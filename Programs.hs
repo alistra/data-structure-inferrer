@@ -1,0 +1,4 @@
+getOperations :: Program -> [OperationName]
+
+
+
