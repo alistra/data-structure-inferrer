@@ -1,4 +1,4 @@
-For now you can sort the structures by relevance depending on operations used in your program:
+For now you can sort the structures by relevance depending on operations used in your program (if you manually put it in the invocation):
 
 *Main> sortBy (\x y-> compareDS x y [InsertVal, ExtremalVal]) allStructures 
 [Hashtable,Red-Black Trees,Heap,Linked List]
