@@ -52,72 +52,6 @@ data DSOperation = Op { getOpName :: OperationName, getComplexity :: Complexity 
 instance Ord DSOperation where
     compare (Op _ c1) (Op _ c2) = compare c1 c2
 
-
-ll = DS "Linked List"       [(Op InsertArgVal       ((LinLog 1 0), N)),
-                            (Op InsertVal           ((LinLog 0 0), N)),
-                            (Op DeleteByArg         ((LinLog 1 0), N)),
-                            (Op DeleteByVal         ((LinLog 1 0), N)),
-                            (Op DeleteExtremalVal   ((LinLog 0 0), N)),
-                            (Op DeleteExtremalArg   ((LinLog 0 0), N)),
-                            (Op ExtremalArg         ((LinLog 0 0), N)),
-                            (Op ExtremalVal         ((LinLog 0 0), N)),
-                            (Op FindByVal           ((LinLog 1 0), N)),
-                            (Op FindByArg           ((LinLog 1 0), N)),
-                            (Op Map                 ((LinLog 1 0), N)),
-                            (Op Size                ((LinLog 0 0), N)),
-                            (Op Empty               ((LinLog 0 0), N)),
-                            (Op BoundByArg          ((LinLog 1 0), N)),
-                            (Op BoundByVal          ((LinLog 1 0), N))]
-
-rbt = DS "Red-Black Trees"  --[(Op InsertArgVal     ((LinLog 1 0), N)),
-                            [(Op InsertVal          ((LinLog 0 1), N)),
-                            --(Op DeleteByArg       ((LinLog 1 0), N)),
-                            (Op DeleteByVal         ((LinLog 0 1), N)),
-                            (Op DeleteExtremalVal   ((LinLog 0 1), N)),
-                            --(Op DeleteExtremalArg ((LinLog 0 1), N)),
-                            --(Op ExtremalArg       ((LinLog 0 0), N)),
-                            (Op ExtremalVal         ((LinLog 0 0), N)),
-                            (Op FindByVal           ((LinLog 0 1), N)),
-                            --(Op FindByArg         ((LinLog 1 0), N)),
-                            (Op Map                 ((LinLog 1 0), N)),
-                            (Op Size                ((LinLog 0 0), N)),
-                            (Op Empty               ((LinLog 0 0), N)),
-                            --(Op BoundByArg        ((LinLog 0 0), N)),
-                            (Op BoundByVal          ((LinLog 0 1), N))]
-
-                            --[(Op InsertArgVal     ((LinLog 0 0), AE),
-hash = DS "Hashtable"       [(Op InsertArgVal       ((LinLog 0 0), N)),
-                            --(Op DeleteByArg       ((LinLog 1 0), N)),
-                            (Op DeleteByArg         ((LinLog 0 0), N)),
-                            --(Op DeleteExtremalVal ((LinLog 0 0), N)),
-                            --(Op DeleteExtremalArg ((LinLog 0 0), N)),
-                            --(Op ExtremalArg       ((LinLog 0 0), N)),
-                            --(Op ExtremalVal       ((LinLog 0 0), N)),
-                            --(Op FindByVal         ((LinLog 0 0), N)),
-                            (Op FindByArg           ((LinLog 0 0), N)),
-                            --(Op Map               ((LinLog 1 0), N)),
-                            (Op Size                ((LinLog 0 0), N)),
-                            (Op Empty               ((LinLog 0 0), N))]
-                            --(Op BoundByArg        ((LinLog 0 0), N)),
-                            --(Op BoundByVal        ((LinLog 1 0), N))]
-
-                            --(Op InsertArgVal      ((LinLog 0 1), N)),
-heap = DS "Heap"            [(Op InsertVal          ((LinLog 0 1), N)),
-                            --(Op DeleteByArg       ((LinLog 1 0), N)),
-                            (Op DeleteByVal         ((LinLog 1 0), N)),
-                            (Op DeleteExtremalVal   ((LinLog 0 1), N)),
-                            --(Op DeleteExtremalArg ((LinLog 0 0), N)),
-                            --(Op ExtremalArg       ((LinLog 0 0), N)),
-                            (Op ExtremalVal         ((LinLog 0 0), N)),
-                            (Op FindByVal           ((LinLog 1 0), N)),
-                            --(Op FindByArg         ((LinLog 1 0), N)),
-                            (Op Map                 ((LinLog 1 0), N)),
-                            (Op Size                ((LinLog 0 0), N)),
-                            (Op Empty               ((LinLog 0 0), N)),
-                            --(Op BoundByArg        ((LinLog 0 0), N)),
-                            (Op BoundByVal          ((LinLog 1 0), N))]
-
-
 countElem :: Eq a => a -> [a] -> Integer
 countElem _ [] = 0
 countElem y (x:xs)  | y == x = 1 + (countElem y xs)
@@ -131,14 +65,9 @@ compareDS s1 s2 opns = let  ops1 = filter (\x -> elem (getOpName x) opns) (getDS
                                     GT -> GT
                                     EQ -> if (length ops1) == 0
                                         then EQ
-                                        else case compare (maximum ops1) (maximum ops2) of --penis empyy list
+                                        else case compare (maximum ops1) (maximum ops2) of
                                             LT -> GT
                                             GT -> LT
                                             EQ -> let ordList = zipWith (compare) ops1 ops2 in
                                                 compare (countElem LT ordList) (countElem GT ordList)
--- check the worst case complexity, and if the same then count better ones
-
-allStructures :: [Structure]
-allStructures = [rbt, heap, hash, ll]
-
 
