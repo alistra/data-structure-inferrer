@@ -129,11 +129,13 @@ compareDS s1 s2 opns = let  ops1 = filter (\x -> elem (getOpName x) opns) (getDS
                                 case compare (length ops1) (length ops2) of
                                     LT -> LT
                                     GT -> GT
-                                    EQ -> case compare (maximum ops1) (maximum ops2) of --penis empyy list
-                                        LT -> GT
-                                        GT -> LT
-                                        EQ -> let ordList = zipWith (compare) ops1 ops2 in
-                                            compare (countElem LT ordList) (countElem GT ordList)
+                                    EQ -> if (length ops1) == 0
+                                        then EQ
+                                        else case compare (maximum ops1) (maximum ops2) of --penis empyy list
+                                            LT -> GT
+                                            GT -> LT
+                                            EQ -> let ordList = zipWith (compare) ops1 ops2 in
+                                                compare (countElem LT ordList) (countElem GT ordList)
 -- check the worst case complexity, and if the same then count better ones
 
 allStructures :: [Structure]

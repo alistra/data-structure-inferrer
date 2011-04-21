@@ -1,0 +1,9 @@
+For now you can sort the structures by relevance depending on operations used in your program:
+
+*Main> sortBy (\x y-> compareDS x y [InsertVal, ExtremalVal]) allStructures 
+[Hashtable,Red-Black Trees,Heap,Linked List]
+*Main> sortBy (\x y-> compareDS x y [InsertArgVal, FindByArg ]) allStructures 
+[Red-Black Trees,Heap,Linked List,Hashtable]
+*Main> sortBy (\x y-> compareDS x y [InsertVal, FindByVal ]) allStructures 
+[Hashtable,Heap,Linked List,Red-Black Trees]
+
