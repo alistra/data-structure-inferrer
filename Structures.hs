@@ -1,3 +1,5 @@
+module Structures where
+
 import Data.List
 
 data Structure = DS { getDSName :: String, getDSOps :: [DSOperation] }

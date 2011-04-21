@@ -4,6 +4,10 @@ Different effects depending on the DS being static or dynamic.
 
 Different effects depending on the existance of user input (dynamic number of operations).
 
+Difference between a hashtable and an array, probably argument type or argument distribution dependent.
+
+Advice mode - which operations when removed, will improve the time complexity of the DS
+
 DS to add:
 	unionfind
 	brodaqueue/fiboheap/binomheap
