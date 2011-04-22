@@ -12,14 +12,21 @@ data OperationName = InsertArgVal
                     | InsertVal
                     | DeleteByArg
                     | DeleteByVal
+                    | DeleteByRef
                     | FindByVal
                     | FindByArg
+                    | FindByRef
+                    | UpdateByVal
+                    | UpdateByArg
+                    | UpdateByRef
                     | DeleteExtremalVal
                     | DeleteExtremalArg
                     | ExtremalArg
                     | ExtremalVal
                     | BoundByArg
                     | BoundByVal
+                    | BoundByRef
+                    | DecreaseValByRef -- isn't that just update?
                     | Union
                     | Intersect
                     | Difference
@@ -75,4 +82,3 @@ compareDS s1 s2 opns = let  ops1 = filter (\x -> getOpName x `elem` opns) (getDS
                                             GT -> LT
                                             EQ -> let ordList = zipWith compare ops1 ops2 in
                                                 compare (countElem LT ordList) (countElem GT ordList)
-
