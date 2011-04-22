@@ -6,6 +6,3 @@ For now you can sort the structures by relevance depending on operations used in
 [Array,Hashtable]
 *AllStructures> recommendAllDS [InsertVal, FindByVal ]
 [Red-Black Trees]
-*AllStructures> recommendAllDS [InsertArgVal, FindByArg ]
-[Array,Hashtable]
-
