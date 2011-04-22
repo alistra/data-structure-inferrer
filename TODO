@@ -8,11 +8,17 @@ Difference between a hashtable and an array, probably argument type or argument 
 
 Advice mode - which operations when removed, will improve the time complexity of the DS
 
+Merging different structures (possibly some kind of compatibility function is needed)
+
+Print all the equal DSs in the inferring
+
+Delete/Change by reference to the object in the DS.
+
 DS to add:
 	unionfind
 	brodaqueue/fiboheap/binomheap
 	array
+	update to all OPS
 
 OPS to add:
-	union/intersection/difference/symdifference
 	decreaseKey
