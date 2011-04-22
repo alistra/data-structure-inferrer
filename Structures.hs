@@ -23,10 +23,10 @@ data OperationName = InsertArgVal
                     | DeleteExtremalArg
                     | ExtremalArg
                     | ExtremalVal
-                    | BoundByArg
+                    | BoundByArg -- is this a thing, lol?
                     | BoundByVal
-                    | BoundByRef
-                    | DecreaseValByRef -- isn't that just update?
+                    | BoundByRef --argref valref?
+                    | DecreaseValByRef
                     | Union
                     | Intersect
                     | Difference
