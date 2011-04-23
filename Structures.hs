@@ -3,7 +3,7 @@ module Structures where
 import Data.List
 import Data.Ord
 
-data Structure = DS { getDSName :: String, getDSOps :: [DSOperation] }
+data Structure = DS { getDSName :: String, getDSOps :: [DSOperation] } deriving Eq
 
 instance Show Structure where
     show = getDSName
@@ -33,7 +33,7 @@ data OperationName = InsertArgVal
                     | SymDifference
                     | Map
                     | Size
-                    | Empty deriving Eq
+                    | Empty deriving (Show, Eq)
                     
 data ComplexityCharacteristics = AE | E | A | N deriving (Ord, Eq)
 

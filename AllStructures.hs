@@ -1,8 +1,6 @@
 module AllStructures where
 
-import Random
 import Structures
-import Data.List
 
 {-
 Op BoundByArg
@@ -142,14 +140,3 @@ array = DS "Array"          [Op InsertArgVal       (LinLog 0 0, N),
 
 allStructures :: [Structure]
 allStructures = [rbt, heap, hash, ll, binom, array, fibo]
-
-recommendDS :: [OperationName] -> IO Structure
-recommendDS opns =  do  let sorted = reverse $ sortBy (\x y-> compareDS x y opns) allStructures 
-                        let  bestStructures = head $ groupBy (\x y -> compareDS x y opns == EQ) sorted 
-                        ridx <- randomRIO (0, length bestStructures - 1)
-                        return $ bestStructures !! ridx
-
-recommendAllDS :: [OperationName] -> [Structure]
-recommendAllDS opns =  let sorted = reverse $ sortBy (\x y-> compareDS x y opns) allStructures 
-                        in  head $ groupBy (\x y -> compareDS x y opns == EQ) sorted 
- 
