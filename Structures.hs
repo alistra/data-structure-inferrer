@@ -81,4 +81,4 @@ compareDS s1 s2 opns = let  ops1 = filter (\x -> getOpName x `elem` opns) (getDS
                                             LT -> GT
                                             GT -> LT
                                             EQ -> let ordList = zipWith compare ops1 ops2 in
-                                                compare (countElem LT ordList) (countElem GT ordList)
+                                                compare (countElem GT ordList) (countElem LT ordList)
