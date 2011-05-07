@@ -8,24 +8,17 @@ data Structure = DS { getDSName :: String, getDSOps :: [DSOperation] } deriving 
 instance Show Structure where
     show = getDSName
 
-data OperationName = InsertArgVal
-                    | InsertVal
-                    | DeleteByArg
+data OperationName =  InsertVal
                     | DeleteByVal
                     | DeleteByRef
                     | FindByVal
-                    | FindByArg
                     | FindByRef
                     | UpdateByVal
-                    | UpdateByArg
                     | UpdateByRef
                     | DeleteExtremalVal
-                    | DeleteExtremalArg
-                    | ExtremalArg
                     | ExtremalVal
-                    | BoundByArg -- is this a thing, lol?
                     | BoundByVal
-                    | BoundByRef --argref valref?
+                    | BoundByRef
                     | DecreaseValByRef
                     | Union
                     | Intersect
