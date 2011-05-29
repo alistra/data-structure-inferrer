@@ -1,7 +1,6 @@
-module AST where
-import Structures
+module Defs.AST where
+import Defs.Structures
 
-type Name = String
 data Term = And Term Term
             | Assign Name Term
             | Block [Term] 

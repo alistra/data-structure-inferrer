@@ -1,5 +1,5 @@
 {
-module Lexer where
+module Il.Lexer where
 }
 
 %wrapper "posn"

@@ -1,9 +1,11 @@
-module Structures where
+module Defs.Structures where
 
 import Data.List
 import Data.Ord
 
-data Structure = DS { getDSName :: String, getDSOps :: [DSOperation] } deriving Eq
+type Name =  String
+
+data Structure = DS { getDSName :: Name, getDSOps :: [DSOperation] } deriving Eq
 
 instance Show Structure where
     show = getDSName

@@ -1,8 +1,8 @@
 {
-module Parser where
+module Il.Parser where
 
-import Lexer
-import AST
+import Il.Lexer
+import Il.AST
 import Prelude hiding (True, False)
 }
 

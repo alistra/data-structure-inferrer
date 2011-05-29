@@ -1,11 +1,8 @@
-analyzer: 	Structures.hs Lexer.hs AST.hs Analyzer.hs Parser.hs
-	ghci -O Structures.hs Lexer.hs AST.hs Analyzer.hs Parser.hs 
+analyzer: 	Defs/AST.hs Defs/Structures.hs Il/Lexer.hs Il/Parser.hs Analyzer.hs
+	ghci -O Analyzer.hs 
 
-Lexer.hs: Lexer.x
-	alex Lexer.x
+Il/Lexer.hs: Il/Lexer.x
+	alex Il/Lexer.x
 
-Parser.hs: Parser.y
-	happy -igrammar.log Parser.y
-
-clean:
-	rm *.hi *.o grammar.log
+Il/Parser.hs: Il/Parser.y
+	happy -iIl/grammar.log Il/Parser.y

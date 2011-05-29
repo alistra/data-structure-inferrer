@@ -1,7 +1,7 @@
 module Analyzer where
 
-import Structures
-import AST
+import Defs.Structures
+import Defs.AST
 
 data DSInfo = DSI { getDSIVarName :: Name,
                     isStatic :: Bool,
@@ -20,9 +20,9 @@ analyzeWithContext context = foldl step context
 isDeclaredStructure t dsis = t `elem` (map getDSIVarName dsis) 
 
 step :: [DSInfo] -> Term -> [DSInfo]
-step dsis (Assign v (Name v1)) = if v1 `isDeclaredStructure` dsis
-    then DSI v (isStatic v1) (getUses v1):dsis 
-    else dsis
+--step dsis (Assign v (Var v1)) = if v1 `isDeclaredStructure` dsis
+--    then DSI v (isStatic v1) (getUses v1):dsis 
+--    else dsis
 step dsis (Block b) = analyzeWithContext dsis b
 step dsis (DSInit v) = if v `isDeclaredStructure` dsis
     then error $ "Already initialized " ++ (show v) 
