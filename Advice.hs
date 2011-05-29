@@ -12,8 +12,12 @@ redColor = setSGR [SetColor Foreground Vivid Red]
 cyanColor = setSGR [SetColor Foreground Vivid Cyan]
 resetColor = setSGR [Reset]
 
+data AdviceData = Advice { advisedDS :: Structure, reducedOperations :: [OperationName], operations :: [OperationName] } deriving Show
+
+integerLength = toEnum.length
+
 sequencesOfLen :: Eq a =>  [a] -> Integer -> [[a]]
-sequencesOfLen xs n = filter (\s -> (toEnum.length $ s) >= n && (s /= xs)) $ subsequences xs
+sequencesOfLen xs n = filter (\s -> integerLength s >= n && (s /= xs)) $ subsequences xs
 
 notWorse :: Structure -> Structure -> [OperationName] -> Bool
 notWorse s1 s2 opns = compareDS s1 s2 opns /= LT
@@ -25,14 +29,16 @@ better s1 s2 opns   | s1 == s2 = True
 betterThanEach :: Structure -> [Structure] -> [OperationName] -> Bool
 betterThanEach s1 ss opns = all (\s2-> better s1 s2 opns) ss 
 
-adviceDS' :: Integer -> [OperationName] -> [([OperationName], Structure)]
+filterAdviceDataForRecommended :: [Structure] -> [AdviceData] -> [AdviceData]
+filterAdviceDataForRecommended recs = filter (\(Advice ds _ _) -> ds `notElem` recs)
+
+adviceDS' :: Integer -> [OperationName] -> [AdviceData]
 adviceDS' n opns =  let recOrig = recommendAllDs opns
-                        opnsSeqs = sequencesOfLen opns (toEnum (length opns) - n)
-                        recSeqs = concatMap (\seq -> map (\x -> (seq,x)) $ filter (\ds-> betterThanEach ds recOrig seq) (recommendAllDs seq)) opnsSeqs 
-                            in filter (\(_, ds) -> ds `notElem` recOrig) recSeqs
+                        opnsSeqs = sequencesOfLen opns (integerLength opns - n)
+                        recSeqs = concatMap (\seq -> map (\x -> Advice x seq opns) $ filter (\ds-> betterThanEach ds recOrig seq) (recommendAllDs seq)) opnsSeqs 
+                            in filterAdviceDataForRecommended recOrig recSeqs
 
-
-adviceDS :: [OperationName] -> [([OperationName], Structure)]
+adviceDS :: [OperationName] -> [AdviceData]
 adviceDS = adviceDS' 1
 
 printAdvice' :: Integer -> [OperationName] -> IO ()
@@ -49,13 +55,13 @@ printAdvice' n opns =   do
                                 else    do
                                             putStr "Currently recommended data structures are: "
                                             cyanColor
-                                            putStrLn (foldl (\str ds -> ( str ++ ", " ++ getDSName ds)) "" rec)
+                                            putStrLn (foldl (\str ds -> (str ++ ", " ++ getDSName ds)) "" rec)
                                             yellowColor
-                            mapM_ (\(seq, ds) -> printAdviceStructure ds seq opns) adv
+                            mapM_ printAdviceStructure adv
                             resetColor
 
-printAdviceStructure :: Structure -> [OperationName] -> [OperationName] -> IO()
-printAdviceStructure s seq opns = do
+printAdviceStructure :: AdviceData -> IO()
+printAdviceStructure (Advice s seq opns) = do
                                         putStr  "You could use " 
                                         greenColor
                                         putStr $ getDSName s

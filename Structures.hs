@@ -12,7 +12,6 @@ data OperationName =  InsertVal
                     | DeleteByVal
                     | DeleteByRef
                     | FindByVal
-                    | FindByRef
                     | UpdateByVal
                     | UpdateByRef
                     | DeleteExtremalVal
@@ -28,7 +27,7 @@ data OperationName =  InsertVal
                     | Size
                     | Empty deriving (Show, Eq)
                     
-data ComplexityCharacteristics = AE | E | A | N deriving (Ord, Eq)
+data ComplexityCharacteristics = AE | E | A | N deriving (Ord, Eq, Show)
 
 type Complexity = (AsymptoticalComplexity, ComplexityCharacteristics)
 
@@ -51,8 +50,7 @@ logs :: Integer -> String
 logs 0 = ""
 logs n = "log" ++ logs (n-1)
 
-
-data DSOperation = Op { getOpName :: OperationName, getComplexity :: Complexity } deriving Eq
+data DSOperation = Op { getOpName :: OperationName, getComplexity :: Complexity } deriving (Show, Eq)
 
 instance Ord DSOperation where
     compare (Op _ c1) (Op _ c2) = compare c1 c2
