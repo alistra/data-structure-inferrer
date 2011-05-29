@@ -64,8 +64,8 @@ expr:		Name Assign valexpr							{ Assign $1 $3 }
 		| block									{ $1 }
 		| If valexpr Then expr Else expr 					{ If $2 $4 $6 }
 		| If valexpr Newline Then expr Newline Else expr 			{ If $2 $5 $8 }
-		| For LParen expr Semicolon valexpr Semicolon expr RParen expr 		{ For $3 $5 $7 $9 }
-		| For LParen expr Semicolon valexpr Semicolon expr RParen Newline expr 	{ For $3 $5 $7 $10 }
+		| For LParen expr Semicolon valexpr Semicolon expr RParen expr 		{ While $5 (Block [$3, $9, $7]) }
+		| For LParen expr Semicolon valexpr Semicolon expr RParen Newline expr 	{ While $5 (Block [$3, $7, $10]) }
 		| While LParen expr RParen expr						{ While $3 $5 }
 		| While LParen expr RParen Newline expr					{ While $3 $6 }
 		| shexpr								{ $1 }
