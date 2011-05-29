@@ -2,6 +2,8 @@ module Analyzer where
 
 import Defs.Structures
 import Defs.AST
+import Data.List
+import Control.Arrow
 
 data DSInfo =   DSI { getDSIVarName :: Name,
                     isStatic :: Bool,
@@ -12,27 +14,36 @@ data DSUse =    DSU {  getDSUOpName :: OperationName,
                     isUserDependent :: Bool }
                 | DSUInit deriving (Show, Eq)
 
+isDeclaredStructure t dsis = t `elem` map getDSIVarName dsis 
+
 setHeavyUsage (DSU opname _ ud) = DSU opname True ud
 setUserDependance (DSU opname hu _) = DSU opname hu True
 
-
-
+isStaticDSU _ = True -- stub
 
 analyze :: [Term] -> [DSInfo]
 analyze = generateDSI . generateDSU  
 
 generateDSI :: [(Name, DSUse)] -> [DSInfo]
-generateDSI dsus = [] -- stub
+generateDSI allDSU@((name, _):dsus) = let (sameName, otherNames) = partition (\x -> fst x == name) allDSU in
+    generateSingleDSI sameName : generateDSI otherNames
+generateDSI [] = []
+
+generateSingleDSI :: [(Name, DSUse)] -> DSInfo
+generateSingleDSI allNDSU@((name, _):_) = DSI name static cleanDSU where
+    mergeDSU allDSU@(dsu:dsus) = let (sameOp, otherOps) = partition (\x -> getDSUOpName x == getDSUOpName dsu) allDSU in
+        mergeSingleDSU sameOp : mergeDSU otherOps
+    mergeSingleDSU = foldl1 (\(DSU name1 hu1 ud1) (DSU name2 hu2 ud2) -> DSU name1 (hu1 || hu2) (ud1 || ud2))
+    cleanDSU = mergeDSU (map snd allNDSU)
+    static = isStaticDSU cleanDSU
 
 generateDSU :: [Term] -> [(Name, DSUse)]
 generateDSU = concatMap stepDSU 
 
-isDeclaredStructure t dsis = t `elem` (map getDSIVarName dsis) 
-
 stepDSU :: Term -> [(Name, DSUse)]
 stepDSU (Block body) = generateDSU body
 stepDSU (DSInit name) = [(name, DSUInit)]
-stepDSU (While cond body) = map (\(name, dsu) -> (name, setHeavyUsage dsu)) $ generateDSU [cond,body]
+stepDSU (While cond body) = map (Control.Arrow.second setHeavyUsage) $ generateDSU [cond,body]
 stepDSU (Funcall name args) = case head args of
     Var varname -> [(varname, DSU opname False False)] where
         opname = case name of
@@ -43,19 +54,3 @@ stepDSU (Funcall name args) = case head args of
     _ -> []
 stepDSU (If cond t1 t2) = generateDSU [cond,t1,t2]
 stepDSU _ = []
-
-
-{-
-step :: [DSUse] -> Term -> [DSUse]
-step dsis (Assign v (Var v1)) = 
-if v `isDeclaredStructure`dsis || v1 `isDeclaredStructure` dsis
-    then error "Assigning DSes not yet available" 
-    else dsis
-step dsis (Block b) = analyzeWithContext dsis b
-step dsis (DSInit v) = if v `isDeclaredStructure` dsis
-    then error $ "Already initialized " ++ (show v) 
-    else DSI v True []:dsis
-step dsis (While t body) = analyzeWithContext dsis [t,body,body] --because of redefintions
-step dsis (Funcall name args) = 
-step dsis (If cond t1 t2) = analyzeWithContext dsis [cond,t1,t2]
-step dsis _ = dsis -}

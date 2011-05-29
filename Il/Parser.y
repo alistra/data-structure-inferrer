@@ -2,7 +2,7 @@
 module Il.Parser where
 
 import Il.Lexer
-import Il.AST
+import Defs.AST
 import Prelude hiding (True, False)
 }
 
@@ -105,7 +105,8 @@ block:		LCParen exprlist RCParen		{ Block $2 }
 exprlist :: { [Term] }
 exprlist:	block exprlist				{ $1:$2 } 
 		| expr Newline exprlist			{ $1:$3 }
-		| expr					{ [$1] }
+		| expr Newline				{ [$1] }
+		| expr 					{ [$1] }
 
 commaseparatedlist :: { [Term] }
 commaseparatedlist: 	valexpr Comma commaseparatedlist { $1:$3 }

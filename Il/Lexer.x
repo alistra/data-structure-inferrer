@@ -1,5 +1,7 @@
 {
 module Il.Lexer where
+
+import Prelude hiding (lex)
 }
 
 %wrapper "posn"
