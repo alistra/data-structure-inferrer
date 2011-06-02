@@ -38,6 +38,7 @@ generateSingleDSI :: AnalyzerOutput -> DSInfo
 generateSingleDSI allNDSU@((name, _):_) = DSI name static cleanDSU where
     mergeDSU allDSU@(dsu:dsus) = let (sameOp, otherOps) = partition (\x -> getDSUOpName x == getDSUOpName dsu) allDSU in
         mergeSingleDSU sameOp : mergeDSU otherOps
+    mergeDSU [] = []
     mergeSingleDSU = foldl1 (\(DSU name1 hu1 ud1) (DSU name2 hu2 ud2) -> DSU name1 (hu1 || hu2) (ud1 || ud2))
     cleanDSU = mergeDSU (map snd allNDSU)
     static = isStaticDSU cleanDSU

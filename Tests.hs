@@ -15,8 +15,8 @@ runTest :: String -> IO()
 runTest name = do
     handle <- openTestFile name
     contents <- hGetContents handle
-    hClose handle
     putStrLn . show . test $ contents
+    hClose handle
 
 test = analyze.parse.lex
 
