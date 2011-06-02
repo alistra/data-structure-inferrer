@@ -44,7 +44,7 @@ tokens :-
 	"}"				{ \p s -> tokenWithPos p TkRCParen }
 	">"				{ \p s -> tokenWithPos p TkGreater }
 	true				{ \p s -> tokenWithPos p TkTrue }
-	$alpha ($digit | $alpha)* 	{ \p s -> tokenWithPos p (TkName s) }
+	$alpha (_ | $digit | $alpha)* 	{ \p s -> tokenWithPos p (TkName s) }
 {                                                 
 data BaseToken = TkAnd 
 	| TkAssign

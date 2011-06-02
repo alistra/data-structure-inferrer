@@ -2,8 +2,7 @@ module Defs.Structures where
 
 import Data.List
 import Data.Ord
-
-type Name =  String
+import Defs.Common
 
 data Structure = DS { getDSName :: Name, getDSOps :: [DSOperation] } deriving Eq
 

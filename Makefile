@@ -1,4 +1,4 @@
-analyzer: 	Defs/AST.hs Defs/Structures.hs Il/Lexer.hs Il/Parser.hs Analyzer.hs Tests.hs
+analyzer: 
 	ghci -O Tests.hs
 
 Il/Lexer.hs: Il/Lexer.x

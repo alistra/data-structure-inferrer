@@ -1,5 +1,6 @@
 module Defs.AST where
-import Defs.Structures
+
+import Defs.Common
 
 data Term = And Term Term
             | Assign Name Term

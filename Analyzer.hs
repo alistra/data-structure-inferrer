@@ -1,6 +1,7 @@
 module Analyzer where
 
 import Defs.Structures
+import Defs.Common
 import Defs.AST
 import Data.List
 import Control.Arrow
@@ -46,34 +47,34 @@ generateSingleDSI allNDSU@((name, _):_) = DSI name static cleanDSU where
 
 
 generateDSU :: [Term] -> AnalyzerOutput
-generateDSU ts = evalState (foldlDSU stepDSU [] ts) []
+generateDSU ts = evalState (foldlTerms step [] ts) []
 
 generateContextDSU :: [Term] -> Analyzer
-generateContextDSU = foldlDSU stepDSU []
+generateContextDSU = foldlTerms step []
 
-foldlDSU :: (a -> b -> State s a) -> a -> [b] -> State s a
-foldlDSU f start [] = return start
-foldlDSU f start (r:rest) = do 
+foldlTerms :: (AnalyzerOutput -> Term -> State Context AnalyzerOutput) -> AnalyzerOutput -> [Term] -> State Context AnalyzerOutput 
+foldlTerms f start [] = return start
+foldlTerms f start (r:rest) = do 
     dsus <- f start r
-    foldlDSU f dsus rest
+    foldlTerms f dsus rest
 
-stepDSU :: AnalyzerOutput -> Term -> Analyzer
+step :: AnalyzerOutput -> Term -> Analyzer
 
-stepDSU dsus (Block body) = do
+step dsus (Block body) = do
     newDSU <- generateContextDSU body
     return $ dsus ++ newDSU
 
-stepDSU dsus (DSInit name) = do
+step dsus (DSInit name) = do
     ctx <- get
     if name `elem` ctx 
         then error $ name ++ " already initialized"
         else put (name:ctx) >> return dsus 
 
-stepDSU dsus (While cond body) = do
+step dsus (While cond body) = do
     newDSU <- generateContextDSU [cond,body] 
     return $ dsus ++ map (Control.Arrow.second setHeavyUsage) newDSU
 
-stepDSU dsus (Funcall name args) = do
+step dsus (Funcall name args) = do --parse funcalls in arguments
     let opname = case name of
             "insert"        -> Just InsertVal
             "max"           -> Just ExtremalVal
@@ -91,7 +92,7 @@ stepDSU dsus (Funcall name args) = do
                                     else error $ varname ++ " not initialized before use in function " ++ name
                             _           -> error "Not implemented yet"
 
-stepDSU dsus (If cond t1 t2) = do
+step dsus (If cond t1 t2) = do
     dsuCond <- generateContextDSU [cond]
     oldCtx <- get
 
@@ -106,4 +107,4 @@ stepDSU dsus (If cond t1 t2) = do
     put $ union ctxT1 ctxT2
     return $ dsus ++ concat [dsuCond, dsuT1, dsuT2]
 
-stepDSU dsus _ = return dsus
+step dsus _ = return dsus
