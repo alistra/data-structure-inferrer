@@ -1,7 +1,7 @@
-* About the project
+# About the project
 This project is meant to be a compiler feature, that analyzes your code and chooses the best data structure depending on your source code. It analyzes the functions used on a data structure and chooses a type of structure that minimizes the time complexity. For now it works as a standalone code analyzer, that prints the most appropriate structure.
 
-* Examples
+# Examples
 
 You can run tests by running runIlTests from the Tests.hs file. Those tests (Il/tests subdirectory) are source codes in a simple imperative language. The analyzer infers the best data structure for operations used in the test program.
 
@@ -18,7 +18,7 @@ You can run tests by running runIlTests from the Tests.hs file. Those tests (Il/
 	The recommended structure for ds is:
 	Red-Black Trees
 
-* Low Level
+# Low Level
 
 For now you can get the best structures depending on operations used in your program (if you manually put it in the invocation):
 
