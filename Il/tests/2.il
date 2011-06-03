@@ -1,4 +1,5 @@
 ds = DS
+ds2 = DS
 
 for(i = 0; i < 20; i++)
 {
@@ -7,12 +8,14 @@ for(i = 0; i < 20; i++)
 
 for(i = 0; i < 10; i++)
 {
+	insert(ds2, i)
 	update(ds, i, 2*i)
 }
 
 for(i = 0; i < 5; i++)
 {
-	print(delete_max(ds))
+	delete_max(ds)
+	extreme_val(ds2)
 }
 
-print(max(ds))
+max(ds)

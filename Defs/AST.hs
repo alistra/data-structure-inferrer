@@ -5,7 +5,7 @@ import Defs.Common
 data Term = And Term Term
             | Assign Name Term
             | Block [Term] 
-            | Dec Term
+            | Dec Name
             | Div Term Term
             | DSInit Name
             | Eq Term Term
@@ -14,7 +14,7 @@ data Term = And Term Term
             | Geq Term Term
             | Gt Term Term
             | If Term Term Term
-            | Inc Term
+            | Inc Name
             | Int Int
             | Leq Term Term
             | Lt Term Term

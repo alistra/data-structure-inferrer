@@ -1,7 +1,9 @@
 module Recommend where
 
-import Structures
+import Defs.Structures
+
 import AllStructures
+
 import Data.List
 import Random
 

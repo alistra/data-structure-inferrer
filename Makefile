@@ -1,4 +1,4 @@
-analyzer: 
+analyzer: Il/Lexer.hs Il/Parser.hs
 	ghci -O Tests.hs
 
 Il/Lexer.hs: Il/Lexer.x

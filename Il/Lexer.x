@@ -11,7 +11,7 @@ $alpha = [a-zA-Z]
 
 tokens :- 
 	(\n)+				{ \p s -> tokenWithPos p TkNewline }
-	$white+				;
+	($white # \n)+			;
     	$digit+				{ \p s -> tokenWithPos p (TkInt (read s)) }
 	and				{ \p s -> tokenWithPos p TkAnd }
 	if				{ \p s -> tokenWithPos p TkIf }

@@ -1,16 +1,12 @@
 module Advice where
 
-import Data.List
-import Structures
+import Defs.Common
+import Defs.Structures
+
 import AllStructures
 import Recommend
-import System.Console.ANSI
 
-greenColor = setSGR [SetColor Foreground Vivid Green]
-yellowColor = setSGR [SetColor Foreground Dull Yellow]
-redColor = setSGR [SetColor Foreground Vivid Red]
-cyanColor = setSGR [SetColor Foreground Vivid Cyan]
-resetColor = setSGR [Reset]
+import Data.List
 
 data AdviceData = Advice { advisedDS :: Structure, reducedOperations :: [OperationName], operations :: [OperationName] } deriving Show
 
@@ -43,33 +39,33 @@ adviceDS = adviceDS' 1
 
 printAdvice' :: Integer -> [OperationName] -> IO ()
 printAdvice' n opns =   do    
-                            yellowColor
-                            let adv = adviceDS' n opns 
-                            let rec = recommendAllDs opns
-                            if length rec == 1
-                                then    do  
-                                            putStr "Currently recommended data structure is: " 
-                                            cyanColor
-                                            putStrLn (getDSName $ head rec)
-                                            yellowColor
-                                else    do
-                                            putStr "Currently recommended data structures are: "
-                                            cyanColor
-                                            putStrLn (foldl (\str ds -> (str ++ ", " ++ getDSName ds)) "" rec)
-                                            yellowColor
-                            mapM_ printAdviceStructure adv
-                            resetColor
+    yellowColor
+    let adv = adviceDS' n opns 
+    let rec = recommendAllDs opns
+    if length rec == 1
+        then    do  
+                    putStr "Currently recommended data structure is: " 
+                    cyanColor
+                    putStrLn (getDSName $ head rec)
+                    yellowColor
+        else    do
+                    putStr "Currently recommended data structures are: "
+                    cyanColor
+                    putStrLn (foldl (\str ds -> (str ++ ", " ++ getDSName ds)) "" rec)
+                    yellowColor
+    mapM_ printAdviceStructure adv
+    resetColor
 
 printAdviceStructure :: AdviceData -> IO()
 printAdviceStructure (Advice s seq opns) = do
-                                        putStr  "You could use " 
-                                        greenColor
-                                        putStr $ getDSName s
-                                        yellowColor
-                                        putStrLn ", if you removed the following operations:"
-                                        redColor
-                                        putStr $ concatMap (\opn -> "* " ++ show opn ++ "\n") (opns \\ seq)
-                                        resetColor
+    putStr  "You could use " 
+    greenColor
+    putStr $ getDSName s
+    yellowColor
+    putStrLn ", if you removed the following operations:"
+    redColor
+    putStr $ concatMap (\opn -> "* " ++ show opn ++ "\n") (opns \\ seq)
+    resetColor
 
 printAdvice :: [OperationName] -> IO ()
 printAdvice = printAdvice' 1

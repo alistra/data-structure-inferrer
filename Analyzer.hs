@@ -3,6 +3,9 @@ module Analyzer where
 import Defs.Structures
 import Defs.Common
 import Defs.AST
+
+import Recommend
+
 import Data.List
 import Control.Arrow
 import Control.Monad.State
@@ -24,6 +27,22 @@ setUserDependance (DSU opname hu _) = DSU opname hu True
 isStaticDSU _ = True -- stub
 
 
+
+printRecommendationFromAnalysis :: [DSInfo] -> IO()
+printRecommendationFromAnalysis = mapM_ printDSI 
+
+printDSI dsi = do
+    putStr "The recommended structure for "
+    redColor
+    putStr $ getDSIVarName dsi
+    resetColor 
+    putStrLn " is:"
+    cyanColor
+    recommendedDS >>= putStrLn.show
+    resetColor where
+        recommendedDS = do 
+            let opns = map getDSUOpName $ getUses dsi
+            recommendDS opns
 
 analyze :: [Term] -> [DSInfo]
 analyze = generateDSI . generateDSU 

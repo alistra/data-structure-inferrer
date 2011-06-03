@@ -64,17 +64,17 @@ expr:		Name Assign valexpr							{ Assign $1 $3 }
 		| block									{ $1 }
 		| If valexpr Then expr Else expr 					{ If $2 $4 $6 }
 		| If valexpr Newline Then expr Newline Else expr 			{ If $2 $5 $8 }
-		| For LParen expr Semicolon valexpr Semicolon expr RParen expr 		{ While $5 (Block [$3, $9, $7]) }
+		| For LParen expr Semicolon valexpr Semicolon expr RParen expr 		{ While $5 (Block [$3, $7, $9]) }
 		| For LParen expr Semicolon valexpr Semicolon expr RParen Newline expr 	{ While $5 (Block [$3, $7, $10]) }
-		| While LParen expr RParen expr						{ While $3 $5 }
-		| While LParen expr RParen Newline expr					{ While $3 $6 }
+		| While LParen valexpr RParen expr					{ While $3 $5 }
+		| While LParen valexpr RParen Newline expr				{ While $3 $6 }
 		| shexpr								{ $1 }
 
 shexpr :: { Term }
-shexpr:		Inc valexpr				{ Inc $2 }
-		| valexpr Inc				{ Inc $1 }
-		| Dec valexpr				{ Dec $2 }
-		| valexpr Dec				{ Dec $1 }
+shexpr:		Inc Name				{ Inc $2 }
+		| Name Inc				{ Inc $1 }
+		| Dec Name				{ Dec $2 }
+		| Name Dec				{ Dec $1 }
 		| Name LParen commaseparatedlist RParen { Funcall $1 $3 }
 
 valexpr :: { Term }
@@ -99,8 +99,10 @@ valexpr:	Name					{ Var $1 }
 		| shexpr				{ $1 }
        		
 block :: { Term }
-block:		LCParen exprlist RCParen		{ Block $2 }
+block:		LCParen Newline exprlist RCParen	{ Block $3 }
+		| LCParen exprlist RCParen		{ Block $2 }
      		| LCParen RCParen			{ Block [] }
+     		| LCParen Newline RCParen		{ Block [] }
 
 exprlist :: { [Term] }
 exprlist:	block exprlist				{ $1:$2 } 

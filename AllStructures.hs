@@ -1,6 +1,6 @@
 module AllStructures where
 
-import Structures
+import Defs.Structures
 
 {-
                             Op BoundByRef
