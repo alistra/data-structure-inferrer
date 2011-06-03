@@ -15,7 +15,7 @@ for(i = 0; i < 10; i++)
 for(i = 0; i < 5; i++)
 {
 	delete_max(ds)
-	extreme_val(ds2)
+	delete_max(ds2)
 }
 
 max(ds)

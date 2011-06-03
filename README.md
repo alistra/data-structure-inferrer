@@ -13,10 +13,12 @@ You can run tests by running runIlTests from the Tests.hs file. Those tests (Il/
 	The recommended structure for ds is:
 	Red-Black Trees
 	The recommended structure for ds2 is:
-	Hashtable
+	Heap
 	Test File Il/tests/3.il
 	The recommended structure for ds is:
 	Red-Black Trees
+	The recommended structure for ds2 is:
+	Heap
 
 # Low Level
 
