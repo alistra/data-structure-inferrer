@@ -8,7 +8,7 @@ import Analyzer
 
 import System.IO
 import System.Directory
-import List
+import Data.List
 import Prelude hiding (lex)
 
 -- | A function inspired by python's string.split().  A list is split
@@ -16,7 +16,7 @@ import Prelude hiding (lex)
 split :: Eq a => [a] -> [a] -> [[a]]
 split tok splitme = unfoldr (sp1 tok) splitme
     where sp1 _ [] = Nothing
-          sp1 t s = case find (t `isSuffixOf`) $ (inits s) of
+          sp1 t s = case find (t `isSuffixOf`) $ inits s of
                       Nothing -> Just (s, [])
                       Just p -> Just (take (length p - length t) p,
                                       drop (length p) s)
@@ -28,8 +28,8 @@ listFiles path = do
     return $ map (path++) files
 
 openTestFile name =
-    do catch (openFile name ReadMode)
-        (\_ -> do error $ "Cannot open "++ name)
+    catch (openFile name ReadMode)
+        (\_ -> error $ "Cannot open "++ name)
          
 runTestFiles :: [String] -> IO()
 runTestFiles = mapM_ runTest

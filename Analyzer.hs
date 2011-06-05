@@ -38,7 +38,7 @@ printDSI dsi = do
     resetColor 
     putStrLn " is:"
     cyanColor
-    recommendedDS >>= putStrLn.show
+    recommendedDS >>= print
     resetColor where
         recommendedDS = do 
             let opns = map getDSUOpName $ getUses dsi

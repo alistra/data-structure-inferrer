@@ -2,6 +2,18 @@ module AllStructures where
 
 import Defs.Structures
 
+import Data.List
+import Data.Maybe
+
+extremalElemCache :: Structure -> Structure 
+extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") ops' where
+    extVal = fromJust $ find (\dsop -> getOpName dsop == ExtremalVal) ops
+    delByVal = fromJust $ find (\dsop -> getOpName dsop == DeleteByVal) ops
+    delByRef = fromJust $ find (\dsop -> getOpName dsop == DeleteByRef) ops
+    ops' = [Op DeleteByRef (max (getComplexity extVal) (getComplexity delByRef)),
+            Op DeleteByVal (max (getComplexity extVal) (getComplexity delByVal)),
+            Op ExtremalVal (LinLog 0 0, N)] ++ filter (\dsop -> getOpName dsop `notElem` [ExtremalVal, DeleteByVal, DeleteByRef]) ops
+
 {-
                             Op BoundByRef
                             Op BoundByVal
@@ -53,7 +65,7 @@ rbt = DS "Red-Black Trees"  [
                             Op DeleteExtremalVal    (LinLog 0 1, N),
                             Op Difference           (LinLog 1 1, N),
                             Op Empty                (LinLog 0 0, N),
-                            Op ExtremalVal          (LinLog 0 0, N),
+                            Op ExtremalVal          (LinLog 1 0, N),
                             Op FindByVal            (LinLog 0 1, N),
                             Op InsertVal            (LinLog 0 1, N),
                             Op Intersect            (LinLog 1 1, N),
