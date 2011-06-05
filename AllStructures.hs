@@ -184,4 +184,10 @@ array = DS "Array"          [
 
 
 allStructures :: [Structure]
-allStructures = [rbt, heap, hash, ll] --, binom, array, fibo]
+allStructures = [extremalElemCache rbt,
+                rbt,
+                hash,
+                extremalElemCache hash,
+                heap,
+                extremalElemCache ll,
+                ll] --, binom, array, fibo]
