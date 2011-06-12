@@ -12,7 +12,19 @@ extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") o
     delByRef = fromJust $ find (\dsop -> getOpName dsop == DeleteByRef) ops
     ops' = [Op DeleteByRef (max (getComplexity extVal) (getComplexity delByRef)),
             Op DeleteByVal (max (getComplexity extVal) (getComplexity delByVal)),
-            Op ExtremalVal (LinLog 0 0, N)] ++ filter (\dsop -> getOpName dsop `notElem` [ExtremalVal, DeleteByVal, DeleteByRef]) ops
+            Op ExtremalVal (LinLog 0 0, N)] ++ 
+            filter (\dsop -> getOpName dsop `notElem` [ExtremalVal, DeleteByVal, DeleteByRef]) ops
+
+linkedLeaves :: Structure -> Structure 
+linkedLeaves (DS name ops) = DS (name ++ " with linked leaves") ops' where
+    bndByRef = fromJust $ find (\dsop -> getOpName dsop == BoundByRef) ops
+    bndByVal = fromJust $ find (\dsop -> getOpName dsop == BoundByVal) ops
+    insVal = fromJust $ find (\dsop -> getOpName dsop == InsertVal) ops
+    findByVal = fromJust $ find (\dsop -> getOpName dsop == InsertVal) ops
+    ops' = [Op BoundByRef (LinLog 0 0, N),
+            Op BoundByVal (min (getComplexity findByVal) (getComplexity bndByVal)),
+            Op InsertVal (max (getComplexity bndByRef) (getComplexity insVal))] ++
+            filter (\dsop -> getOpName dsop `notElem` [ExtremalVal, DeleteByVal, DeleteByRef]) ops
 
 {-
                             Op BoundByRef
@@ -184,10 +196,6 @@ array = DS "Array"          [
 
 
 allStructures :: [Structure]
-allStructures = [extremalElemCache rbt,
-                rbt,
-                hash,
-                extremalElemCache hash,
-                heap,
-                extremalElemCache ll,
-                ll] --, binom, array, fibo]
+allStructures = [rbt, hash, heap, ll] ++
+                map extremalElemCache [rbt, hash, ll] ++
+                map linkedLeaves [rbt] --, binom, array, fibo]
