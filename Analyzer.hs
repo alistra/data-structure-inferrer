@@ -93,23 +93,28 @@ step dsus (While cond body) = do
     newDSU <- generateContextDSU [cond,body] 
     return $ dsus ++ map (Control.Arrow.second setHeavyUsage) newDSU
 
-step dsus (Funcall name args) = do --parse funcalls in arguments
+step dsus (Funcall name args) = do 
     let opname = case name of
             "insert"        -> Just InsertVal
-            "max"           -> Just ExtremalVal
+            "find"          -> Just FindByVal
             "update"        -> Just UpdateByVal
+            "max"           -> Just ExtremalVal
             "delete_max"    -> Just DeleteExtremalVal
             _               -> Nothing
 
-    case opname of
-            Nothing ->  return dsus
+    argDsus <- generateContextDSU args
+
+    funcallDsu <- case opname of
+            Nothing ->  return []
             Just op ->  case head args of
                             Var varname -> do
                                 ctx <- get
                                 if varname `elem` ctx 
-                                    then return $ dsus ++ [(varname, DSU op False False)]
+                                    then return  [(varname, DSU op False False)]
                                     else error $ varname ++ " not initialized before use in function " ++ name
                             _           -> error "Not implemented yet"
+
+    return $ argDsus ++ funcallDsu ++ dsus
 
 step dsus (If cond t1 t2) = do
     dsuCond <- generateContextDSU [cond]
