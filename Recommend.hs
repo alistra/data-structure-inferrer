@@ -20,5 +20,6 @@ recommendAllDs :: [OperationName] -> [Structure]
 recommendAllDs opns = recommendAllDsFromList opns allStructures
 
 -- | Recommends the best possible data structure from @structs@ for given operations @opns@
+recommendAllDsFromList :: [OperationName] -> [Structure] -> [Structure]
 recommendAllDsFromList opns structs =    let sorted = reverse $ sortBy (\x y-> compareDS x y opns) structs
                                             in head $ groupBy (\x y -> compareDS x y opns == EQ) sorted 
