@@ -1,3 +1,4 @@
+-- | Module for adding possible structures and functions modifying the structures
 module AllStructures where
 
 import Defs.Structures
@@ -5,6 +6,7 @@ import Defs.Structures
 import Data.List
 import Data.Maybe
 
+-- | Function that adds extremal element cache to a data structure
 extremalElemCache :: Structure -> Structure 
 extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") ops' where
     extVal = fromJust $ find (\dsop -> getOpName dsop == ExtremalVal) ops
@@ -15,6 +17,7 @@ extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") o
             Op ExtremalVal (LinLog 0 0, N)] ++ 
             filter (\dsop -> getOpName dsop `notElem` [ExtremalVal, DeleteByVal, DeleteByRef]) ops
 
+-- | Function that links the elements of a data structure
 linkedLeaves :: Structure -> Structure 
 linkedLeaves (DS name ops) = DS (name ++ " with linked leaves") ops' where
     bndByRef = fromJust $ find (\dsop -> getOpName dsop == BoundByRef) ops
@@ -47,6 +50,8 @@ linkedLeaves (DS name ops) = DS (name ++ " with linked leaves") ops' where
                             Op UpdateByVal
 -}
 
+-- | Linked list
+ll :: Structure
 ll = DS "Linked List"       [
                             Op BoundByRef           (LinLog 1 0, N),
                             Op BoundByVal           (LinLog 1 0, N),
@@ -66,8 +71,8 @@ ll = DS "Linked List"       [
                             Op Union                (LinLog 0 0, N),
                             Op UpdateByRef          (LinLog 0 0, N),
                             Op UpdateByVal          (LinLog 1 0, N)
-                                                                    ]
-
+-- | Red Black Trees                                                                    ]
+rbt :: Structure
 rbt = DS "Red-Black Trees"  [
                             Op BoundByRef           (LinLog 0 1, N),
                             Op BoundByVal           (LinLog 0 1, N),
@@ -87,8 +92,8 @@ rbt = DS "Red-Black Trees"  [
                             Op Union                (LinLog 1 1, N),
                             Op UpdateByRef          (LinLog 0 1, N),
                             Op UpdateByVal          (LinLog 0 1, N)
-                                                                    ]
-
+-- | Hashtable                                                                    ]
+hash :: Structure
 hash = DS "Hashtable"       [
                             Op BoundByRef           (LinLog 1 0, N),
                             Op BoundByVal           (LinLog 1 0, N),
@@ -109,7 +114,8 @@ hash = DS "Hashtable"       [
                             Op UpdateByVal          (LinLog 0 0, N),
                             Op UpdateByRef          (LinLog 0 0, N)
                                                                     ]
-
+-- | Heap
+heap :: Structure
 heap = DS "Heap"            [
                             Op BoundByRef           (LinLog 0 0, N),
                             Op BoundByVal           (LinLog 1 0, N),
@@ -194,7 +200,7 @@ array = DS "Array"          [
                                                                     ]
 -}
 
-
+-- | List of all possible structures
 allStructures :: [Structure]
 allStructures = [rbt, hash, heap, ll] ++
                 map extremalElemCache [rbt, hash, ll] ++
