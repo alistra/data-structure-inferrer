@@ -119,12 +119,6 @@
 ></TR
 ><TR
 ><TD CLASS="decl"
->| <A HREF="#v%3ADeleteByVal"
->DeleteByVal</A
-></TD
-></TR
-><TR
-><TD CLASS="decl"
 >| <A HREF="#v%3ADeleteByRef"
 >DeleteByRef</A
 ></TD
@@ -133,12 +127,6 @@
 ><TD CLASS="decl"
 >| <A HREF="#v%3AFindByVal"
 >FindByVal</A
-></TD
-></TR
-><TR
-><TD CLASS="decl"
->| <A HREF="#v%3AUpdateByVal"
->UpdateByVal</A
 ></TD
 ></TR
 ><TR
@@ -161,12 +149,6 @@
 ></TR
 ><TR
 ><TD CLASS="decl"
->| <A HREF="#v%3ABoundByVal"
->BoundByVal</A
-></TD
-></TR
-><TR
-><TD CLASS="decl"
 >| <A HREF="#v%3ABoundByRef"
 >BoundByRef</A
 ></TD
@@ -185,8 +167,8 @@
 ></TR
 ><TR
 ><TD CLASS="decl"
->| <A HREF="#v%3AIntersect"
->Intersect</A
+>| <A HREF="#v%3AIntersection"
+>Intersection</A
 ></TD
 ></TR
 ><TR
@@ -301,7 +283,21 @@
 >AsymptoticalComplexity</A
 >  = <A HREF="#v%3ALinLog"
 >LinLog</A
-> Integer Integer</TD
+> {<TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AgetLin"
+>getLin</A
+> :: Integer</TD
+></TR
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AgetLog"
+>getLog</A
+> :: Integer</TD
+></TR
+></TABLE
+>}</TD
 ></TR
 ><TR
 ><TD CLASS="s8"
@@ -392,6 +388,11 @@
 ><TD CLASS="body"
 ><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
 ><TR
+><TD CLASS="ndoc"
+>Data structure for keeping data structures
+</TD
+></TR
+><TR
 ><TD CLASS="section4"
 >Constructors</TD
 ></TR
@@ -425,7 +426,8 @@
 >Name</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>name of the data structure
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -439,7 +441,8 @@
 >DSOperation</A
 >]</TD
 ><TD CLASS="rdoc"
-></TD
+>operations with their complexities
+</TD
 ></TR
 ></TABLE
 ></TD
@@ -495,6 +498,11 @@
 ><TD CLASS="body"
 ><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
 ><TR
+><TD CLASS="ndoc"
+>Type for operation names
+</TD
+></TR
+><TR
 ><TD CLASS="section4"
 >Constructors</TD
 ></TR
@@ -511,19 +519,8 @@
 >InsertVal</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
-></TR
-><TR
-><TD CLASS="arg"
-><A NAME="v:DeleteByVal"
-><A NAME="v%3ADeleteByVal"
-></A
-></A
-><B
->DeleteByVal</B
-></TD
-><TD CLASS="rdoc"
-></TD
+>Insert an element
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -535,7 +532,8 @@
 >DeleteByRef</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Delete the element
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -547,19 +545,8 @@
 >FindByVal</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
-></TR
-><TR
-><TD CLASS="arg"
-><A NAME="v:UpdateByVal"
-><A NAME="v%3AUpdateByVal"
-></A
-></A
-><B
->UpdateByVal</B
-></TD
-><TD CLASS="rdoc"
-></TD
+>Find the element by value
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -571,7 +558,8 @@
 >UpdateByRef</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Update the value
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -583,7 +571,8 @@
 >DeleteExtremalVal</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Delete the extreme value
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -595,19 +584,8 @@
 >ExtremalVal</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
-></TR
-><TR
-><TD CLASS="arg"
-><A NAME="v:BoundByVal"
-><A NAME="v%3ABoundByVal"
-></A
-></A
-><B
->BoundByVal</B
-></TD
-><TD CLASS="rdoc"
-></TD
+>Maximum or minimum
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -619,7 +597,8 @@
 >BoundByRef</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Precedessor or successor 
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -631,7 +610,8 @@
 >DecreaseValByRef</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Update that decreases the value
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -643,19 +623,21 @@
 >Union</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Union
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
-><A NAME="v:Intersect"
-><A NAME="v%3AIntersect"
+><A NAME="v:Intersection"
+><A NAME="v%3AIntersection"
 ></A
 ></A
 ><B
->Intersect</B
+>Intersection</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Intersection
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -667,7 +649,8 @@
 >Difference</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Difference
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -679,7 +662,8 @@
 >SymDifference</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Symmetric difference
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -691,7 +675,8 @@
 >Map</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Map elements 
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -703,7 +688,8 @@
 >Size</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Checking the size
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -715,7 +701,8 @@
 >Empty</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Checking the empiness
+</TD
 ></TR
 ></TABLE
 ></TD
@@ -768,6 +755,11 @@
 ><TD CLASS="body"
 ><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
 ><TR
+><TD CLASS="ndoc"
+>Additional complexity qualifiers
+</TD
+></TR
+><TR
 ><TD CLASS="section4"
 >Constructors</TD
 ></TR
@@ -784,7 +776,8 @@
 >AE</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Amortized expected time
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -796,7 +789,8 @@
 >E</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Expected time
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -808,7 +802,8 @@
 >A</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Amortized time
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -820,7 +815,8 @@
 >N</B
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Normal time
+</TD
 ></TR
 ></TABLE
 ></TD
@@ -880,6 +876,11 @@
 >)</TD
 ></TR
 ><TR
+><TD CLASS="doc"
+>Full complexity type
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -899,12 +900,19 @@
 ><TD CLASS="body"
 ><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
 ><TR
+><TD CLASS="ndoc"
+>Asymptotical complexity type, remembered as the exponent of the <TT
+>n</TT
+> and the number of stacked logarithms
+</TD
+></TR
+><TR
 ><TD CLASS="section4"
 >Constructors</TD
 ></TR
 ><TR
 ><TD CLASS="body"
-><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TABLE CLASS="vanilla" CELLSPACING="5" CELLPADDING="0"
 ><TR
 ><TD CLASS="arg"
 ><A NAME="v:LinLog"
@@ -913,8 +921,42 @@
 ></A
 ><B
 >LinLog</B
-> Integer Integer</TD
+></TD
 ><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="body" COLSPAN="2"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:getLin"
+><A NAME="v%3AgetLin"
+></A
+></A
+><B
+>getLin</B
+> :: Integer</TD
+><TD CLASS="rdoc"
+>exponent of <TT
+>n</TT
+>
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:getLog"
+><A NAME="v%3AgetLog"
+></A
+></A
+><B
+>getLog</B
+> :: Integer</TD
+><TD CLASS="rdoc"
+>number of the stacked logarithms
+</TD
+></TR
+></TABLE
 ></TD
 ></TR
 ></TABLE
@@ -969,6 +1011,11 @@
 > :: Integer -&gt; String</TD
 ></TR
 ><TR
+><TD CLASS="doc"
+>Function to pretty print stacked logarithms
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -987,6 +1034,11 @@
 ><TR
 ><TD CLASS="body"
 ><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="ndoc"
+>Type for operation and it's complexity
+</TD
+></TR
 ><TR
 ><TD CLASS="section4"
 >Constructors</TD
@@ -1021,7 +1073,8 @@
 >OperationName</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Operation name
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -1035,7 +1088,8 @@
 >Complexity</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Complexity of the operation
+</TD
 ></TR
 ></TABLE
 ></TD
