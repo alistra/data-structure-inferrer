@@ -1,5 +1,7 @@
 -- | Module for recommending a data structure based on operations used
-module Recommend where
+module Recommend 
+  ( recommendDS,
+    recommendAllDs ) where
 
 import Defs.Structures
 

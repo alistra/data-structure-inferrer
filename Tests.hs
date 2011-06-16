@@ -1,5 +1,6 @@
 -- | Testing module
-module Tests where
+module Tests
+  ( runIlTests ) where
 
 import Il.Lexer
 import Il.Parser

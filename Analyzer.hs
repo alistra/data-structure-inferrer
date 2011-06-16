@@ -34,9 +34,11 @@ type Context = [Name]
 setHeavyUsage (DSU opname _ ud) = DSU opname True ud
 setUserDependance (DSU opname hu _) = DSU opname hu True
 
+-- | Pretty printer for the analyzer effects
 printRecommendationFromAnalysis :: [DSInfo] -> IO()
 printRecommendationFromAnalysis = mapM_ printDSI 
 
+-- | Pretty print single 'DSInfo' 
 printDSI dsi = do
     putStr "The recommended structure for "
     redColor
@@ -50,9 +52,9 @@ printDSI dsi = do
             let opns = map getDSUOpName $ getUses dsi
             recommendDS opns
 
+-- | Run the analyzer
 analyze :: [Term] -> [DSInfo]
 analyze = generateDSI . generateDSU 
-
 
 
 generateDSI :: AnalyzerOutput -> [DSInfo]
