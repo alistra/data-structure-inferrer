@@ -76,103 +76,23 @@
 ><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
 ><TR
 ><TD CLASS="decl"
-><SPAN CLASS="keyword"
->data</SPAN
->  <A HREF="#t%3AAdvice"
->Advice</A
->  = <A HREF="#v%3AAdvice"
->Advice</A
-> {<TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
-><TR
-><TD CLASS="recfield"
-><A HREF="#v%3AadvisedDS"
->advisedDS</A
-> :: <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-></TD
-></TR
-><TR
-><TD CLASS="recfield"
-><A HREF="#v%3AreducedOperations"
->reducedOperations</A
+><A HREF="#v%3AadviceDS"
+>adviceDS</A
 > :: [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
->]</TD
+>] -&gt; [Advice]</TD
 ></TR
 ><TR
-><TD CLASS="recfield"
-><A HREF="#v%3Aoperations"
->operations</A
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AprintAdvice"
+>printAdvice</A
 > :: [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
->]</TD
-></TR
-></TABLE
->}</TD
-></TR
-><TR
-><TD CLASS="s8"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A HREF="#v%3AnotWorse"
->notWorse</A
-> :: <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-> -&gt; <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-> -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->] -&gt; Bool</TD
-></TR
-><TR
-><TD CLASS="s8"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A HREF="#v%3Abetter"
->better</A
-> :: <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-> -&gt; <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-> -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->] -&gt; Bool</TD
-></TR
-><TR
-><TD CLASS="s8"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A HREF="#v%3AbetterThanEach"
->betterThanEach</A
-> :: <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-> -&gt; [<A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
->] -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->] -&gt; Bool</TD
-></TR
-><TR
-><TD CLASS="s8"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A HREF="#v%3AfilterAdviceForRecommended"
->filterAdviceForRecommended</A
-> :: [<A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
->] -&gt; [<A HREF="Advice.html#t%3AAdvice"
->Advice</A
->] -&gt; [<A HREF="Advice.html#t%3AAdvice"
->Advice</A
->]</TD
+>] -&gt; IO ()</TD
 ></TR
 ><TR
 ><TD CLASS="s8"
@@ -184,23 +104,7 @@
 >adviceDS'</A
 > :: Integer -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
->] -&gt; [<A HREF="Advice.html#t%3AAdvice"
->Advice</A
->]</TD
-></TR
-><TR
-><TD CLASS="s8"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A HREF="#v%3AadviceDS"
->adviceDS</A
-> :: [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->] -&gt; [<A HREF="Advice.html#t%3AAdvice"
->Advice</A
->]</TD
+>] -&gt; [Advice]</TD
 ></TR
 ><TR
 ><TD CLASS="s8"
@@ -211,30 +115,6 @@
 ><A HREF="#v%3AprintAdvice%27"
 >printAdvice'</A
 > :: Integer -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->] -&gt; IO ()</TD
-></TR
-><TR
-><TD CLASS="s8"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A HREF="#v%3AprintAdviceStructure"
->printAdviceStructure</A
-> :: <A HREF="Advice.html#t%3AAdvice"
->Advice</A
-> -&gt; IO ()</TD
-></TR
-><TR
-><TD CLASS="s8"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A HREF="#v%3AprintAdvice"
->printAdvice</A
-> :: [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
 >] -&gt; IO ()</TD
 ></TR
@@ -255,272 +135,6 @@
 ></TR
 ><TR
 ><TD CLASS="decl"
-><SPAN CLASS="keyword"
->data</SPAN
->  <A NAME="t:Advice"
-><A NAME="t%3AAdvice"
-></A
-></A
-><B
->Advice</B
->  </TD
-></TR
-><TR
-><TD CLASS="body"
-><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
-><TR
-><TD CLASS="ndoc"
->Type for advice data
-</TD
-></TR
-><TR
-><TD CLASS="section4"
->Constructors</TD
-></TR
-><TR
-><TD CLASS="body"
-><TABLE CLASS="vanilla" CELLSPACING="5" CELLPADDING="0"
-><TR
-><TD CLASS="arg"
-><A NAME="v:Advice"
-><A NAME="v%3AAdvice"
-></A
-></A
-><B
->Advice</B
-></TD
-><TD CLASS="rdoc"
-></TD
-></TR
-><TR
-><TD CLASS="body" COLSPAN="2"
-><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
-><TR
-><TD CLASS="arg"
-><A NAME="v:advisedDS"
-><A NAME="v%3AadvisedDS"
-></A
-></A
-><B
->advisedDS</B
-> :: <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-></TD
-><TD CLASS="rdoc"
->Structure to be advised
-</TD
-></TR
-><TR
-><TD CLASS="arg"
-><A NAME="v:reducedOperations"
-><A NAME="v%3AreducedOperations"
-></A
-></A
-><B
->reducedOperations</B
-> :: [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->]</TD
-><TD CLASS="rdoc"
->Operations on which the structure is better than the recommended one
-</TD
-></TR
-><TR
-><TD CLASS="arg"
-><A NAME="v:operations"
-><A NAME="v%3Aoperations"
-></A
-></A
-><B
->operations</B
-> :: [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->]</TD
-><TD CLASS="rdoc"
->Original operations (we can get recommendations from them)
-</TD
-></TR
-></TABLE
-></TD
-></TR
-></TABLE
-></TD
-></TR
-><TR
-><TD CLASS="section4"
-><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Advice')" ALT="show/hide"
-> Instances</TD
-></TR
-><TR
-><TD CLASS="body"
-><DIV ID="i:Advice" STYLE="display:block;"
-><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
-><TR
-><TD CLASS="decl"
->Show <A HREF="Advice.html#t%3AAdvice"
->Advice</A
-></TD
-></TR
-></TABLE
-></DIV
-></TD
-></TR
-></TABLE
-></TD
-></TR
-><TR
-><TD CLASS="s15"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A NAME="v:notWorse"
-><A NAME="v%3AnotWorse"
-></A
-></A
-><B
->notWorse</B
-> :: <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-> -&gt; <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-> -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->] -&gt; Bool</TD
-></TR
-><TR
-><TD CLASS="doc"
->Checks if structure <TT
->s1</TT
-> is not worse than structure <TT
->s2</TT
-> on operations <TT
->opns</TT
->
-</TD
-></TR
-><TR
-><TD CLASS="s15"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A NAME="v:better"
-><A NAME="v%3Abetter"
-></A
-></A
-><B
->better</B
-> :: <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-> -&gt; <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-> -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->] -&gt; Bool</TD
-></TR
-><TR
-><TD CLASS="doc"
->Checks if the structure <TT
->s1</TT
-> is better than the structure <TT
->s2</TT
-> on operations <TT
->opns</TT
->
-</TD
-></TR
-><TR
-><TD CLASS="s15"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A NAME="v:betterThanEach"
-><A NAME="v%3AbetterThanEach"
-></A
-></A
-><B
->betterThanEach</B
-> :: <A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
-> -&gt; [<A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
->] -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->] -&gt; Bool</TD
-></TR
-><TR
-><TD CLASS="doc"
->Checks if the structure <TT
->s1</TT
-> is better than each of the structures in <TT
->ss</TT
-> on operations <TT
->opns</TT
->
-</TD
-></TR
-><TR
-><TD CLASS="s15"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A NAME="v:filterAdviceForRecommended"
-><A NAME="v%3AfilterAdviceForRecommended"
-></A
-></A
-><B
->filterAdviceForRecommended</B
-> :: [<A HREF="Defs-Structures.html#t%3AStructure"
->Structure</A
->] -&gt; [<A HREF="Advice.html#t%3AAdvice"
->Advice</A
->] -&gt; [<A HREF="Advice.html#t%3AAdvice"
->Advice</A
->]</TD
-></TR
-><TR
-><TD CLASS="doc"
->Removes already recommended data structures <TT
->recs</TT
-> from the advised structures
-</TD
-></TR
-><TR
-><TD CLASS="s15"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A NAME="v:adviceDS'"
-><A NAME="v%3AadviceDS%27"
-></A
-></A
-><B
->adviceDS'</B
-> :: Integer -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->] -&gt; [<A HREF="Advice.html#t%3AAdvice"
->Advice</A
->]</TD
-></TR
-><TR
-><TD CLASS="doc"
->Returns advice data for operations <TT
->opns</TT
-> and at most <TT
->n</TT
-> operations to forget about
-</TD
-></TR
-><TR
-><TD CLASS="s15"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
 ><A NAME="v:adviceDS"
 ><A NAME="v%3AadviceDS"
 ></A
@@ -529,65 +143,13 @@
 >adviceDS</B
 > :: [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
->] -&gt; [<A HREF="Advice.html#t%3AAdvice"
->Advice</A
->]</TD
+>] -&gt; [Advice]</TD
 ></TR
 ><TR
 ><TD CLASS="doc"
 >Returns advice data for operations <TT
 >opns</TT
 >
-</TD
-></TR
-><TR
-><TD CLASS="s15"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A NAME="v:printAdvice'"
-><A NAME="v%3AprintAdvice%27"
-></A
-></A
-><B
->printAdvice'</B
-> :: Integer -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
->OperationName</A
->] -&gt; IO ()</TD
-></TR
-><TR
-><TD CLASS="doc"
->Pretty prints effects of <TT
-><A HREF="Advice.html#v%3AadviceDS%27"
->adviceDS'</A
-></TT
->
-</TD
-></TR
-><TR
-><TD CLASS="s15"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
-><A NAME="v:printAdviceStructure"
-><A NAME="v%3AprintAdviceStructure"
-></A
-></A
-><B
->printAdviceStructure</B
-> :: <A HREF="Advice.html#t%3AAdvice"
->Advice</A
-> -&gt; IO ()</TD
-></TR
-><TR
-><TD CLASS="doc"
->Prints one <TT
-><A HREF="Advice.html#t%3AAdvice"
->Advice</A
-></TT
-> element
 </TD
 ></TR
 ><TR
@@ -611,6 +173,56 @@
 >Pretty prints effects of <TT
 ><A HREF="Advice.html#v%3AadviceDS"
 >adviceDS</A
+></TT
+>
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:adviceDS'"
+><A NAME="v%3AadviceDS%27"
+></A
+></A
+><B
+>adviceDS'</B
+> :: Integer -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; [Advice]</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Returns advice data for operations <TT
+>opns</TT
+> and at most <TT
+>n</TT
+> operations to forget about
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:printAdvice'"
+><A NAME="v%3AprintAdvice%27"
+></A
+></A
+><B
+>printAdvice'</B
+> :: Integer -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; IO ()</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Pretty prints effects of <TT
+><A HREF="Advice.html#v%3AadviceDS%27"
+>adviceDS'</A
 ></TT
 >
 </TD

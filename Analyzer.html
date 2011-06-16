@@ -55,6 +55,260 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="section1"
+>Synopsis</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3ADSInfo"
+>DSInfo</A
+>  = <A HREF="#v%3ADSI"
+>DSI</A
+> {<TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AgetDSIVarName"
+>getDSIVarName</A
+> :: <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+></TR
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AisStatic"
+>isStatic</A
+> :: Bool</TD
+></TR
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AgetUses"
+>getUses</A
+> :: [<A HREF="Analyzer.html#t%3ADSUse"
+>DSUse</A
+>]</TD
+></TR
+></TABLE
+>}</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3ADSUse"
+>DSUse</A
+>  = <A HREF="#v%3ADSU"
+>DSU</A
+> {<TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AgetDSUOpName"
+>getDSUOpName</A
+> :: <A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+></TD
+></TR
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AisHeavilyUsed"
+>isHeavilyUsed</A
+> :: Bool</TD
+></TR
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AisUserDependent"
+>isUserDependent</A
+> :: Bool</TD
+></TR
+></TABLE
+>}</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A HREF="#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+> = [(<A HREF="Defs-Common.html#t%3AName"
+>Name</A
+>, <A HREF="Analyzer.html#t%3ADSUse"
+>DSUse</A
+>)]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A HREF="#t%3AAnalyzer"
+>Analyzer</A
+> = State [<A HREF="Defs-Common.html#t%3AName"
+>Name</A
+>] <A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A HREF="#t%3AContext"
+>Context</A
+> = [<A HREF="Defs-Common.html#t%3AName"
+>Name</A
+>]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AprintRecommendationFromAnalysis"
+>printRecommendationFromAnalysis</A
+> :: [<A HREF="Analyzer.html#t%3ADSInfo"
+>DSInfo</A
+>] -&gt; IO ()</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3Aanalyze"
+>analyze</A
+> :: [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>] -&gt; [<A HREF="Analyzer.html#t%3ADSInfo"
+>DSInfo</A
+>]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AgenerateDSI"
+>generateDSI</A
+> :: <A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+> -&gt; [<A HREF="Analyzer.html#t%3ADSInfo"
+>DSInfo</A
+>]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AgenerateSingleDSI"
+>generateSingleDSI</A
+> :: <A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+> -&gt; <A HREF="Analyzer.html#t%3ADSInfo"
+>DSInfo</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AgenerateDSU"
+>generateDSU</A
+> :: [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>] -&gt; <A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AgenerateContextDSU"
+>generateContextDSU</A
+> :: [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>] -&gt; <A HREF="Analyzer.html#t%3AAnalyzer"
+>Analyzer</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AfoldlTerms"
+>foldlTerms</A
+> :: (<A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+> -&gt; <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> -&gt; State <A HREF="Analyzer.html#t%3AContext"
+>Context</A
+> <A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+>) -&gt; <A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+> -&gt; [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>] -&gt; State <A HREF="Analyzer.html#t%3AContext"
+>Context</A
+> <A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3Astep"
+>step</A
+> :: <A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+> -&gt; <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> -&gt; <A HREF="Analyzer.html#t%3AAnalyzer"
+>Analyzer</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -81,6 +335,11 @@
 ><TR
 ><TD CLASS="body"
 ><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="ndoc"
+>Data structure analysis info type
+</TD
+></TR
 ><TR
 ><TD CLASS="section4"
 >Constructors</TD
@@ -115,7 +374,8 @@
 >Name</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Variable holding the data structure
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -127,7 +387,8 @@
 >isStatic</B
 > :: Bool</TD
 ><TD CLASS="rdoc"
-></TD
+>Is the variable static or dynamic
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -141,7 +402,8 @@
 >DSUse</A
 >]</TD
 ><TD CLASS="rdoc"
-></TD
+>Data structure use cases
+</TD
 ></TR
 ></TABLE
 ></TD
@@ -197,6 +459,11 @@
 ><TD CLASS="body"
 ><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
 ><TR
+><TD CLASS="ndoc"
+>Data structure use case type
+</TD
+></TR
+><TR
 ><TD CLASS="section4"
 >Constructors</TD
 ></TR
@@ -230,7 +497,8 @@
 >OperationName</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Operation used
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -242,7 +510,8 @@
 >isHeavilyUsed</B
 > :: Bool</TD
 ><TD CLASS="rdoc"
-></TD
+>Is it heavily used
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -254,7 +523,8 @@
 >isUserDependent</B
 > :: Bool</TD
 ><TD CLASS="rdoc"
-></TD
+>Is it dependent on some external input (user, network, random, signals, etc.)
+</TD
 ></TR
 ></TABLE
 ></TD
@@ -311,6 +581,11 @@
 >)]</TD
 ></TR
 ><TR
+><TD CLASS="doc"
+>List of pairs: variable name, use case
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -331,6 +606,19 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="doc"
+>State monad with <TT
+><A HREF="Analyzer.html#t%3AContext"
+>Context</A
+></TT
+> state returning <TT
+><A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+></TT
+>
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -349,6 +637,11 @@
 >]</TD
 ></TR
 ><TR
+><TD CLASS="doc"
+>Analyzer context containing variable names with data structures
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -363,6 +656,11 @@
 > :: [<A HREF="Analyzer.html#t%3ADSInfo"
 >DSInfo</A
 >] -&gt; IO ()</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Pretty printer for the analyzer effects
+</TD
 ></TR
 ><TR
 ><TD CLASS="s15"
@@ -383,6 +681,20 @@
 >]</TD
 ></TR
 ><TR
+><TD CLASS="doc"
+><P
+>Pretty print single <TT
+><A HREF="Analyzer.html#t%3ADSInfo"
+>DSInfo</A
+></TT
+> 
+</P
+><P
+>Run the analyzer
+</P
+></TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -399,6 +711,15 @@
 > -&gt; [<A HREF="Analyzer.html#t%3ADSInfo"
 >DSInfo</A
 >]</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Generate <TT
+><A HREF="Analyzer.html#t%3ADSInfo"
+>DSInfo</A
+></TT
+>s for each data structure in the program
+</TD
 ></TR
 ><TR
 ><TD CLASS="s15"
@@ -419,6 +740,19 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="doc"
+>Generate single <TT
+><A HREF="Analyzer.html#t%3ADSInfo"
+>DSInfo</A
+></TT
+> from <TT
+><A HREF="Analyzer.html#t%3ADSUse"
+>DSUse</A
+></TT
+>s of on data structure
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -437,6 +771,15 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="doc"
+>Start the state monad to gather <TT
+><A HREF="Analyzer.html#t%3ADSUse"
+>DSUse</A
+></TT
+>s from the AST
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -453,6 +796,11 @@
 >] -&gt; <A HREF="Analyzer.html#t%3AAnalyzer"
 >Analyzer</A
 ></TD
+></TR
+><TR
+><TD CLASS="doc"
+>Analyze the terms using the state monad
+</TD
 ></TR
 ><TR
 ><TD CLASS="s15"
@@ -485,6 +833,23 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="doc"
+>Foldl <TT
+><A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TT
+>s using the <TT
+><A HREF="Analyzer.html#v%3Astep"
+>step</A
+></TT
+> function to generate <TT
+><A HREF="Analyzer.html#t%3AAnalyzerOutput"
+>AnalyzerOutput</A
+></TT
+>
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -503,6 +868,15 @@
 > -&gt; <A HREF="Analyzer.html#t%3AAnalyzer"
 >Analyzer</A
 ></TD
+></TR
+><TR
+><TD CLASS="doc"
+>Folding step generating <TT
+><A HREF="Analyzer.html#t%3ADSUse"
+>DSUse</A
+></TT
+>s
+</TD
 ></TR
 ><TR
 ><TD CLASS="s15"
