@@ -22,13 +22,13 @@ resetColor = setSGR [Reset]
 -- | Type for names
 type Name =  String
 
--- | Count the number of occurences of given element in the list
+-- | Count the number of occurences of a given element in the list
 countElem :: Eq a => a -> [a] -> Integer
 countElem _ [] = 0
 countElem y (x:xs)  | y == x = 1 + countElem y xs
                     | otherwise = countElem y xs
 
--- | All subsequences of given length @n@ and longer of given sequence @xs@
+-- | Find all subsequences of length @n@ and longer than sequence @xs@
 sequencesOfLen :: Eq a =>  [a] -> Integer -> [[a]]
 sequencesOfLen xs n = filter (\s -> genericLength s >= n && (s /= xs)) $ subsequences xs
 

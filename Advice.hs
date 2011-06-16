@@ -1,4 +1,4 @@
--- | Module that provides helpful tips for the programmer, that can minimize the complexity of the chosen data structure
+-- | Module providing helpful tips about minimizing the complexity of the chosen data structure
 module Advice 
       ( adviceDS,
         printAdvice,
@@ -55,12 +55,12 @@ printAdvice' n opns =   do
     let rec = recommendAllDs opns
     if length rec == 1
         then    do  
-                    putStr "Currently recommended data structure is: " 
+                    putStr "Currently, the recommended data structure is: " 
                     cyanColor
                     putStrLn (getDSName $ head rec)
                     yellowColor
         else    do
-                    putStr "Currently recommended data structures are: "
+                    putStr "Currently, the recommended data structures are: "
                     cyanColor
                     putStrLn (foldl (\str ds -> (str ++ ", " ++ getDSName ds)) "" rec)
                     yellowColor
