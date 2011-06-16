@@ -12,3 +12,6 @@ clean:
 
 doc:	*.hs
 	haddock -o doc -h *.hs
+	git checkout gh-pages
+	cp -r doc/* .
+	git checkout master
