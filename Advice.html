@@ -64,6 +64,194 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="section1"
+>Synopsis</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AAdviceData"
+>AdviceData</A
+>  = <A HREF="#v%3AAdvice"
+>Advice</A
+> {<TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AadvisedDS"
+>advisedDS</A
+> :: <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+></TD
+></TR
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AreducedOperations"
+>reducedOperations</A
+> :: [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>]</TD
+></TR
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3Aoperations"
+>operations</A
+> :: [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>]</TD
+></TR
+></TABLE
+>}</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AsequencesOfLen"
+>sequencesOfLen</A
+> :: Eq a =&gt; [a] -&gt; Integer -&gt; [[a]]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AnotWorse"
+>notWorse</A
+> :: <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+> -&gt; <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+> -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; Bool</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3Abetter"
+>better</A
+> :: <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+> -&gt; <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+> -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; Bool</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AbetterThanEach"
+>betterThanEach</A
+> :: <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+> -&gt; [<A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+>] -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; Bool</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AfilterAdviceDataForRecommended"
+>filterAdviceDataForRecommended</A
+> :: [<A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
+>AdviceData</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
+>AdviceData</A
+>]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AadviceDS%27"
+>adviceDS'</A
+> :: Integer -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
+>AdviceData</A
+>]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AadviceDS"
+>adviceDS</A
+> :: [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
+>AdviceData</A
+>]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AprintAdvice%27"
+>printAdvice'</A
+> :: Integer -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; IO ()</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AprintAdviceStructure"
+>printAdviceStructure</A
+> :: <A HREF="Advice.html#t%3AAdviceData"
+>AdviceData</A
+> -&gt; IO ()</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AprintAdvice"
+>printAdvice</A
+> :: [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; IO ()</TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -217,6 +405,17 @@
 >] -&gt; Bool</TD
 ></TR
 ><TR
+><TD CLASS="doc"
+>Checks if structure <TT
+>s1</TT
+> is not worse than structure <TT
+>s2</TT
+> on operations <TT
+>opns</TT
+>
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -235,6 +434,17 @@
 > -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
 >] -&gt; Bool</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Checks if structure <TT
+>s1</TT
+> is better than structure <TT
+>s2</TT
+> on operations <TT
+>opns</TT
+>
+</TD
 ></TR
 ><TR
 ><TD CLASS="s15"
