@@ -10,9 +10,10 @@ import Recommend
 import Data.List
 
 -- | Type for advice data
-data Advice = Advice {  advisedDS :: Structure, -- ^ Structure to be advised
-                        reducedOperations :: [OperationName], -- ^ Operations on which the structure is better than the recommended one
-                        operations :: [OperationName] } deriving Show -- ^ Original operations (we can get recommendations from them)
+data Advice = Advice {  advisedDS :: Structure,                 -- ^ Structure to be advised
+                        reducedOperations :: [OperationName],   -- ^ Operations on which the structure is better than the recommended one
+                        operations :: [OperationName]           -- ^ Original operations (we can get recommendations from them)
+                                                        } deriving Show 
 
 -- | Checks if structure @s1@ is not worse than structure @s2@ on operations @opns@
 notWorse :: Structure -> Structure -> [OperationName] -> Bool
