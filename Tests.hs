@@ -38,7 +38,7 @@ listFiles path = do
     let files = filter (\s -> last (split "/" s) `notElem` [".", ".."]) allfiles
     return $ map (path++) files
 
--- | Wrapper for openFile with exception catching
+-- | Wrapper for openFile adding exception catching
 openTestFile :: FilePath -> IO Handle
 openTestFile name = catch (openFile name ReadMode) (\_ -> error $ "Cannot open "++ name)
         

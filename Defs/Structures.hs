@@ -6,7 +6,7 @@ import Defs.Common
 
 -- | Data structure for keeping data structures
 data Structure = DS {   getDSName :: Name, -- ^ name of the data structure
-                        getDSOps :: [DSOperation] -- ^ operations with their complexities
+                        getDSOps :: [DSOperation] -- ^ operations along with their complexities
                         } deriving Eq
 
 instance Show Structure where
@@ -63,7 +63,7 @@ logs :: Integer -> String
 logs 0 = ""
 logs n = "log" ++ logs (n-1)
 
--- | Type for operation and it's complexity
+-- | Type for operation and its complexity
 data DSOperation = Op { getOpName :: OperationName, -- ^ Operation name
                         getComplexity :: Complexity -- ^ Complexity of the operation
                         } deriving (Show, Eq)
