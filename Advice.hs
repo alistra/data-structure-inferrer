@@ -16,9 +16,13 @@ integerLength = toEnum.length
 sequencesOfLen :: Eq a =>  [a] -> Integer -> [[a]]
 sequencesOfLen xs n = filter (\s -> integerLength s >= n && (s /= xs)) $ subsequences xs
 
+
+-- | Checks if structure @s1@ is not worse than structure @s2@ on operations @opns@
 notWorse :: Structure -> Structure -> [OperationName] -> Bool
 notWorse s1 s2 opns = compareDS s1 s2 opns /= LT
 
+
+-- | Checks if structure @s1@ is better than structure @s2@ on operations @opns@
 better :: Structure -> Structure -> [OperationName] -> Bool
 better s1 s2 opns   | s1 == s2 = True
                     | otherwise = compareDS s1 s2 opns == GT
