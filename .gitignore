@@ -1,3 +1,4 @@
+doc/
 *.hi
 *.o
 Parser.hs
