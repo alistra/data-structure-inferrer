@@ -1,0 +1,493 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--Rendered using the Haskell Html Library v0.2-->
+<HTML
+><HEAD
+><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"
+><TITLE
+>Defs.AST</TITLE
+><LINK HREF="haddock.css" REL="stylesheet" TYPE="text/css"
+><SCRIPT SRC="haddock-util.js" TYPE="text/javascript"
+></SCRIPT
+><SCRIPT TYPE="text/javascript"
+>window.onload = function () {setSynopsis("mini_Defs-AST.html")};</SCRIPT
+></HEAD
+><BODY
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="topbar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><IMG SRC="haskell_icon.gif" WIDTH="16" HEIGHT="16" ALT=" "
+></TD
+><TD CLASS="title"
+></TD
+><TD CLASS="topbut"
+><A HREF="index.html"
+>Contents</A
+></TD
+><TD CLASS="topbut"
+><A HREF="doc-index.html"
+>Index</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="modulebar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><FONT SIZE="6"
+>Defs.AST</FONT
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Documentation</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:Term"
+><A NAME="t%3ATerm"
+></A
+></A
+><B
+>Term</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:And"
+><A NAME="v%3AAnd"
+></A
+></A
+><B
+>And</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Assign"
+><A NAME="v%3AAssign"
+></A
+></A
+><B
+>Assign</B
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Block"
+><A NAME="v%3ABlock"
+></A
+></A
+><B
+>Block</B
+> [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>]</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Dec"
+><A NAME="v%3ADec"
+></A
+></A
+><B
+>Dec</B
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Div"
+><A NAME="v%3ADiv"
+></A
+></A
+><B
+>Div</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:DSInit"
+><A NAME="v%3ADSInit"
+></A
+></A
+><B
+>DSInit</B
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Eq"
+><A NAME="v%3AEq"
+></A
+></A
+><B
+>Eq</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:For"
+><A NAME="v%3AFor"
+></A
+></A
+><B
+>For</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Funcall"
+><A NAME="v%3AFuncall"
+></A
+></A
+><B
+>Funcall</B
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+> [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>]</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Geq"
+><A NAME="v%3AGeq"
+></A
+></A
+><B
+>Geq</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Gt"
+><A NAME="v%3AGt"
+></A
+></A
+><B
+>Gt</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:If"
+><A NAME="v%3AIf"
+></A
+></A
+><B
+>If</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Inc"
+><A NAME="v%3AInc"
+></A
+></A
+><B
+>Inc</B
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Int"
+><A NAME="v%3AInt"
+></A
+></A
+><B
+>Int</B
+> Int</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Leq"
+><A NAME="v%3ALeq"
+></A
+></A
+><B
+>Leq</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Lt"
+><A NAME="v%3ALt"
+></A
+></A
+><B
+>Lt</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Mul"
+><A NAME="v%3AMul"
+></A
+></A
+><B
+>Mul</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Not"
+><A NAME="v%3ANot"
+></A
+></A
+><B
+>Not</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Or"
+><A NAME="v%3AOr"
+></A
+></A
+><B
+>Or</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Sub"
+><A NAME="v%3ASub"
+></A
+></A
+><B
+>Sub</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Sum"
+><A NAME="v%3ASum"
+></A
+></A
+><B
+>Sum</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:While"
+><A NAME="v%3AWhile"
+></A
+></A
+><B
+>While</B
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Var"
+><A NAME="v%3AVar"
+></A
+></A
+><B
+>Var</B
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Term')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Term" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="botbar"
+>Produced by <A HREF="http://www.haskell.org/haddock/"
+>Haddock</A
+> version 2.6.1</TD
+></TR
+></TABLE
+></BODY
+></HTML
+>

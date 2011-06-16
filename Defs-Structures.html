@@ -1,0 +1,817 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--Rendered using the Haskell Html Library v0.2-->
+<HTML
+><HEAD
+><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"
+><TITLE
+>Defs.Structures</TITLE
+><LINK HREF="haddock.css" REL="stylesheet" TYPE="text/css"
+><SCRIPT SRC="haddock-util.js" TYPE="text/javascript"
+></SCRIPT
+><SCRIPT TYPE="text/javascript"
+>window.onload = function () {setSynopsis("mini_Defs-Structures.html")};</SCRIPT
+></HEAD
+><BODY
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="topbar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><IMG SRC="haskell_icon.gif" WIDTH="16" HEIGHT="16" ALT=" "
+></TD
+><TD CLASS="title"
+></TD
+><TD CLASS="topbut"
+><A HREF="index.html"
+>Contents</A
+></TD
+><TD CLASS="topbut"
+><A HREF="doc-index.html"
+>Index</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="modulebar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><FONT SIZE="6"
+>Defs.Structures</FONT
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Documentation</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:Structure"
+><A NAME="t%3AStructure"
+></A
+></A
+><B
+>Structure</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="5" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:DS"
+><A NAME="v%3ADS"
+></A
+></A
+><B
+>DS</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="body" COLSPAN="2"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:getDSName"
+><A NAME="v%3AgetDSName"
+></A
+></A
+><B
+>getDSName</B
+> :: <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:getDSOps"
+><A NAME="v%3AgetDSOps"
+></A
+></A
+><B
+>getDSOps</B
+> :: [<A HREF="Defs-Structures.html#t%3ADSOperation"
+>DSOperation</A
+>]</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Structure')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Structure" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:OperationName"
+><A NAME="t%3AOperationName"
+></A
+></A
+><B
+>OperationName</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:InsertVal"
+><A NAME="v%3AInsertVal"
+></A
+></A
+><B
+>InsertVal</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:DeleteByVal"
+><A NAME="v%3ADeleteByVal"
+></A
+></A
+><B
+>DeleteByVal</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:DeleteByRef"
+><A NAME="v%3ADeleteByRef"
+></A
+></A
+><B
+>DeleteByRef</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:FindByVal"
+><A NAME="v%3AFindByVal"
+></A
+></A
+><B
+>FindByVal</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:UpdateByVal"
+><A NAME="v%3AUpdateByVal"
+></A
+></A
+><B
+>UpdateByVal</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:UpdateByRef"
+><A NAME="v%3AUpdateByRef"
+></A
+></A
+><B
+>UpdateByRef</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:DeleteExtremalVal"
+><A NAME="v%3ADeleteExtremalVal"
+></A
+></A
+><B
+>DeleteExtremalVal</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:ExtremalVal"
+><A NAME="v%3AExtremalVal"
+></A
+></A
+><B
+>ExtremalVal</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:BoundByVal"
+><A NAME="v%3ABoundByVal"
+></A
+></A
+><B
+>BoundByVal</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:BoundByRef"
+><A NAME="v%3ABoundByRef"
+></A
+></A
+><B
+>BoundByRef</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:DecreaseValByRef"
+><A NAME="v%3ADecreaseValByRef"
+></A
+></A
+><B
+>DecreaseValByRef</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Union"
+><A NAME="v%3AUnion"
+></A
+></A
+><B
+>Union</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Intersect"
+><A NAME="v%3AIntersect"
+></A
+></A
+><B
+>Intersect</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Difference"
+><A NAME="v%3ADifference"
+></A
+></A
+><B
+>Difference</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:SymDifference"
+><A NAME="v%3ASymDifference"
+></A
+></A
+><B
+>SymDifference</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Map"
+><A NAME="v%3AMap"
+></A
+></A
+><B
+>Map</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Size"
+><A NAME="v%3ASize"
+></A
+></A
+><B
+>Size</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Empty"
+><A NAME="v%3AEmpty"
+></A
+></A
+><B
+>Empty</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:OperationName')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:OperationName" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:ComplexityCharacteristics"
+><A NAME="t%3AComplexityCharacteristics"
+></A
+></A
+><B
+>ComplexityCharacteristics</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:AE"
+><A NAME="v%3AAE"
+></A
+></A
+><B
+>AE</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:E"
+><A NAME="v%3AE"
+></A
+></A
+><B
+>E</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:A"
+><A NAME="v%3AA"
+></A
+></A
+><B
+>A</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:N"
+><A NAME="v%3AN"
+></A
+></A
+><B
+>N</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:ComplexityCharacteristics')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:ComplexityCharacteristics" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Defs-Structures.html#t%3AComplexityCharacteristics"
+>ComplexityCharacteristics</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Ord <A HREF="Defs-Structures.html#t%3AComplexityCharacteristics"
+>ComplexityCharacteristics</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Defs-Structures.html#t%3AComplexityCharacteristics"
+>ComplexityCharacteristics</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A NAME="t:Complexity"
+><A NAME="t%3AComplexity"
+></A
+></A
+><B
+>Complexity</B
+> = (<A HREF="Defs-Structures.html#t%3AAsymptoticalComplexity"
+>AsymptoticalComplexity</A
+>, <A HREF="Defs-Structures.html#t%3AComplexityCharacteristics"
+>ComplexityCharacteristics</A
+>)</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:AsymptoticalComplexity"
+><A NAME="t%3AAsymptoticalComplexity"
+></A
+></A
+><B
+>AsymptoticalComplexity</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:LinLog"
+><A NAME="v%3ALinLog"
+></A
+></A
+><B
+>LinLog</B
+> Integer Integer</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:AsymptoticalComplexity')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:AsymptoticalComplexity" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Defs-Structures.html#t%3AAsymptoticalComplexity"
+>AsymptoticalComplexity</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Ord <A HREF="Defs-Structures.html#t%3AAsymptoticalComplexity"
+>AsymptoticalComplexity</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Defs-Structures.html#t%3AAsymptoticalComplexity"
+>AsymptoticalComplexity</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:logs"
+><A NAME="v%3Alogs"
+></A
+></A
+><B
+>logs</B
+> :: Integer -&gt; String</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:DSOperation"
+><A NAME="t%3ADSOperation"
+></A
+></A
+><B
+>DSOperation</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="5" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:Op"
+><A NAME="v%3AOp"
+></A
+></A
+><B
+>Op</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="body" COLSPAN="2"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:getOpName"
+><A NAME="v%3AgetOpName"
+></A
+></A
+><B
+>getOpName</B
+> :: <A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:getComplexity"
+><A NAME="v%3AgetComplexity"
+></A
+></A
+><B
+>getComplexity</B
+> :: <A HREF="Defs-Structures.html#t%3AComplexity"
+>Complexity</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:DSOperation')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:DSOperation" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Defs-Structures.html#t%3ADSOperation"
+>DSOperation</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Ord <A HREF="Defs-Structures.html#t%3ADSOperation"
+>DSOperation</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Defs-Structures.html#t%3ADSOperation"
+>DSOperation</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:countElem"
+><A NAME="v%3AcountElem"
+></A
+></A
+><B
+>countElem</B
+> :: Eq a =&gt; a -&gt; [a] -&gt; Integer</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:compareDS"
+><A NAME="v%3AcompareDS"
+></A
+></A
+><B
+>compareDS</B
+> :: <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+> -&gt; <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+> -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; Ordering</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="botbar"
+>Produced by <A HREF="http://www.haskell.org/haddock/"
+>Haddock</A
+> version 2.6.1</TD
+></TR
+></TABLE
+></BODY
+></HTML
+>

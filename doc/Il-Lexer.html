@@ -1,0 +1,1090 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--Rendered using the Haskell Html Library v0.2-->
+<HTML
+><HEAD
+><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"
+><TITLE
+>Il.Lexer</TITLE
+><LINK HREF="haddock.css" REL="stylesheet" TYPE="text/css"
+><SCRIPT SRC="haddock-util.js" TYPE="text/javascript"
+></SCRIPT
+><SCRIPT TYPE="text/javascript"
+>window.onload = function () {setSynopsis("mini_Il-Lexer.html")};</SCRIPT
+></HEAD
+><BODY
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="topbar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><IMG SRC="haskell_icon.gif" WIDTH="16" HEIGHT="16" ALT=" "
+></TD
+><TD CLASS="title"
+></TD
+><TD CLASS="topbut"
+><A HREF="index.html"
+>Contents</A
+></TD
+><TD CLASS="topbut"
+><A HREF="doc-index.html"
+>Index</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="modulebar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><FONT SIZE="6"
+>Il.Lexer</FONT
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Documentation</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:BaseToken"
+><A NAME="t%3ABaseToken"
+></A
+></A
+><B
+>BaseToken</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkAnd"
+><A NAME="v%3ATkAnd"
+></A
+></A
+><B
+>TkAnd</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkAssign"
+><A NAME="v%3ATkAssign"
+></A
+></A
+><B
+>TkAssign</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkColon"
+><A NAME="v%3ATkColon"
+></A
+></A
+><B
+>TkColon</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkComma"
+><A NAME="v%3ATkComma"
+></A
+></A
+><B
+>TkComma</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkDec"
+><A NAME="v%3ATkDec"
+></A
+></A
+><B
+>TkDec</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkDiv"
+><A NAME="v%3ATkDiv"
+></A
+></A
+><B
+>TkDiv</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkDot"
+><A NAME="v%3ATkDot"
+></A
+></A
+><B
+>TkDot</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkDS"
+><A NAME="v%3ATkDS"
+></A
+></A
+><B
+>TkDS</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkElse"
+><A NAME="v%3ATkElse"
+></A
+></A
+><B
+>TkElse</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkEquals"
+><A NAME="v%3ATkEquals"
+></A
+></A
+><B
+>TkEquals</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkFalse"
+><A NAME="v%3ATkFalse"
+></A
+></A
+><B
+>TkFalse</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkFor"
+><A NAME="v%3ATkFor"
+></A
+></A
+><B
+>TkFor</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkGEqual"
+><A NAME="v%3ATkGEqual"
+></A
+></A
+><B
+>TkGEqual</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkGreater"
+><A NAME="v%3ATkGreater"
+></A
+></A
+><B
+>TkGreater</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkIf"
+><A NAME="v%3ATkIf"
+></A
+></A
+><B
+>TkIf</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkInc"
+><A NAME="v%3ATkInc"
+></A
+></A
+><B
+>TkInc</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkInt"
+><A NAME="v%3ATkInt"
+></A
+></A
+><B
+>TkInt</B
+> Int</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkLAParen"
+><A NAME="v%3ATkLAParen"
+></A
+></A
+><B
+>TkLAParen</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkLCParen"
+><A NAME="v%3ATkLCParen"
+></A
+></A
+><B
+>TkLCParen</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkLEqual"
+><A NAME="v%3ATkLEqual"
+></A
+></A
+><B
+>TkLEqual</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkLess"
+><A NAME="v%3ATkLess"
+></A
+></A
+><B
+>TkLess</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkLParen"
+><A NAME="v%3ATkLParen"
+></A
+></A
+><B
+>TkLParen</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkMinus"
+><A NAME="v%3ATkMinus"
+></A
+></A
+><B
+>TkMinus</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkMul"
+><A NAME="v%3ATkMul"
+></A
+></A
+><B
+>TkMul</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkName"
+><A NAME="v%3ATkName"
+></A
+></A
+><B
+>TkName</B
+> String</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkNewline"
+><A NAME="v%3ATkNewline"
+></A
+></A
+><B
+>TkNewline</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkNot"
+><A NAME="v%3ATkNot"
+></A
+></A
+><B
+>TkNot</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkNull"
+><A NAME="v%3ATkNull"
+></A
+></A
+><B
+>TkNull</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkOr"
+><A NAME="v%3ATkOr"
+></A
+></A
+><B
+>TkOr</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkPlus"
+><A NAME="v%3ATkPlus"
+></A
+></A
+><B
+>TkPlus</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkRAParen"
+><A NAME="v%3ATkRAParen"
+></A
+></A
+><B
+>TkRAParen</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkRCParen"
+><A NAME="v%3ATkRCParen"
+></A
+></A
+><B
+>TkRCParen</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkRParen"
+><A NAME="v%3ATkRParen"
+></A
+></A
+><B
+>TkRParen</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkSemicolon"
+><A NAME="v%3ATkSemicolon"
+></A
+></A
+><B
+>TkSemicolon</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkThen"
+><A NAME="v%3ATkThen"
+></A
+></A
+><B
+>TkThen</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkTrue"
+><A NAME="v%3ATkTrue"
+></A
+></A
+><B
+>TkTrue</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TkWhile"
+><A NAME="v%3ATkWhile"
+></A
+></A
+><B
+>TkWhile</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:BaseToken')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:BaseToken" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Il-Lexer.html#t%3ABaseToken"
+>BaseToken</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Il-Lexer.html#t%3ABaseToken"
+>BaseToken</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A NAME="t:Token"
+><A NAME="t%3AToken"
+></A
+></A
+><B
+>Token</B
+> = ((Int, Int), <A HREF="Il-Lexer.html#t%3ABaseToken"
+>BaseToken</A
+>)</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:tokenWithPos"
+><A NAME="v%3AtokenWithPos"
+></A
+></A
+><B
+>tokenWithPos</B
+> :: <A HREF="Il-Lexer.html#t%3AAlexPosn"
+>AlexPosn</A
+> -&gt; <A HREF="Il-Lexer.html#t%3ABaseToken"
+>BaseToken</A
+> -&gt; <A HREF="Il-Lexer.html#t%3AToken"
+>Token</A
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:AlexReturn"
+><A NAME="t%3AAlexReturn"
+></A
+></A
+><B
+>AlexReturn</B
+> a </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexEOF"
+><A NAME="v%3AAlexEOF"
+></A
+></A
+><B
+>AlexEOF</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexError"
+><A NAME="v%3AAlexError"
+></A
+></A
+><B
+>AlexError</B
+> !<A HREF="Il-Lexer.html#t%3AAlexInput"
+>AlexInput</A
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexSkip"
+><A NAME="v%3AAlexSkip"
+></A
+></A
+><B
+>AlexSkip</B
+> !<A HREF="Il-Lexer.html#t%3AAlexInput"
+>AlexInput</A
+> !Int</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexToken"
+><A NAME="v%3AAlexToken"
+></A
+></A
+><B
+>AlexToken</B
+> !<A HREF="Il-Lexer.html#t%3AAlexInput"
+>AlexInput</A
+> !Int a</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:AlexLastAcc"
+><A NAME="t%3AAlexLastAcc"
+></A
+></A
+><B
+>AlexLastAcc</B
+> a </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexNone"
+><A NAME="v%3AAlexNone"
+></A
+></A
+><B
+>AlexNone</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexLastAcc"
+><A NAME="v%3AAlexLastAcc"
+></A
+></A
+><B
+>AlexLastAcc</B
+> a !<A HREF="Il-Lexer.html#t%3AAlexInput"
+>AlexInput</A
+> !Int</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexLastSkip"
+><A NAME="v%3AAlexLastSkip"
+></A
+></A
+><B
+>AlexLastSkip</B
+> !<A HREF="Il-Lexer.html#t%3AAlexInput"
+>AlexInput</A
+> !Int</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:AlexAcc"
+><A NAME="t%3AAlexAcc"
+></A
+></A
+><B
+>AlexAcc</B
+> a user </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexAcc"
+><A NAME="v%3AAlexAcc"
+></A
+></A
+><B
+>AlexAcc</B
+> a</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexAccSkip"
+><A NAME="v%3AAlexAccSkip"
+></A
+></A
+><B
+>AlexAccSkip</B
+></TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexAccPred"
+><A NAME="v%3AAlexAccPred"
+></A
+></A
+><B
+>AlexAccPred</B
+> a (<A HREF="Il-Lexer.html#t%3AAlexAccPred"
+>AlexAccPred</A
+> user)</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexAccSkipPred"
+><A NAME="v%3AAlexAccSkipPred"
+></A
+></A
+><B
+>AlexAccSkipPred</B
+> (<A HREF="Il-Lexer.html#t%3AAlexAccPred"
+>AlexAccPred</A
+> user)</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A NAME="t:AlexAccPred"
+><A NAME="t%3AAlexAccPred"
+></A
+></A
+><B
+>AlexAccPred</B
+> user = user -&gt; <A HREF="Il-Lexer.html#t%3AAlexInput"
+>AlexInput</A
+> -&gt; Int -&gt; <A HREF="Il-Lexer.html#t%3AAlexInput"
+>AlexInput</A
+> -&gt; Bool</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A NAME="t:AlexInput"
+><A NAME="t%3AAlexInput"
+></A
+></A
+><B
+>AlexInput</B
+> = (<A HREF="Il-Lexer.html#t%3AAlexPosn"
+>AlexPosn</A
+>, Char, String)</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:alexInputPrevChar"
+><A NAME="v%3AalexInputPrevChar"
+></A
+></A
+><B
+>alexInputPrevChar</B
+> :: <A HREF="Il-Lexer.html#t%3AAlexInput"
+>AlexInput</A
+> -&gt; Char</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:alexGetChar"
+><A NAME="v%3AalexGetChar"
+></A
+></A
+><B
+>alexGetChar</B
+> :: <A HREF="Il-Lexer.html#t%3AAlexInput"
+>AlexInput</A
+> -&gt; Maybe (Char, <A HREF="Il-Lexer.html#t%3AAlexInput"
+>AlexInput</A
+>)</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:AlexPosn"
+><A NAME="t%3AAlexPosn"
+></A
+></A
+><B
+>AlexPosn</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:AlexPn"
+><A NAME="v%3AAlexPn"
+></A
+></A
+><B
+>AlexPn</B
+> !Int !Int !Int</TD
+><TD CLASS="rdoc"
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:AlexPosn')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:AlexPosn" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Il-Lexer.html#t%3AAlexPosn"
+>AlexPosn</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Il-Lexer.html#t%3AAlexPosn"
+>AlexPosn</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:alexStartPos"
+><A NAME="v%3AalexStartPos"
+></A
+></A
+><B
+>alexStartPos</B
+> :: <A HREF="Il-Lexer.html#t%3AAlexPosn"
+>AlexPosn</A
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:alexMove"
+><A NAME="v%3AalexMove"
+></A
+></A
+><B
+>alexMove</B
+> :: <A HREF="Il-Lexer.html#t%3AAlexPosn"
+>AlexPosn</A
+> -&gt; Char -&gt; <A HREF="Il-Lexer.html#t%3AAlexPosn"
+>AlexPosn</A
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:alex_base"
+><A NAME="v%3Aalex_base"
+></A
+></A
+><B
+>alex_base</B
+> :: Array Int Int</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:alex_table"
+><A NAME="v%3Aalex_table"
+></A
+></A
+><B
+>alex_table</B
+> :: Array Int Int</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:alex_check"
+><A NAME="v%3Aalex_check"
+></A
+></A
+><B
+>alex_check</B
+> :: Array Int Int</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:alex_deflt"
+><A NAME="v%3Aalex_deflt"
+></A
+></A
+><B
+>alex_deflt</B
+> :: Array Int Int</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="botbar"
+>Produced by <A HREF="http://www.haskell.org/haddock/"
+>Haddock</A
+> version 2.6.1</TD
+></TR
+></TABLE
+></BODY
+></HTML
+>
