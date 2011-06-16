@@ -71,7 +71,8 @@ ll = DS "Linked List"       [
                             Op Union                (LinLog 0 0, N),
                             Op UpdateByRef          (LinLog 0 0, N),
                             Op UpdateByVal          (LinLog 1 0, N)
--- | Red Black Trees                                                                    ]
+                                                                    ]
+-- | Red Black Trees 
 rbt :: Structure
 rbt = DS "Red-Black Trees"  [
                             Op BoundByRef           (LinLog 0 1, N),
@@ -92,7 +93,8 @@ rbt = DS "Red-Black Trees"  [
                             Op Union                (LinLog 1 1, N),
                             Op UpdateByRef          (LinLog 0 1, N),
                             Op UpdateByVal          (LinLog 0 1, N)
--- | Hashtable                                                                    ]
+                                                                    ]
+-- | Hashtable                                                      
 hash :: Structure
 hash = DS "Hashtable"       [
                             Op BoundByRef           (LinLog 1 0, N),
