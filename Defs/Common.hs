@@ -24,9 +24,7 @@ type Name =  String
 
 -- | Count the number of occurences of given element in the list
 countElem :: Eq a => a -> [a] -> Integer
-countElem _ [] = 0
-countElem y (x:xs)  | y == x = 1 + countElem y xs
-                    | otherwise = countElem y xs
+countElem y xs = genericLength $ filter (== y) xs
 
 -- | All subsequences of given length @n@ and longer of given sequence @xs@
 sequencesOfLen :: Eq a =>  [a] -> Integer -> [[a]]
