@@ -1,4 +1,5 @@
-module Analyzer where
+module Analyzer 
+  ( printRecommendationFromAnalysis ) where
 
 import Defs.Structures
 import Defs.Common
@@ -17,7 +18,7 @@ data DSInfo =   DSI { getDSIVarName :: Name,    -- ^ Variable holding the data s
                     } deriving (Show, Eq)
 
 -- | Data structure use case type
-data DSUse =    DSU {getDSUOpName :: OperationName, -- ^ Operation used
+data DSUse =    DSU { getDSUOpName :: OperationName,-- ^ Operation used
                     isHeavilyUsed :: Bool,          -- ^ Is it heavily used
                     isUserDependent :: Bool         -- ^ Is it dependent on some external input (user, network, random, signals, etc.)
                     } deriving (Show, Eq)
