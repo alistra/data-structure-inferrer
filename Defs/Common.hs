@@ -22,10 +22,6 @@ resetColor = setSGR [Reset]
 -- | Type for names
 type Name =  String
 
--- | Length of a list of type Integer
-integerLength :: [a] ->  Integer
-integerLength = toEnum.length
-
 -- | Count the number of occurences of given element in the list
 countElem :: Eq a => a -> [a] -> Integer
 countElem _ [] = 0

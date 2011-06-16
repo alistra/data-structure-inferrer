@@ -9,7 +9,10 @@ import Recommend
 
 import Data.List
 
-data Advice = Advice { advisedDS :: Structure, reducedOperations :: [OperationName], operations :: [OperationName] } deriving Show
+-- | Type for advice data
+data Advice = Advice {  advisedDS :: Structure, -- ^ Structure to be advised
+                        reducedOperations :: [OperationName], -- ^ Operations on which the structure is better than the recommended one
+                        operations :: [OperationName] } deriving Show -- ^ Original operations (we can get recommendations from them)
 
 -- | Checks if structure @s1@ is not worse than structure @s2@ on operations @opns@
 notWorse :: Structure -> Structure -> [OperationName] -> Bool
@@ -31,7 +34,7 @@ filterAdviceForRecommended recs = filter (\(Advice ds _ _) -> ds `notElem` recs)
 -- | Returns advice data for operations @opns@ and at most @n@ operations to forget about
 adviceDS' :: Integer -> [OperationName] -> [Advice]
 adviceDS' n opns =  let recOrig = recommendAllDs opns
-                        opnsSeqs = sequencesOfLen opns (integerLength opns - n)
+                        opnsSeqs = sequencesOfLen opns (genericLength opns - n)
                         recSeqs = concatMap (\seq -> map (\x -> Advice x seq opns) $ filter (\ds-> betterThanEach ds recOrig seq) (recommendAllDs seq)) opnsSeqs 
                             in filterAdviceForRecommended recOrig recSeqs
 
