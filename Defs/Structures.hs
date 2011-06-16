@@ -56,11 +56,7 @@ data DSOperation = Op { getOpName :: OperationName, getComplexity :: Complexity 
 instance Ord DSOperation where
     compare (Op _ c1) (Op _ c2) = compare c1 c2
 
-countElem :: Eq a => a -> [a] -> Integer
-countElem _ [] = 0
-countElem y (x:xs)  | y == x = 1 + countElem y xs
-                    | otherwise = countElem y xs
-
+-- | Function to check which of the two data structures, on given operations, is better
 compareDS ::  Structure -> Structure -> [OperationName] -> Ordering
 compareDS s1 s2 opns = let  ops1 = filter (\x -> getOpName x `elem` opns) (getDSOps s1)
                             ops2 = filter (\x -> getOpName x `elem` opns) (getDSOps s2) in

@@ -9,7 +9,7 @@ import Recommend
 
 import Data.List
 
-data AdviceData = Advice { advisedDS :: Structure, reducedOperations :: [OperationName], operations :: [OperationName] } deriving Show
+data Advice = Advice { advisedDS :: Structure, reducedOperations :: [OperationName], operations :: [OperationName] } deriving Show
 
 -- | Checks if structure @s1@ is not worse than structure @s2@ on operations @opns@
 notWorse :: Structure -> Structure -> [OperationName] -> Bool
@@ -25,18 +25,18 @@ betterThanEach :: Structure -> [Structure] -> [OperationName] -> Bool
 betterThanEach s1 ss opns = all (\s2-> better s1 s2 opns) ss 
 
 -- | Removes already recommended data structures @recs@ from the advised structures
-filterAdviceDataForRecommended :: [Structure] -> [AdviceData] -> [AdviceData]
-filterAdviceDataForRecommended recs = filter (\(Advice ds _ _) -> ds `notElem` recs)
+filterAdviceForRecommended :: [Structure] -> [Advice] -> [Advice]
+filterAdviceForRecommended recs = filter (\(Advice ds _ _) -> ds `notElem` recs)
 
 -- | Returns advice data for operations @opns@ and at most @n@ operations to forget about
-adviceDS' :: Integer -> [OperationName] -> [AdviceData]
+adviceDS' :: Integer -> [OperationName] -> [Advice]
 adviceDS' n opns =  let recOrig = recommendAllDs opns
                         opnsSeqs = sequencesOfLen opns (integerLength opns - n)
                         recSeqs = concatMap (\seq -> map (\x -> Advice x seq opns) $ filter (\ds-> betterThanEach ds recOrig seq) (recommendAllDs seq)) opnsSeqs 
-                            in filterAdviceDataForRecommended recOrig recSeqs
+                            in filterAdviceForRecommended recOrig recSeqs
 
 -- | Returns advice data for operations @opns@
-adviceDS :: [OperationName] -> [AdviceData]
+adviceDS :: [OperationName] -> [Advice]
 adviceDS = adviceDS' 1
 
 -- | Pretty prints effects of 'adviceDS''
@@ -59,8 +59,8 @@ printAdvice' n opns =   do
     mapM_ printAdviceStructure adv
     resetColor
 
--- | Prints one 'AdviceData' element
-printAdviceStructure :: AdviceData -> IO()
+-- | Prints one 'Advice' element
+printAdviceStructure :: Advice -> IO()
 printAdviceStructure (Advice s seq opns) = do
     putStr  "You could use " 
     greenColor

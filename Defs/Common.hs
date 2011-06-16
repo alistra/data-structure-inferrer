@@ -26,6 +26,12 @@ type Name =  String
 integerLength :: [a] ->  Integer
 integerLength = toEnum.length
 
+-- | Count the number of occurences of given element in the list
+countElem :: Eq a => a -> [a] -> Integer
+countElem _ [] = 0
+countElem y (x:xs)  | y == x = 1 + countElem y xs
+                    | otherwise = countElem y xs
+
 -- | All subsequences of given length @n@ and longer of given sequence @xs@
 sequencesOfLen :: Eq a =>  [a] -> Integer -> [[a]]
 sequencesOfLen xs n = filter (\s -> integerLength s >= n && (s /= xs)) $ subsequences xs
