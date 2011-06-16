@@ -41,6 +41,7 @@ printRecommendationFromAnalysis :: [DSInfo] -> IO()
 printRecommendationFromAnalysis = mapM_ printDSI 
 
 -- | Pretty print single 'DSInfo' 
+printDSI :: DSInfo -> IO()
 printDSI dsi = do
     putStr "The recommended structure for "
     redColor
