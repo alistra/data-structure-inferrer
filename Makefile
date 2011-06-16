@@ -14,4 +14,7 @@ doc:	*.hs
 	haddock -o doc -h *.hs
 	git checkout gh-pages
 	cp -r doc/* .
+	git add .
+	git commit -a -m "Automated doc push"
+	git push origin gh-pages
 	git checkout master
