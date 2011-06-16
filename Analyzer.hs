@@ -1,5 +1,6 @@
 module Analyzer 
-  ( printRecommendationFromAnalysis ) where
+  ( printRecommendationFromAnalysis,
+    analyze) where
 
 import Defs.Structures
 import Defs.Common
