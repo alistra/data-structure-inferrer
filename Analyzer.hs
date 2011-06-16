@@ -56,12 +56,13 @@ printDSI dsi = do
 analyze :: [Term] -> [DSInfo]
 analyze = generateDSI . generateDSU 
 
-
+-- | Generate 'DSInfo's for each data structure in the program
 generateDSI :: AnalyzerOutput -> [DSInfo]
 generateDSI allDSU@((name, _):dsus) = let (sameName, otherNames) = partition (\x -> fst x == name) allDSU in
     generateSingleDSI sameName : generateDSI otherNames
 generateDSI [] = []
 
+-- | Generate single 'DSInfo' from 'DSUse's of on data structure
 generateSingleDSI :: AnalyzerOutput -> DSInfo
 generateSingleDSI allNDSU@((name, _):_) = DSI name static cleanDSU where
     mergeDSU allDSU@(dsu:dsus) = let (sameOp, otherOps) = partition (\x -> getDSUOpName x == getDSUOpName dsu) allDSU in
@@ -71,21 +72,22 @@ generateSingleDSI allNDSU@((name, _):_) = DSI name static cleanDSU where
     cleanDSU = mergeDSU (map snd allNDSU)
     static = True
 
-
-
+-- | Start the state monad to gather 'DSUse's from the AST
 generateDSU :: [Term] -> AnalyzerOutput
 generateDSU ts = evalState (foldlTerms step [] ts) []
 
+-- | Analyze the terms using the state monad
 generateContextDSU :: [Term] -> Analyzer
-generateContextDSU = foldlTerms step []
+generateContextDSU = foldlTerms step [] where
 
+-- | Foldl 'Term's using the 'step' function to generate 'AnalyzerOutput'
 foldlTerms :: (AnalyzerOutput -> Term -> State Context AnalyzerOutput) -> AnalyzerOutput -> [Term] -> State Context AnalyzerOutput 
 foldlTerms f start [] = return start
 foldlTerms f start (r:rest) = do 
     dsus <- f start r
     foldlTerms f dsus rest
 
--- | Analyze step generating DSUs
+-- | Folding step generating 'DSUse's
 step :: AnalyzerOutput -> Term -> Analyzer
 
 step dsus (Block body) = do
