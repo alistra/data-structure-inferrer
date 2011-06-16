@@ -30,7 +30,7 @@ countElem y (x:xs)  | y == x = 1 + countElem y xs
 
 -- | All subsequences of given length @n@ and longer of given sequence @xs@
 sequencesOfLen :: Eq a =>  [a] -> Integer -> [[a]]
-sequencesOfLen xs n = filter (\s -> integerLength s >= n && (s /= xs)) $ subsequences xs
+sequencesOfLen xs n = filter (\s -> genericLength s >= n && (s /= xs)) $ subsequences xs
 
 -- | A function inspired by python's string.split().  A list is split
 -- on a separator which is itself a list (not a single element).
