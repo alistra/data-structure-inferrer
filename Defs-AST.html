@@ -51,7 +51,270 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="section1"
+>Description</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Module with Abstract Syntax Tree syntax
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Synopsis</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3ATerm"
+>Term</A
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>= <A HREF="#v%3AAnd"
+>And</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AAssign"
+>Assign</A
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ABlock"
+>Block</A
+> [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>]</TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADec"
+>Dec</A
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADiv"
+>Div</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADSInit"
+>DSInit</A
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AEq"
+>Eq</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AFor"
+>For</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AFuncall"
+>Funcall</A
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+> [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>]</TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AGeq"
+>Geq</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AGt"
+>Gt</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AIf"
+>If</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AInc"
+>Inc</A
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AInt"
+>Int</A
+> Int</TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ALeq"
+>Leq</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ALt"
+>Lt</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AMul"
+>Mul</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ANot"
+>Not</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AOr"
+>Or</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ASub"
+>Sub</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ASum"
+>Sum</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AWhile"
+>While</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AVar"
+>Var</A
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
 ></TD
 ></TR
 ><TR
@@ -82,6 +345,11 @@
 ><TD CLASS="body"
 ><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
 ><TR
+><TD CLASS="ndoc"
+>Type for language operations
+</TD
+></TR
+><TR
 ><TD CLASS="section4"
 >Constructors</TD
 ></TR
@@ -102,7 +370,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Logical and
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -118,7 +387,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Variable assignment
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -132,7 +402,8 @@
 >Term</A
 >]</TD
 ><TD CLASS="rdoc"
-></TD
+>Block of operations
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -146,7 +417,8 @@
 >Name</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Decrement
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -162,7 +434,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Division
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -176,7 +449,8 @@
 >Name</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Data structure initialization
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -192,7 +466,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Equality test
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -212,7 +487,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>For loop
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -228,7 +504,8 @@
 >Term</A
 >]</TD
 ><TD CLASS="rdoc"
-></TD
+>Function call
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -244,7 +521,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Greater or equal test
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -260,7 +538,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Greater than test
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -278,7 +557,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>If-else statement
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -292,7 +572,8 @@
 >Name</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Increment
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -304,7 +585,8 @@
 >Int</B
 > Int</TD
 ><TD CLASS="rdoc"
-></TD
+>Integer Constant
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -320,7 +602,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Less or equal test
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -336,7 +619,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Less than thest
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -352,7 +636,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Multiplication
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -366,7 +651,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Logical not
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -382,7 +668,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Logical or
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -398,7 +685,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Subtraction
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -414,7 +702,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Addition
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -430,7 +719,8 @@
 >Term</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>While loop
+</TD
 ></TR
 ><TR
 ><TD CLASS="arg"
@@ -444,7 +734,8 @@
 >Name</A
 ></TD
 ><TD CLASS="rdoc"
-></TD
+>Variable
+</TD
 ></TR
 ></TABLE
 ></TD

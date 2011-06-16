@@ -78,8 +78,8 @@
 ><TD CLASS="decl"
 ><SPAN CLASS="keyword"
 >data</SPAN
->  <A HREF="#t%3AAdviceData"
->AdviceData</A
+>  <A HREF="#t%3AAdvice"
+>Advice</A
 >  = <A HREF="#v%3AAdvice"
 >Advice</A
 > {<TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
@@ -164,14 +164,14 @@
 ></TR
 ><TR
 ><TD CLASS="decl"
-><A HREF="#v%3AfilterAdviceDataForRecommended"
->filterAdviceDataForRecommended</A
+><A HREF="#v%3AfilterAdviceForRecommended"
+>filterAdviceForRecommended</A
 > :: [<A HREF="Defs-Structures.html#t%3AStructure"
 >Structure</A
->] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
->] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdvice"
+>Advice</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdvice"
+>Advice</A
 >]</TD
 ></TR
 ><TR
@@ -184,8 +184,8 @@
 >adviceDS'</A
 > :: Integer -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
->] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdvice"
+>Advice</A
 >]</TD
 ></TR
 ><TR
@@ -198,8 +198,8 @@
 >adviceDS</A
 > :: [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
->] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdvice"
+>Advice</A
 >]</TD
 ></TR
 ><TR
@@ -222,8 +222,8 @@
 ><TD CLASS="decl"
 ><A HREF="#v%3AprintAdviceStructure"
 >printAdviceStructure</A
-> :: <A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
+> :: <A HREF="Advice.html#t%3AAdvice"
+>Advice</A
 > -&gt; IO ()</TD
 ></TR
 ><TR
@@ -257,12 +257,12 @@
 ><TD CLASS="decl"
 ><SPAN CLASS="keyword"
 >data</SPAN
->  <A NAME="t:AdviceData"
-><A NAME="t%3AAdviceData"
+>  <A NAME="t:Advice"
+><A NAME="t%3AAdvice"
 ></A
 ></A
 ><B
->AdviceData</B
+>Advice</B
 >  </TD
 ></TR
 ><TR
@@ -340,17 +340,17 @@
 ></TR
 ><TR
 ><TD CLASS="section4"
-><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:AdviceData')" ALT="show/hide"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Advice')" ALT="show/hide"
 > Instances</TD
 ></TR
 ><TR
 ><TD CLASS="body"
-><DIV ID="i:AdviceData" STYLE="display:block;"
+><DIV ID="i:Advice" STYLE="display:block;"
 ><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
 ><TR
 ><TD CLASS="decl"
->Show <A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
+>Show <A HREF="Advice.html#t%3AAdvice"
+>Advice</A
 ></TD
 ></TR
 ></TABLE
@@ -459,18 +459,18 @@
 ></TR
 ><TR
 ><TD CLASS="decl"
-><A NAME="v:filterAdviceDataForRecommended"
-><A NAME="v%3AfilterAdviceDataForRecommended"
+><A NAME="v:filterAdviceForRecommended"
+><A NAME="v%3AfilterAdviceForRecommended"
 ></A
 ></A
 ><B
->filterAdviceDataForRecommended</B
+>filterAdviceForRecommended</B
 > :: [<A HREF="Defs-Structures.html#t%3AStructure"
 >Structure</A
->] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
->] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdvice"
+>Advice</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdvice"
+>Advice</A
 >]</TD
 ></TR
 ><TR
@@ -494,8 +494,8 @@
 >adviceDS'</B
 > :: Integer -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
->] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdvice"
+>Advice</A
 >]</TD
 ></TR
 ><TR
@@ -521,8 +521,8 @@
 >adviceDS</B
 > :: [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
->] -&gt; [<A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
+>] -&gt; [<A HREF="Advice.html#t%3AAdvice"
+>Advice</A
 >]</TD
 ></TR
 ><TR
@@ -569,15 +569,15 @@
 ></A
 ><B
 >printAdviceStructure</B
-> :: <A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
+> :: <A HREF="Advice.html#t%3AAdvice"
+>Advice</A
 > -&gt; IO ()</TD
 ></TR
 ><TR
 ><TD CLASS="doc"
 >Prints one <TT
-><A HREF="Advice.html#t%3AAdviceData"
->AdviceData</A
+><A HREF="Advice.html#t%3AAdvice"
+>Advice</A
 ></TT
 > element
 </TD

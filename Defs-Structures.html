@@ -55,6 +55,316 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="section1"
+>Synopsis</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AStructure"
+>Structure</A
+>  = <A HREF="#v%3ADS"
+>DS</A
+> {<TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AgetDSName"
+>getDSName</A
+> :: <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+></TD
+></TR
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AgetDSOps"
+>getDSOps</A
+> :: [<A HREF="Defs-Structures.html#t%3ADSOperation"
+>DSOperation</A
+>]</TD
+></TR
+></TABLE
+>}</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AOperationName"
+>OperationName</A
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>= <A HREF="#v%3AInsertVal"
+>InsertVal</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADeleteByVal"
+>DeleteByVal</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADeleteByRef"
+>DeleteByRef</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AFindByVal"
+>FindByVal</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AUpdateByVal"
+>UpdateByVal</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AUpdateByRef"
+>UpdateByRef</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADeleteExtremalVal"
+>DeleteExtremalVal</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AExtremalVal"
+>ExtremalVal</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ABoundByVal"
+>BoundByVal</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ABoundByRef"
+>BoundByRef</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADecreaseValByRef"
+>DecreaseValByRef</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AUnion"
+>Union</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AIntersect"
+>Intersect</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADifference"
+>Difference</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ASymDifference"
+>SymDifference</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AMap"
+>Map</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ASize"
+>Size</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AEmpty"
+>Empty</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AComplexityCharacteristics"
+>ComplexityCharacteristics</A
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>= <A HREF="#v%3AAE"
+>AE</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AE"
+>E</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AA"
+>A</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AN"
+>N</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A HREF="#t%3AComplexity"
+>Complexity</A
+> = (<A HREF="Defs-Structures.html#t%3AAsymptoticalComplexity"
+>AsymptoticalComplexity</A
+>, <A HREF="Defs-Structures.html#t%3AComplexityCharacteristics"
+>ComplexityCharacteristics</A
+>)</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AAsymptoticalComplexity"
+>AsymptoticalComplexity</A
+>  = <A HREF="#v%3ALinLog"
+>LinLog</A
+> Integer Integer</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3Alogs"
+>logs</A
+> :: Integer -&gt; String</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3ADSOperation"
+>DSOperation</A
+>  = <A HREF="#v%3AOp"
+>Op</A
+> {<TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AgetOpName"
+>getOpName</A
+> :: <A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+></TD
+></TR
+><TR
+><TD CLASS="recfield"
+><A HREF="#v%3AgetComplexity"
+>getComplexity</A
+> :: <A HREF="Defs-Structures.html#t%3AComplexity"
+>Complexity</A
+></TD
+></TR
+></TABLE
+>}</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AcompareDS"
+>compareDS</A
+> :: <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+> -&gt; <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+> -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; Ordering</TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -773,20 +1083,6 @@
 ></TR
 ><TR
 ><TD CLASS="decl"
-><A NAME="v:countElem"
-><A NAME="v%3AcountElem"
-></A
-></A
-><B
->countElem</B
-> :: Eq a =&gt; a -&gt; [a] -&gt; Integer</TD
-></TR
-><TR
-><TD CLASS="s15"
-></TD
-></TR
-><TR
-><TD CLASS="decl"
 ><A NAME="v:compareDS"
 ><A NAME="v%3AcompareDS"
 ></A
@@ -800,6 +1096,11 @@
 > -&gt; [<A HREF="Defs-Structures.html#t%3AOperationName"
 >OperationName</A
 >] -&gt; Ordering</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Function to check which of the two data structures, on given operations, is better
+</TD
 ></TR
 ><TR
 ><TD CLASS="s15"
