@@ -6,8 +6,8 @@ import Control.Monad.State
 {-
 data Type = TInt | TBool | TDs | TDsElem
 
-type Context = [(Name, Type)]
-type Typechecker a = State Context a
+type TypeContext = [(Name, Type)]
+type Typechecker a = State TypeContext a
 
 typecheckP :: [Term] -> Bool
 

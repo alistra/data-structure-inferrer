@@ -20,6 +20,7 @@ data DSUse =    DSU {  getDSUOpName :: OperationName,
 
 type AnalyzerOutput = [(Name, DSUse)]
 type Analyzer = State [Name] AnalyzerOutput
+type Context = [Name]
 
 setHeavyUsage (DSU opname _ ud) = DSU opname True ud
 setUserDependance (DSU opname hu _) = DSU opname hu True

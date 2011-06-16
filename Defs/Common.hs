@@ -3,14 +3,24 @@ module Defs.Common where
 import System.Console.ANSI
 import Data.List
 
+-- | Changes the color of the terminal output to green
+greenColor :: IO()
 greenColor = setSGR [SetColor Foreground Vivid Green]
+-- | Changes the color of the terminal output to yellow
+yellowColor :: IO()
 yellowColor = setSGR [SetColor Foreground Dull Yellow]
+-- | Changes the color of the terminal output to red
+redColor :: IO()
 redColor = setSGR [SetColor Foreground Vivid Red]
+-- | Changes the color of the terminal output to cyan
+cyanColor :: IO()
 cyanColor = setSGR [SetColor Foreground Vivid Cyan]
+-- | Resets the color of the terminal output
+resetColor :: IO()
 resetColor = setSGR [Reset]
 
+-- | Type for names
 type Name =  String
-type Context = [Name]
 
 -- | A function inspired by python's string.split().  A list is split
 -- on a separator which is itself a list (not a single element).
