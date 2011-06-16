@@ -51,7 +51,54 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="section1"
+>Description</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Module for recommending a data structure based on operations used
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Synopsis</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3ArecommendDS"
+>recommendDS</A
+> :: [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; IO <A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3ArecommendAllDs"
+>recommendAllDs</A
+> :: [<A HREF="Defs-Structures.html#t%3AOperationName"
+>OperationName</A
+>] -&gt; [<A HREF="Defs-Structures.html#t%3AStructure"
+>Structure</A
+>]</TD
+></TR
+></TABLE
 ></TD
 ></TR
 ><TR
@@ -81,6 +128,13 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="doc"
+>Recommends a data structure which is best for given operations <TT
+>opns</TT
+>. If there's more than one optimal structure, it chooses one at random
+</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
 ></TR
@@ -97,6 +151,13 @@
 >] -&gt; [<A HREF="Defs-Structures.html#t%3AStructure"
 >Structure</A
 >]</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Recommends all optimal data structures for given operations <TT
+>opns</TT
+>
+</TD
 ></TR
 ><TR
 ><TD CLASS="s15"
