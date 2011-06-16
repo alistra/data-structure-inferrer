@@ -4,35 +4,46 @@ import Data.List
 import Data.Ord
 import Defs.Common
 
-data Structure = DS { getDSName :: Name, getDSOps :: [DSOperation] } deriving Eq
+-- | Data structure for keeping data structures
+data Structure = DS {   getDSName :: Name, -- ^ name of the data structure
+                        getDSOps :: [DSOperation] -- ^ operations with their complexities
+                        } deriving Eq
 
 instance Show Structure where
     show = getDSName
 
-data OperationName =  InsertVal
-                    | DeleteByVal
-                    | DeleteByRef
-                    | FindByVal
-                    | UpdateByVal
-                    | UpdateByRef
-                    | DeleteExtremalVal
-                    | ExtremalVal
-                    | BoundByVal
-                    | BoundByRef
-                    | DecreaseValByRef
-                    | Union
-                    | Intersect
-                    | Difference
-                    | SymDifference
-                    | Map
-                    | Size
-                    | Empty deriving (Show, Eq)
+-- | Type for operation names
+data OperationName =  InsertVal         -- ^ Insert an element
+                    | DeleteByRef       -- ^ Delete the element
+                    | FindByVal         -- ^ Find the element by value
+                    | UpdateByRef       -- ^ Update the value
+                    | DeleteExtremalVal -- ^ Delete the extreme value
+                    | ExtremalVal       -- ^ Maximum or minimum
+                    | BoundByRef        -- ^ Precedessor or successor 
+                    | DecreaseValByRef  -- ^ Update that decreases the value
+                    | Union             -- ^ Union
+                    | Intersection      -- ^ Intersection
+                    | Difference        -- ^ Difference
+                    | SymDifference     -- ^ Symmetric difference
+                    | Map               -- ^ Map elements 
+                    | Size              -- ^ Checking the size
+                    | Empty             -- ^ Checking the empiness
+                    deriving (Show, Eq)
                     
-data ComplexityCharacteristics = AE | E | A | N deriving (Ord, Eq, Show)
+-- | Additional complexity qualifiers
+data ComplexityCharacteristics = AE -- ^ Amortized expected time
+                                | E -- ^ Expected time
+                                | A -- ^ Amortized time
+                                | N -- ^ Normal time
+                                deriving (Ord, Eq, Show)
 
+-- | Full complexity type
 type Complexity = (AsymptoticalComplexity, ComplexityCharacteristics)
 
-data AsymptoticalComplexity = LinLog Integer Integer deriving (Eq)
+-- | Asymptotical complexity type, remembered as the exponent of the @n@ and the number of stacked logarithms
+data AsymptoticalComplexity = LinLog {  getLin :: Integer, -- ^ exponent of @n@
+                                        getLog :: Integer  -- ^ number of the stacked logarithms
+                                        } deriving (Eq)
 
 instance Ord AsymptoticalComplexity where
     compare (LinLog l1 l2) (LinLog r1 r2) = case compare l1 r1 of
@@ -47,11 +58,15 @@ instance Show AsymptoticalComplexity where
     show (LinLog n 0)   = "O(n^" ++ show n ++ ")" 
     show (LinLog n m)   = "O(n^" ++ show n ++ " " ++ logs m ++ " n)"
 
+-- | Function to pretty print stacked logarithms
 logs :: Integer -> String
 logs 0 = ""
 logs n = "log" ++ logs (n-1)
 
-data DSOperation = Op { getOpName :: OperationName, getComplexity :: Complexity } deriving (Show, Eq)
+-- | Type for operation and it's complexity
+data DSOperation = Op { getOpName :: OperationName, -- ^ Operation name
+                        getComplexity :: Complexity -- ^ Complexity of the operation
+                        } deriving (Show, Eq)
 
 instance Ord DSOperation where
     compare (Op _ c1) (Op _ c2) = compare c1 c2

@@ -98,7 +98,7 @@ step dsus (Funcall name args) = do
     let opname = case name of
             "insert"        -> Just InsertVal
             "find"          -> Just FindByVal
-            "update"        -> Just UpdateByVal
+            "update"        -> Just UpdateByRef -- FIXME
             "max"           -> Just ExtremalVal
             "delete_max"    -> Just DeleteExtremalVal
             _               -> Nothing
