@@ -22,14 +22,15 @@ notWorse :: Structure -> Structure -> [OperationName] -> Bool
 notWorse s1 s2 opns = compareDS s1 s2 opns /= LT
 
 
--- | Checks if structure @s1@ is better than structure @s2@ on operations @opns@
+-- | Checks if the structure @s1@ is better than the structure @s2@ on operations @opns@
 better :: Structure -> Structure -> [OperationName] -> Bool
 better s1 s2 opns   | s1 == s2 = True
                     | otherwise = compareDS s1 s2 opns == GT
-
+-- | Checks if the structure @s1@ is better than each of the structures in @ss@ on operations @opns@
 betterThanEach :: Structure -> [Structure] -> [OperationName] -> Bool
 betterThanEach s1 ss opns = all (\s2-> better s1 s2 opns) ss 
 
+-- | Removes already recommended data structures @recs@ from the advised structures
 filterAdviceDataForRecommended :: [Structure] -> [AdviceData] -> [AdviceData]
 filterAdviceDataForRecommended recs = filter (\(Advice ds _ _) -> ds `notElem` recs)
 
