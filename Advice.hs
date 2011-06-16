@@ -11,12 +11,6 @@ import Data.List
 
 data AdviceData = Advice { advisedDS :: Structure, reducedOperations :: [OperationName], operations :: [OperationName] } deriving Show
 
-integerLength = toEnum.length
-
-sequencesOfLen :: Eq a =>  [a] -> Integer -> [[a]]
-sequencesOfLen xs n = filter (\s -> integerLength s >= n && (s /= xs)) $ subsequences xs
-
-
 -- | Checks if structure @s1@ is not worse than structure @s2@ on operations @opns@
 notWorse :: Structure -> Structure -> [OperationName] -> Bool
 notWorse s1 s2 opns = compareDS s1 s2 opns /= LT
@@ -34,15 +28,18 @@ betterThanEach s1 ss opns = all (\s2-> better s1 s2 opns) ss
 filterAdviceDataForRecommended :: [Structure] -> [AdviceData] -> [AdviceData]
 filterAdviceDataForRecommended recs = filter (\(Advice ds _ _) -> ds `notElem` recs)
 
+-- | Returns advice data for operations @opns@ and at most @n@ operations to forget about
 adviceDS' :: Integer -> [OperationName] -> [AdviceData]
 adviceDS' n opns =  let recOrig = recommendAllDs opns
                         opnsSeqs = sequencesOfLen opns (integerLength opns - n)
                         recSeqs = concatMap (\seq -> map (\x -> Advice x seq opns) $ filter (\ds-> betterThanEach ds recOrig seq) (recommendAllDs seq)) opnsSeqs 
                             in filterAdviceDataForRecommended recOrig recSeqs
 
+-- | Returns advice data for operations @opns@
 adviceDS :: [OperationName] -> [AdviceData]
 adviceDS = adviceDS' 1
 
+-- | Pretty prints effects of 'adviceDS''
 printAdvice' :: Integer -> [OperationName] -> IO ()
 printAdvice' n opns =   do    
     yellowColor
@@ -62,6 +59,7 @@ printAdvice' n opns =   do
     mapM_ printAdviceStructure adv
     resetColor
 
+-- | Prints one 'AdviceData' element
 printAdviceStructure :: AdviceData -> IO()
 printAdviceStructure (Advice s seq opns) = do
     putStr  "You could use " 
@@ -73,5 +71,6 @@ printAdviceStructure (Advice s seq opns) = do
     putStr $ concatMap (\opn -> "* " ++ show opn ++ "\n") (opns \\ seq)
     resetColor
 
+-- | Pretty prints effects of 'adviceDS'
 printAdvice :: [OperationName] -> IO ()
 printAdvice = printAdvice' 1
