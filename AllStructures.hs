@@ -11,7 +11,7 @@ import Defs.Structures
 import Data.List
 import Data.Maybe
 
--- | Function that adds extremal element cache to a data structure
+-- | A function that adds an extremal element cache to a data structure
 extremalElemCache :: Structure -> Structure 
 extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") ops' where
     extVal = fromJust $ find (\dsop -> getOpName dsop == ExtremalVal) ops
@@ -20,7 +20,7 @@ extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") o
             Op ExtremalVal (LinLog 0 0, N)] ++ 
             filter (\dsop -> getOpName dsop `notElem` [ExtremalVal, DeleteByRef]) ops
 
--- | Function that links the elements of a data structure
+-- | A function that links the elements of a data structure
 linkedLeaves :: Structure -> Structure 
 linkedLeaves (DS name ops) = DS (name ++ " with linked leaves") ops' where
     bndByRef = fromJust $ find (\dsop -> getOpName dsop == BoundByRef) ops
