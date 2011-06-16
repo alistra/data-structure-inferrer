@@ -10,24 +10,29 @@ import Data.List
 import Control.Arrow
 import Control.Monad.State
 
-data DSInfo =   DSI { getDSIVarName :: Name,
-                    isStatic :: Bool,
-                    getUses :: [DSUse] } deriving (Show, Eq)
+-- | Data structure analysis info type
+data DSInfo =   DSI { getDSIVarName :: Name,    -- ^ Variable holding the data structure
+                    isStatic :: Bool,           -- ^ Is the variable static or dynamic
+                    getUses :: [DSUse]          -- ^ Data structure use cases
+                    } deriving (Show, Eq)
 
-data DSUse =    DSU {  getDSUOpName :: OperationName,
-                    isHeavilyUsed :: Bool, 
-                    isUserDependent :: Bool } deriving (Show, Eq)
+-- | Data structure use case type
+data DSUse =    DSU {getDSUOpName :: OperationName, -- ^ Operation used
+                    isHeavilyUsed :: Bool,          -- ^ Is it heavily used
+                    isUserDependent :: Bool         -- ^ Is it dependent on some external input (user, network, random, signals, etc.)
+                    } deriving (Show, Eq)
 
+-- | List of pairs: variable name, use case
 type AnalyzerOutput = [(Name, DSUse)]
+
+-- | State monad with 'Context' state returning 'AnalyzerOutput'
 type Analyzer = State [Name] AnalyzerOutput
+
+-- | Analyzer context containing variable names with data structures
 type Context = [Name]
 
 setHeavyUsage (DSU opname _ ud) = DSU opname True ud
 setUserDependance (DSU opname hu _) = DSU opname hu True
-
-isStaticDSU _ = True -- stub
-
-
 
 printRecommendationFromAnalysis :: [DSInfo] -> IO()
 printRecommendationFromAnalysis = mapM_ printDSI 
@@ -62,7 +67,7 @@ generateSingleDSI allNDSU@((name, _):_) = DSI name static cleanDSU where
     mergeDSU [] = []
     mergeSingleDSU = foldl1 (\(DSU name1 hu1 ud1) (DSU name2 hu2 ud2) -> DSU name1 (hu1 || hu2) (ud1 || ud2))
     cleanDSU = mergeDSU (map snd allNDSU)
-    static = isStaticDSU cleanDSU
+    static = True
 
 
 
@@ -78,6 +83,7 @@ foldlTerms f start (r:rest) = do
     dsus <- f start r
     foldlTerms f dsus rest
 
+-- | Analyze step generating DSUs
 step :: AnalyzerOutput -> Term -> Analyzer
 
 step dsus (Block body) = do

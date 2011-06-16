@@ -1,5 +1,10 @@
 -- | Module for adding possible structures and functions modifying the structures
-module AllStructures where
+module AllStructures
+  ( allStructures,
+    rbt,
+    hash,
+    ll,
+    heap) where
 
 import Defs.Structures
 

@@ -1,5 +1,9 @@
 -- | Module that provides helpful tips for the programmer, that can minimize the complexity of the chosen data structure
-module Advice where
+module Advice 
+      ( adviceDS,
+        printAdvice,
+        adviceDS',
+        printAdvice' ) where
 
 import Defs.Common
 import Defs.Structures
