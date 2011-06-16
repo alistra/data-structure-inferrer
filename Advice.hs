@@ -1,3 +1,4 @@
+-- | Module that provides helpful tips for the programmer, that can minimize the complexity of the chosen data structure
 module Advice where
 
 import Defs.Common

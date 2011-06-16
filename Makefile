@@ -6,3 +6,6 @@ Il/Lexer.hs: Il/Lexer.x
 
 Il/Parser.hs: Il/Parser.y
 	happy -iIl/grammar.log Il/Parser.y
+
+doc:	*.hs
+	haddock -o doc -h *.hs
