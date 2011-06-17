@@ -1,3 +1,14 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Data-Structure-Inferrer.Analyzer
+-- License     :  MIT
+--
+-- Maintainer  :  Aleksander Balicki <balicki.aleksander@gmail.com>
+--
+-- A program that analyzes source code with a data-structure wildcard and suggests the right one.
+--
+-----------------------------------------------------------------------------
+
 module Analyzer 
   ( printRecommendationFromAnalysis,
     analyze) where
