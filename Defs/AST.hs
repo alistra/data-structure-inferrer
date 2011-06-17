@@ -32,8 +32,9 @@ data Term = And Term Term               -- ^ Logical and
             deriving (Show, Eq)
 
 -- | Type for the language values
-data Type = TInt        -- ^ Integer
-            | TBool     -- ^ Boolean
-            | Ds        -- ^ Data structure reference
-            | DsElem    -- ^ Data structure element reference
+data Type = TInt                    -- ^ Integer
+            | TBool                 -- ^ Boolean
+            | Ds                    -- ^ Data structure reference
+            | DsElem                -- ^ Data structure element reference
+            | TRec [(Name, Type)]   -- ^ Record
             deriving (Show, Eq)

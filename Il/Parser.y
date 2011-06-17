@@ -66,11 +66,18 @@ import Prelude hiding (True, False)
 
 
 type :: { Type }
-type:		TInt		{ TInt }
-    		| TBool		{ TBool }
-		| Ds		{ Ds }
-		| DsElem	{ DsElem }
+type:		TInt				{ TInt }
+    		| TBool				{ TBool }
+		| Ds				{ Ds }
+		| DsElem			{ DsElem }
+		| LSParen trecordintern RSParen { TRec $2 }
 
+trecordintern :: { [(Name, Type)] }
+trecordintern:	trecordpair Comma trecordintern { $1 : $3 }
+	     	| trecordpair 			{ [$1] }
+
+trecordpair :: { (Name, Type) }
+trecordpair:	Name type 			{ ($1, $2) }
 
 expr :: { Term }
 expr:		Name Assign valexpr							{ Assign $1 $3 }
