@@ -11,7 +11,7 @@ clean:
 	rm Il/Lexer.hs Il/Parser.hs Il/grammar.log
 
 doc:	*.hs
-	haddock -o doc -h *.hs
+	haddock -t "Data Structure Inferrer" -o doc -h *.hs
 	git checkout gh-pages
 	cp -r doc/* .
 	git add .
