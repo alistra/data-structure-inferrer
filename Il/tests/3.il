@@ -1,5 +1,5 @@
 f()
-ds = DS
-ds2 = DS
-delete_max(ds)
-max(ds2)
+ds d1
+ds d2
+delete_max(d1)
+max(d2)

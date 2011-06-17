@@ -97,11 +97,21 @@ step dsus (Block body) = do
     newDSU <- generateContextDSU body
     return $ dsus ++ newDSU
 
-step dsus (DSInit name) = do
+step dsus (VarInit name Ds) = do
     ctx <- get
     if name `elem` ctx 
         then error $ name ++ " already initialized"
         else put (name:ctx) >> return dsus 
+
+step dsus (VarInit name _) = return dsus
+
+step dsus (InitAssign name term Ds) = do
+    ctx <- get
+    if name `elem` ctx 
+        then error $ name ++ " already initialized"
+        else put (name:ctx) >> return dsus 
+
+step dsus (InitAssign name term _ ) = return dsus
 
 step dsus (While cond body) = do
     newDSU <- generateContextDSU [cond,body] 

@@ -1,8 +1,8 @@
-ds = DS
+ds d
 
 for(i = 0; i < 20; i++)
 {
-	insert(ds, i)
+	insert(d, i)
 }
 
-print(max(ds))
+print(max(d))

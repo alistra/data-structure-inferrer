@@ -18,11 +18,15 @@ tokens :-
 	then				{ \p s -> tokenWithPos p TkThen }
 	else				{ \p s -> tokenWithPos p TkElse }
 	false				{ \p s -> tokenWithPos p TkFalse }
+	true				{ \p s -> tokenWithPos p TkTrue }
 	for				{ \p s -> tokenWithPos p TkFor }
 	while				{ \p s -> tokenWithPos p TkWhile }
 	null				{ \p s -> tokenWithPos p TkNull }
 	or				{ \p s -> tokenWithPos p TkOr }
-	DS				{ \p s -> tokenWithPos p TkDS }
+	ds				{ \p s -> tokenWithPos p TkDs }
+	dsElem				{ \p s -> tokenWithPos p TkDsElem }
+	int				{ \p s -> tokenWithPos p TkTInt }
+	bool				{ \p s -> tokenWithPos p TkTBool }
     	"++"				{ \p s -> tokenWithPos p TkInc }
     	"+"				{ \p s -> tokenWithPos p TkPlus }
     	"--"				{ \p s -> tokenWithPos p TkDec }
@@ -45,7 +49,6 @@ tokens :-
 	"}"				{ \p s -> tokenWithPos p TkRCParen }
 	"]"				{ \p s -> tokenWithPos p TkRSParen }
 	">"				{ \p s -> tokenWithPos p TkGreater }
-	true				{ \p s -> tokenWithPos p TkTrue }
 	$alpha (_ | $digit | $alpha)* 	{ \p s -> tokenWithPos p (TkName s) }
 {                                                 
 data BaseToken = TkAnd 
@@ -55,7 +58,8 @@ data BaseToken = TkAnd
 	| TkDec
 	| TkDiv
 	| TkDot 
-	| TkDS 
+	| TkDs
+	| TkDsElem
 	| TkElse
 	| TkEquals
 	| TkFalse
@@ -86,6 +90,8 @@ data BaseToken = TkAnd
 	| TkSemicolon 
 	| TkThen
 	| TkTrue
+	| TkTInt
+	| TkTBool
 	| TkWhile
 	deriving (Show, Eq)
           

@@ -19,7 +19,8 @@ import Prelude hiding (True, False)
 	Comma           { (_,TkComma)  	}
 	Dec		{ (_,TkDec) 	}
 	Div           	{ (_,TkDiv) 	}
-	DS		{ (_,TkDS)	}
+	Ds		{ (_,TkDs)	}
+	DsElem		{ (_,TkDsElem)	}
 	Else		{ (_,TkElse)   	}
 	Equals          { (_,TkEquals) 	}
 	False		{ (_,TkFalse)	}
@@ -48,6 +49,8 @@ import Prelude hiding (True, False)
 	Semicolon       { (_,TkSemicolon)}
 	Then		{ (_,TkThen) 	}
 	True		{ (_,TkTrue)	}
+	TInt		{ (_,TkTInt)	}
+	TBool		{ (_,TkTBool)	}
 	While		{ (_,TkWhile)	}
 
 %left Else RParen
@@ -62,9 +65,17 @@ import Prelude hiding (True, False)
 %%                              
 
 
+type :: { Type }
+type:		TInt		{ TInt }
+    		| TBool		{ TBool }
+		| Ds		{ Ds }
+		| DsElem	{ DsElem }
+
+
 expr :: { Term }
 expr:		Name Assign valexpr							{ Assign $1 $3 }
-		| Name Assign DS							{ DSInit $1 }
+		| type Name Assign valexpr						{ InitAssign $2 $4 $1 }
+		| type Name								{ VarInit $2 $1 }
 		| block									{ $1 }
 		| If valexpr Then expr Else expr 					{ If $2 $4 $6 }
 		| If valexpr Newline Then expr Newline Else expr 			{ If $2 $5 $8 }
