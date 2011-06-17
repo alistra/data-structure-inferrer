@@ -3,6 +3,8 @@ module Il.Parser where
 
 import Il.Lexer
 import Defs.AST
+import Defs.Common
+
 import Prelude hiding (True, False)
 }
 
@@ -28,9 +30,10 @@ import Prelude hiding (True, False)
 	Inc		{ (_,TkInc) 	}
 	Int		{ (_,TkInt $$) 	}
 	LCParen         { (_,TkLCParen)	}
+	LSParen		{ (_,TkLSParen) }
 	LEqual		{ (_,TkLEqual)	}
-	Less		{ (_,TkLess)	}
 	LParen          { (_,TkLParen) 	}
+	Less		{ (_,TkLess)	}
 	Minus		{ (_,TkMinus)  	}
 	Mul           	{ (_,TkMul) 	}
 	Name		{ (_,TkName $$)	}
@@ -40,8 +43,9 @@ import Prelude hiding (True, False)
 	Or              { (_,TkOr)   	}
 	Plus            { (_,TkPlus)  	}
 	RCParen         { (_,TkRCParen) }
+	RSParen		{ (_,TkRSParen) }
 	RParen          { (_,TkRParen) 	}
-	Semicolon       { (_,TkSemicolon) }
+	Semicolon       { (_,TkSemicolon)}
 	Then		{ (_,TkThen) 	}
 	True		{ (_,TkTrue)	}
 	While		{ (_,TkWhile)	}
@@ -96,8 +100,21 @@ valexpr:	Name					{ Var $1 }
 		| valexpr Greater valexpr		{ Gt $1 $3 }
 		| valexpr Less valexpr			{ Lt $1 $3 }
 		| LParen valexpr RParen			{ $2 }
+		| record				{ $1 }
 		| shexpr				{ $1 }
        		
+record :: { Term }
+record:		LSParen RSParen 			{ Record [] }
+      		| LSParen recordintern RSParen		{ Record $2 }
+
+recordintern :: { [(Name, Term)] }
+recordintern: 	recordpair Comma recordintern		{ $1 : $3 }
+	    	| recordpair				{ [$1] }
+
+
+recordpair :: { (Name, Term) }
+recordpair:	Name Assign valexpr			{ ($1, $3) }
+
 block :: { Term }
 block:		LCParen Newline exprlist RCParen	{ Block $3 }
 		| LCParen exprlist RCParen		{ Block $2 }

@@ -39,9 +39,11 @@ tokens :-
 	"="				{ \p s -> tokenWithPos p TkAssign }
     	"("				{ \p s -> tokenWithPos p TkLParen }
 	"{"				{ \p s -> tokenWithPos p TkLCParen }
+	"["				{ \p s -> tokenWithPos p TkLSParen }
 	"<"				{ \p s -> tokenWithPos p TkLess }
 	")"				{ \p s -> tokenWithPos p TkRParen }      
 	"}"				{ \p s -> tokenWithPos p TkRCParen }
+	"]"				{ \p s -> tokenWithPos p TkRSParen }
 	">"				{ \p s -> tokenWithPos p TkGreater }
 	true				{ \p s -> tokenWithPos p TkTrue }
 	$alpha (_ | $digit | $alpha)* 	{ \p s -> tokenWithPos p (TkName s) }
@@ -65,6 +67,7 @@ data BaseToken = TkAnd
 	| TkInt Int
 	| TkLAParen
 	| TkLCParen
+	| TkLSParen
 	| TkLEqual
 	| TkLess
 	| TkLParen 
@@ -78,6 +81,7 @@ data BaseToken = TkAnd
 	| TkPlus 
 	| TkRAParen
 	| TkRCParen
+	| TkRSParen
 	| TkRParen
 	| TkSemicolon 
 	| TkThen

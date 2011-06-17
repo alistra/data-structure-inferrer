@@ -23,6 +23,7 @@ data Term = And Term Term               -- ^ Logical and
             | Mul Term Term             -- ^ Multiplication
             | Not Term                  -- ^ Logical not
             | Or Term Term              -- ^ Logical or
+            | Record [(Name, Term)]     -- ^ Record
             | Sub Term Term             -- ^ Subtraction
             | Sum Term Term             -- ^ Addition
             | While Term Term           -- ^ While loop
