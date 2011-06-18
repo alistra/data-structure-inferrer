@@ -1,6 +1,0 @@
-doc/
-*.hi
-*.o
-Parser.hs
-Lexer.hs
-grammar.log
