@@ -136,14 +136,6 @@
 ></TR
 ><TR
 ><TD CLASS="decl"
->| <A HREF="#v%3ADSInit"
->DSInit</A
-> <A HREF="Defs-Common.html#t%3AName"
->Name</A
-></TD
-></TR
-><TR
-><TD CLASS="decl"
 >| <A HREF="#v%3AEq"
 >Eq</A
 > <A HREF="Defs-AST.html#t%3ATerm"
@@ -224,6 +216,18 @@
 ></TR
 ><TR
 ><TD CLASS="decl"
+>| <A HREF="#v%3AInitAssign"
+>InitAssign</A
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
 >| <A HREF="#v%3ALeq"
 >Leq</A
 > <A HREF="Defs-AST.html#t%3ATerm"
@@ -272,6 +276,16 @@
 ></TR
 ><TR
 ><TD CLASS="decl"
+>| <A HREF="#v%3ARecord"
+>Record</A
+> [(<A HREF="Defs-Common.html#t%3AName"
+>Name</A
+>, <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>)]</TD
+></TR
+><TR
+><TD CLASS="decl"
 >| <A HREF="#v%3ASub"
 >Sub</A
 > <A HREF="Defs-AST.html#t%3ATerm"
@@ -307,6 +321,74 @@
 > <A HREF="Defs-Common.html#t%3AName"
 >Name</A
 ></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3AVarInit"
+>VarInit</A
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+> <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A HREF="#t%3AType"
+>Type</A
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>= <A HREF="#v%3ATInt"
+>TInt</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ATBool"
+>TBool</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADs"
+>Ds</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ADsElem"
+>DsElem</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>| <A HREF="#v%3ATRec"
+>TRec</A
+> [(<A HREF="Defs-Common.html#t%3AName"
+>Name</A
+>, <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>)]</TD
 ></TR
 ></TABLE
 ></TD
@@ -435,21 +517,6 @@
 ></TD
 ><TD CLASS="rdoc"
 >Division
-</TD
-></TR
-><TR
-><TD CLASS="arg"
-><A NAME="v:DSInit"
-><A NAME="v%3ADSInit"
-></A
-></A
-><B
->DSInit</B
-> <A HREF="Defs-Common.html#t%3AName"
->Name</A
-></TD
-><TD CLASS="rdoc"
->Data structure initialization
 </TD
 ></TR
 ><TR
@@ -590,6 +657,25 @@
 ></TR
 ><TR
 ><TD CLASS="arg"
+><A NAME="v:InitAssign"
+><A NAME="v%3AInitAssign"
+></A
+></A
+><B
+>InitAssign</B
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+> <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+></TD
+><TD CLASS="rdoc"
+>Variable declaration and assignment
+</TD
+></TR
+><TR
+><TD CLASS="arg"
 ><A NAME="v:Leq"
 ><A NAME="v%3ALeq"
 ></A
@@ -673,6 +759,23 @@
 ></TR
 ><TR
 ><TD CLASS="arg"
+><A NAME="v:Record"
+><A NAME="v%3ARecord"
+></A
+></A
+><B
+>Record</B
+> [(<A HREF="Defs-Common.html#t%3AName"
+>Name</A
+>, <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>)]</TD
+><TD CLASS="rdoc"
+>Record
+</TD
+></TR
+><TR
+><TD CLASS="arg"
 ><A NAME="v:Sub"
 ><A NAME="v%3ASub"
 ></A
@@ -737,6 +840,23 @@
 >Variable
 </TD
 ></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:VarInit"
+><A NAME="v%3AVarInit"
+></A
+></A
+><B
+>VarInit</B
+> <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+> <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+></TD
+><TD CLASS="rdoc"
+>Variable declaration
+</TD
+></TR
 ></TABLE
 ></TD
 ></TR
@@ -759,6 +879,137 @@
 ><TD CLASS="decl"
 >Show <A HREF="Defs-AST.html#t%3ATerm"
 >Term</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+>  <A NAME="t:Type"
+><A NAME="t%3AType"
+></A
+></A
+><B
+>Type</B
+>  </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="ndoc"
+>Type for the language values
+</TD
+></TR
+><TR
+><TD CLASS="section4"
+>Constructors</TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+><A NAME="v:TInt"
+><A NAME="v%3ATInt"
+></A
+></A
+><B
+>TInt</B
+></TD
+><TD CLASS="rdoc"
+>Integer
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TBool"
+><A NAME="v%3ATBool"
+></A
+></A
+><B
+>TBool</B
+></TD
+><TD CLASS="rdoc"
+>Boolean
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:Ds"
+><A NAME="v%3ADs"
+></A
+></A
+><B
+>Ds</B
+></TD
+><TD CLASS="rdoc"
+>Data structure reference
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:DsElem"
+><A NAME="v%3ADsElem"
+></A
+></A
+><B
+>DsElem</B
+></TD
+><TD CLASS="rdoc"
+>Data structure element reference
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+><A NAME="v:TRec"
+><A NAME="v%3ATRec"
+></A
+></A
+><B
+>TRec</B
+> [(<A HREF="Defs-Common.html#t%3AName"
+>Name</A
+>, <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>)]</TD
+><TD CLASS="rdoc"
+>Record
+</TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:Type')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:Type" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>Eq <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+>Show <A HREF="Defs-AST.html#t%3AType"
+>Type</A
 ></TD
 ></TR
 ></TABLE
