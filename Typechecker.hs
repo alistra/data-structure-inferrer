@@ -21,6 +21,7 @@ typecheckB :: [Term] -> Typechecker [Maybe Type]
 typecheckB = mapM typecheckT
   
 -- | Assert a type to a term, raise an error otherwise
+assertType :: Term -> Type -> Typechecker ()
 assertType t1 tp2 = do
     tp1' <- typecheckT t1
     case tp1' of
