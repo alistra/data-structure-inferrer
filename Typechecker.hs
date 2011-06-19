@@ -46,6 +46,15 @@ typecheckF f ts = do
         -- DsElem operations
         ("update", DsElem) -> return Nothing
         ("delete", DsElem) -> return Nothing
+        (_, _) -> return Nothing
+
+-- | Typecheck one field of the record
+typecheckR :: (Name, Term) -> Typechecker (Name, Type)
+typecheckR (n, t) = do
+    tp <- typecheckT t
+    case tp of
+        Nothing -> error $ "Type error: " ++ (show t) ++ " returning no value in a record field"
+        Just tp1 -> return (n, tp1)
 
 -- | Typecheck a term, 'Nothing' symbolizes the expressions without a value
 typecheckT :: Term -> Typechecker (Maybe Type)
@@ -149,6 +158,9 @@ typecheckT (Or t1 t2) = do
     assertType t1 TBool
     assertType t2 TBool
     return $ Just TBool
+
+typecheckT (Record rs) = do
+    mapM typecheckR rs >>= return . Just . TRec
 
 typecheckT (Sub t1 t2) = do
     assertType t1 TInt

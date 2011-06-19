@@ -77,7 +77,7 @@ trecordintern:	trecordpair Comma trecordintern { $1 : $3 }
 	     	| trecordpair 			{ [$1] }
 
 trecordpair :: { (Name, Type) }
-trecordpair:	Name type 			{ ($1, $2) }
+trecordpair:	type Name 			{ ($2, $1) }
 
 expr :: { Term }
 expr:		Name Assign valexpr							{ Assign $1 $3 }

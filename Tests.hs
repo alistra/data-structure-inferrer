@@ -7,6 +7,7 @@ import Il.Parser
 import Defs.Common
 
 import Analyzer
+import Typechecker
 
 import System.IO
 import System.Directory
@@ -44,5 +45,10 @@ openTestFile name = catch (openFile name ReadMode) (\_ -> error $ "Cann
         
 -- | Lexes, parses, analyzes and pretty prints test results
 test :: String -> IO()
-test = printRecommendationFromAnalysis.analyze.parse.lex
+test src = do
+    let ast = (parse.lex) src
+    let tps = typecheckP ast
+    print tps
+    (printRecommendationFromAnalysis.analyze) ast
+    return ()
 

@@ -1,5 +1,6 @@
 ds d1
 ds d2
+int i
 
 for(i = 0; i < 20; i++)
 {
