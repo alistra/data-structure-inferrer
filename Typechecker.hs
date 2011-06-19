@@ -2,18 +2,25 @@ module Typechecker where
 
 import Defs.Common
 import Defs.AST
+
 import Control.Monad.State
+import Data.Maybe
+
+-- | Variables and their types
 type TypeContext = [(Name, Type)]
+
+-- | State monad to remember the 'TypeContext'
 type Typechecker a = State TypeContext a
 
-{-
-typecheckP :: [Term] -> Bool
-typecheckP ts = evalState (mapM typecheckT ts) [] -- check is there a Just element
+-- | Runs the typechecker on the program
+typecheckP :: [Term] -> [Maybe Type]
+typecheckP ts = evalState (mapM typecheckT ts) []
 
-typecheckB :: [Term] -> [Maybe Type]
+-- | Typecheck a term block
+typecheckB :: [Term] -> Typechecker [Maybe Type]
 typecheckB = mapM typecheckT
--}
-
+  
+-- | Assert a type to a term, raise an error otherwise
 assertType t1 tp2 = do
     tp1' <- typecheckT t1
     case tp1' of
@@ -22,6 +29,24 @@ assertType t1 tp2 = do
             else return ()
         Nothing -> error $ "Type error: " ++ (show t1) ++ " does not return a value, should return " ++ (show tp2)
 
+-- | Typecheck a function call
+typecheckF :: Name -> [Term] -> Typechecker (Maybe Type)
+typecheckF f [] = return Nothing
+typecheckF f ts = do
+    tps <- typecheckB ts
+    case (f, fromJust $ head tps) of
+        -- Ds operations
+        ("update", Ds) -> return Nothing
+        ("insert", Ds) -> return $ Just DsElem
+        ("delete", Ds) -> return Nothing
+        ("max", Ds) -> return $ Just DsElem
+        ("min", Ds) -> return $ Just DsElem
+        ("delete_max", Ds) -> return $ Just DsElem
+        -- DsElem operations
+        ("update", DsElem) -> return Nothing
+        ("delete", DsElem) -> return Nothing
+
+-- | Typecheck a term
 typecheckT :: Term -> Typechecker (Maybe Type)
 typecheckT (And t1 t2) = do
     assertType t1 TBool
@@ -37,7 +62,7 @@ typecheckT (Assign v t1) = do
         Nothing -> error $ "Variable " ++ v ++ " not initialized"
 
 typecheckT (Block ts) = do
---  typecheckB ts
+    typecheckB ts
     return Nothing
 
 typecheckT (Dec v) = do
@@ -63,9 +88,9 @@ typecheckT (For t1 t2 t3 t4) = do
     typecheckT t3
     typecheckT t4
     return Nothing
-{-
-typecheckT (Funcall f ts) =
--}
+
+typecheckT (Funcall f ts) = typecheckF f ts
+    
 typecheckT (Geq t1 t2) = do
     assertType t1 TInt
     assertType t2 TInt
