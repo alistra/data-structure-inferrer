@@ -46,7 +46,7 @@ typecheckF f ts = do
         ("update", DsElem) -> return Nothing
         ("delete", DsElem) -> return Nothing
 
--- | Typecheck a term
+-- | Typecheck a term, 'Nothing' symbolizes the expressions without a value
 typecheckT :: Term -> Typechecker (Maybe Type)
 typecheckT (And t1 t2) = do
     assertType t1 TBool
