@@ -55,8 +55,275 @@
 ></TD
 ></TR
 ><TR
+><TD CLASS="section1"
+>Synopsis</TD
+></TR
+><TR
 ><TD CLASS="s15"
 ></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A HREF="#t%3ATypeContext"
+>TypeContext</A
+> = [(<A HREF="Defs-Common.html#t%3AName"
+>Name</A
+>, <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>)]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A HREF="#t%3ATypechecker"
+>Typechecker</A
+> a = State <A HREF="Typechecker.html#t%3ATypeContext"
+>TypeContext</A
+> a</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AtypecheckP"
+>typecheckP</A
+> :: [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>] -&gt; [Maybe <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AtypecheckB"
+>typecheckB</A
+> :: [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>] -&gt; <A HREF="Typechecker.html#t%3ATypechecker"
+>Typechecker</A
+> [Maybe <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>]</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AtypecheckF"
+>typecheckF</A
+> :: <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+> -&gt; [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>] -&gt; <A HREF="Typechecker.html#t%3ATypechecker"
+>Typechecker</A
+> (Maybe <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>)</TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AtypecheckT"
+>typecheckT</A
+> :: <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> -&gt; <A HREF="Typechecker.html#t%3ATypechecker"
+>Typechecker</A
+> (Maybe <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>)</TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Documentation</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A NAME="t:TypeContext"
+><A NAME="t%3ATypeContext"
+></A
+></A
+><B
+>TypeContext</B
+> = [(<A HREF="Defs-Common.html#t%3AName"
+>Name</A
+>, <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>)]</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Variables and their types
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>type</SPAN
+> <A NAME="t:Typechecker"
+><A NAME="t%3ATypechecker"
+></A
+></A
+><B
+>Typechecker</B
+> a = State <A HREF="Typechecker.html#t%3ATypeContext"
+>TypeContext</A
+> a</TD
+></TR
+><TR
+><TD CLASS="doc"
+>State monad to remember the <TT
+><A HREF="Typechecker.html#t%3ATypeContext"
+>TypeContext</A
+></TT
+>
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:typecheckP"
+><A NAME="v%3AtypecheckP"
+></A
+></A
+><B
+>typecheckP</B
+> :: [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>] -&gt; [Maybe <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>]</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Runs the typechecker on the program
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:typecheckB"
+><A NAME="v%3AtypecheckB"
+></A
+></A
+><B
+>typecheckB</B
+> :: [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>] -&gt; <A HREF="Typechecker.html#t%3ATypechecker"
+>Typechecker</A
+> [Maybe <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>]</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Typecheck a term block
+</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:typecheckF"
+><A NAME="v%3AtypecheckF"
+></A
+></A
+><B
+>typecheckF</B
+> :: <A HREF="Defs-Common.html#t%3AName"
+>Name</A
+> -&gt; [<A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+>] -&gt; <A HREF="Typechecker.html#t%3ATypechecker"
+>Typechecker</A
+> (Maybe <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>)</TD
+></TR
+><TR
+><TD CLASS="doc"
+><P
+>Assert a type to a term, raise an error otherwise
+</P
+><P
+>Typecheck a function call
+</P
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v:typecheckT"
+><A NAME="v%3AtypecheckT"
+></A
+></A
+><B
+>typecheckT</B
+> :: <A HREF="Defs-AST.html#t%3ATerm"
+>Term</A
+> -&gt; <A HREF="Typechecker.html#t%3ATypechecker"
+>Typechecker</A
+> (Maybe <A HREF="Defs-AST.html#t%3AType"
+>Type</A
+>)</TD
+></TR
+><TR
+><TD CLASS="doc"
+>Typecheck a term, <TT
+>Nothing</TT
+> symbolizes the expressions without a value
+</TD
 ></TR
 ><TR
 ><TD CLASS="s15"
