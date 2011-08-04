@@ -1,9 +1,12 @@
-ds d1
-
-for(i = 0; i < 20; i++)
+int main()
 {
-	insert(d1, i)
-	update(d1, i, 2*i)
-}
+	ds d1
 
-print(max(d1))
+	for(i = 0; i < 20; i++)
+	{
+		insert(d1, i)
+		update(d1, i, 2*i)
+	}
+
+	print(max(d1))
+}
