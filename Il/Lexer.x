@@ -27,7 +27,8 @@ tokens :-
 	dsElem				{ \p s -> tokenWithPos p TkDsElem }
 	int				{ \p s -> tokenWithPos p TkTInt }
 	bool				{ \p s -> tokenWithPos p TkTBool }
-    	"++"				{ \p s -> tokenWithPos p TkInc }
+	void				{ \p s -> tokenWithPos p TkTVoid }
+	"++"				{ \p s -> tokenWithPos p TkInc }
     	"+"				{ \p s -> tokenWithPos p TkPlus }
     	"--"				{ \p s -> tokenWithPos p TkDec }
     	"-"				{ \p s -> tokenWithPos p TkMinus }
@@ -92,6 +93,7 @@ data BaseToken = TkAnd
 	| TkTrue
 	| TkTInt
 	| TkTBool
+	| TkTVoid
 	| TkWhile
 	deriving (Show, Eq)
           

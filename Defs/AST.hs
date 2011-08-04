@@ -3,6 +3,10 @@ module Defs.AST where
 
 import Defs.Common
 
+-- | Type for function definitions
+data Function = FunDef Name Type [(Type, Name)] Term
+            deriving (Show, Eq)
+
 -- | Type for language operations
 data Term = And Term Term               -- ^ Logical and
             | Assign Name Term          -- ^ Variable assignment
@@ -34,6 +38,7 @@ data Term = And Term Term               -- ^ Logical and
 -- | Type for the language values
 data Type = TInt                    -- ^ Integer
             | TBool                 -- ^ Boolean
+            | TVoid                 -- ^ Void
             | Ds                    -- ^ Data structure reference
             | DsElem                -- ^ Data structure element reference
             | TRec [(Name, Type)]   -- ^ Record

@@ -9,6 +9,7 @@ import Prelude hiding (True, False)
 }
 
 %name parse exprlist
+%name parseFun funlist
 
 %tokentype { Token }
 %error     { parseError }
@@ -51,6 +52,7 @@ import Prelude hiding (True, False)
 	True		{ (_,TkTrue)	}
 	TInt		{ (_,TkTInt)	}
 	TBool		{ (_,TkTBool)	}
+	TVoid		{ (_,TkTVoid)	}
 	While		{ (_,TkWhile)	}
 
 %left Else RParen
@@ -62,11 +64,25 @@ import Prelude hiding (True, False)
 %left Mul Div
 %nonassoc Inc Dec
 %nonassoc Newline
-%%                              
+%%                    
 
+funlist :: { [Function] }
+funlist:	fundef funlist			{ $1:$2 }
+funlist:	fundef Newline funlist		{ $1:$3 }
+		| 				{ [] }
+
+fundef :: { Function }
+fundef:		type Name LParen argdef RParen block		{ FunDef $2 $1 $4 $6 }
+		| type Name LParen argdef RParen Newline block	{ FunDef $2 $1 $4 $7 }
+
+argdef :: { [(Type, Name)] }
+argdef:		type Name Comma argdef		{ ($1, $2):$4 }
+      		| type Name			{ [($1, $2)] }
+		| 				{ [] }
 
 type :: { Type }
-type:		TInt				{ TInt }
+type:		TVoid				{ TVoid }
+    		| TInt				{ TInt }
     		| TBool				{ TBool }
 		| Ds				{ Ds }
 		| DsElem			{ DsElem }
