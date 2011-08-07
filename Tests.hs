@@ -46,9 +46,9 @@ openTestFile name = catch (openFile name ReadMode) (\_ -> error $ "Cann
 -- | Lexes, parses, analyzes and pretty prints test results
 test :: String -> IO()
 test src = do
-    let ast = (parse.lex) src
-    let tps = typecheckP ast
-    print tps
-    (printRecommendationFromAnalysis.analyze) ast
+    let fns = (parse.lex) src
+--    let tps = map typecheckF fns
+--    print tps
+    (printRecommendationFromAnalysis.analyze) fns
     return ()
 

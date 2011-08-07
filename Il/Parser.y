@@ -8,8 +8,7 @@ import Defs.Common
 import Prelude hiding (True, False)
 }
 
-%name parse exprlist
-%name parseFun funlist
+%name parse funlist
 
 %tokentype { Token }
 %error     { parseError }

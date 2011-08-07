@@ -13,13 +13,18 @@ import Control.Arrow
 import Control.Monad.State
 
 -- | Data structure analysis info type
-data DSInfo =   DSI { getDSIVarName :: Name,    -- ^ Variable holding the data structure
+data DSInfo =   DSI { getDSIName :: Name,    -- ^ Variable holding the data structure
                     isStatic :: Bool,           -- ^ Is the variable static or dynamic
-                    getUses :: [DSUse]          -- ^ Data structure use cases
+                    getDSU :: [DSUse]           -- ^ Data structure use cases
+                    } deriving (Show, Eq)
+
+data DSFun = DSF {  getDSFName :: Name,
+                    getDSFCalls :: [Function],
+                    getDSFDSU :: [DSUse]
                     } deriving (Show, Eq)
 
 -- | Data structure use case type
-data DSUse =    DSU { getDSUOpName :: OperationName,-- ^ Operation used
+data DSUse =    DSU { getDSUName :: OperationName,  -- ^ Operation used
                     isHeavilyUsed :: Bool,          -- ^ Is it heavily used
                     isUserDependent :: Bool         -- ^ Is it dependent on some external input (user, network, random, signals, etc.)
                     } deriving (Show, Eq)
@@ -27,8 +32,14 @@ data DSUse =    DSU { getDSUOpName :: OperationName,-- ^ Operation used
 -- | List of pairs: variable name, use case
 type AnalyzerOutput = [(Name, DSUse)]
 
--- | State monad with 'Context' state returning 'AnalyzerOutput'
-type Analyzer = State [Name] AnalyzerOutput
+-- | State monad with 'AnalyzerState' 
+type Analyzer a = State AnalyzerState a
+
+-- | State containing function names defined in and current variables declared
+data AnalyzerState = AS { getStateFunNames :: FunNames, getStateContext :: Context }
+
+-- | Type for storing the function names defined in a program
+type FunNames = [Name]
 
 -- | Analyzer context containing variable names with data structures
 type Context = [Name]
@@ -36,29 +47,31 @@ type Context = [Name]
 setHeavyUsage (DSU opname _ ud) = DSU opname True ud
 setUserDependance (DSU opname hu _) = DSU opname hu True
 
--- | Pretty printer for the analyzer effects
-printRecommendationFromAnalysis :: [DSInfo] -> IO()
-printRecommendationFromAnalysis = mapM_ printDSI 
-
 -- | Pretty print single 'DSInfo' 
 printDSI :: DSInfo -> IO()
 printDSI dsi = do
     putStr "The recommended structure for "
     redColor
-    putStr $ getDSIVarName dsi
+    putStr $ getDSIName dsi
     resetColor 
     putStrLn " is:"
     cyanColor
     recommendedDS >>= print
     resetColor where
         recommendedDS = do 
-            let opns = map getDSUOpName $ getUses dsi
+            let opns = map getDSUName $ getDSU dsi
             recommendDS opns
 
--- | Run the analyzer
-analyze :: [Term] -> [DSInfo]
-analyze = generateDSI . generateDSU 
+-- | Pretty printer for the analyzer effects
+printRecommendationFromAnalysis :: [DSInfo] -> IO()
+printRecommendationFromAnalysis = mapM_ printDSI 
 
+-- | Runs everything that is needed to analyze a program
+analyze :: [Function] -> [DSInfo]
+analyze fns = let   fnns = map getFunName fns
+                    fnsDSU = zip fns (map (\x -> generateDSU fnns x) fns) in
+                    generateDSI $ concatMap snd fnsDSU
+      
 -- | Generate 'DSInfo's for each data structure in the program
 generateDSI :: AnalyzerOutput -> [DSInfo]
 generateDSI allDSU@((name, _):dsus) = let (sameName, otherNames) = partition (\x -> fst x == name) allDSU in
@@ -68,7 +81,7 @@ generateDSI [] = []
 -- | Generate single 'DSInfo' from 'DSUse's of on data structure
 generateSingleDSI :: AnalyzerOutput -> DSInfo
 generateSingleDSI allNDSU@((name, _):_) = DSI name static cleanDSU where
-    mergeDSU allDSU@(dsu:dsus) = let (sameOp, otherOps) = partition (\x -> getDSUOpName x == getDSUOpName dsu) allDSU in
+    mergeDSU allDSU@(dsu:dsus) = let (sameOp, otherOps) = partition (\x -> getDSUName x == getDSUName dsu) allDSU in
         mergeSingleDSU sameOp : mergeDSU otherOps
     mergeDSU [] = []
     mergeSingleDSU = foldl1 (\(DSU name1 hu1 ud1) (DSU name2 hu2 ud2) -> DSU name1 (hu1 || hu2) (ud1 || ud2))
@@ -76,64 +89,74 @@ generateSingleDSI allNDSU@((name, _):_) = DSI name static cleanDSU where
     static = True
 
 -- | Start the state monad to gather 'DSUse's from the AST
-generateDSU :: [Term] -> AnalyzerOutput
-generateDSU ts = evalState (foldlTerms step [] ts) []
+generateDSU :: [Name] -> Function -> AnalyzerOutput
+generateDSU fnns fn = evalState (foldlTerms step [] ([getFunBody fn])) (AS fnns [])
 
 -- | Analyze the terms using the state monad
-generateContextDSU :: [Term] -> Analyzer
+generateContextDSU :: [Term] -> Analyzer AnalyzerOutput
 generateContextDSU = foldlTerms step [] where
 
 -- | Foldl 'Term's using the 'step' function to generate 'AnalyzerOutput'
-foldlTerms :: (AnalyzerOutput -> Term -> State Context AnalyzerOutput) -> AnalyzerOutput -> [Term] -> State Context AnalyzerOutput 
+foldlTerms :: (AnalyzerOutput -> Term -> Analyzer AnalyzerOutput) -> AnalyzerOutput -> [Term] -> Analyzer AnalyzerOutput
 foldlTerms f start [] = return start
 foldlTerms f start (r:rest) = do 
     dsus <- f start r
     foldlTerms f dsus rest
 
+-- | Function putting a variable definition in the context
+putVar :: Name -> Analyzer ()
+putVar name = do
+    state <- get 
+    put $ AS (getStateFunNames state) (name:(getStateContext state))
+
+-- | Function returning 'True' if the variable is already defined
+getVar :: Name -> AnalyzerState -> Bool
+getVar name state = name `elem` getStateContext state
+
 -- | Folding step generating 'DSUse's
-step :: AnalyzerOutput -> Term -> Analyzer
+step :: AnalyzerOutput -> Term -> Analyzer AnalyzerOutput
 
 step dsus (Block body) = do
     newDSU <- generateContextDSU body
     return $ dsus ++ newDSU
 
 step dsus (VarInit name Ds) = do
-    ctx <- get
-    if name `elem` ctx 
+    s <- get
+    if getVar name s
         then error $ name ++ " already initialized"
-        else put (name:ctx) >> return dsus 
+        else putVar name >> return dsus 
 
 step dsus (VarInit name _) = return dsus
 
 step dsus (InitAssign name term Ds) = do
-    ctx <- get
-    if name `elem` ctx 
+    s <- get
+    if getVar name s
         then error $ name ++ " already initialized"
-        else put (name:ctx) >> return dsus 
+        else putVar name >> return dsus 
 
 step dsus (InitAssign name term _ ) = return dsus
 
 step dsus (While cond body) = do
     newDSU <- generateContextDSU [cond,body] 
-    return $ dsus ++ map (Control.Arrow.second setHeavyUsage) newDSU
+    return $ dsus ++ map (Control.Arrow.second setHeavyUsage) newDSU -- FIXME
 
 step dsus (Funcall name args) = do 
+    s <- get 
     let opname = case name of
             "insert"        -> Just InsertVal
             "find"          -> Just FindByVal
             "update"        -> Just UpdateByRef -- FIXME
             "max"           -> Just ExtremalVal
             "delete_max"    -> Just DeleteExtremalVal
-            _               -> Nothing
-
+            _               -> Nothing 
+                                                -- FIXME add reading the function calls
     argDsus <- generateContextDSU args
 
     funcallDsu <- case opname of
             Nothing ->  return []
             Just op ->  case head args of
                             Var varname -> do
-                                ctx <- get
-                                if varname `elem` ctx 
+                                if getVar varname s
                                     then return  [(varname, DSU op False False)]
                                     else error $ varname ++ " not initialized before use in function " ++ name
                             _           -> error "Not implemented yet"
@@ -142,17 +165,17 @@ step dsus (Funcall name args) = do
 
 step dsus (If cond t1 t2) = do
     dsuCond <- generateContextDSU [cond]
-    oldCtx <- get
+    oldState <- get 
 
     dsuT1 <- generateContextDSU [t1]
-    ctxT1 <- get
+    stateT1 <- get 
 
-    put oldCtx
+    put oldState
 
     dsuT2 <- generateContextDSU  [t2]
-    ctxT2 <- get
+    stateT2 <- get 
 
-    put $ union ctxT1 ctxT2
+    put $ AS (getStateFunNames stateT1) (union (getStateContext stateT1) (getStateContext stateT2)) 
     return $ dsus ++ concat [dsuCond, dsuT1, dsuT2]
 
 step dsus _ = return dsus
