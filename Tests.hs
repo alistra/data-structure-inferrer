@@ -47,8 +47,8 @@ openTestFile name = catch (openFile name ReadMode) (\_ -> error $ "Cann
 test :: String -> IO()
 test src = do
     let fns = (parse.lex) src
---    let tps = map typecheckF fns
---    print tps
+    let tps = typecheckP fns
+    mapM_ print tps
     (printRecommendationFromAnalysis.analyze) fns
     return ()
 

@@ -13,8 +13,8 @@ type TypeContext = [(Name, Type)]
 type Typechecker a = State TypeContext a
 
 -- | Runs the typechecker on the program
-typecheckP :: [Term] -> [Maybe Type]
-typecheckP ts = evalState (mapM typecheckT ts) []
+typecheckP :: [Function] -> [[Maybe Type]]
+typecheckP fns = map (\fn -> evalState (typecheckF fn) []) fns
 
 -- | Typecheck a term block
 typecheckB :: [Term] -> Typechecker [Maybe Type]
@@ -30,10 +30,16 @@ assertType t1 tp2 = do
             else return ()
         Nothing -> error $ "Type error: " ++ (show t1) ++ " does not return a value, should return " ++ (show tp2)
 
+-- | Typecheck a function definition
+typecheckF :: Function -> Typechecker [Maybe Type]
+typecheckF (FunDef name tp args (Block body)) = typecheckB body
+    -- FIXME check return type
+    
+
 -- | Typecheck a function call
-typecheckF :: Name -> [Term] -> Typechecker (Maybe Type)
-typecheckF f [] = return Nothing
-typecheckF f ts = do
+typecheckFC :: Name -> [Term] -> Typechecker (Maybe Type)
+typecheckFC f [] = return Nothing
+typecheckFC f ts = do
     tps <- typecheckB ts
     case (f, fromJust $ head tps) of
         -- Ds operations
@@ -99,7 +105,7 @@ typecheckT (For t1 t2 t3 t4) = do
     typecheckT t4
     return Nothing
 
-typecheckT (Funcall f ts) = typecheckF f ts
+typecheckT (Funcall f ts) = typecheckFC f ts
     
 typecheckT (Geq t1 t2) = do
     assertType t1 TInt
