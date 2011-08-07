@@ -18,6 +18,7 @@ tokens :-
 	then				{ \p s -> tokenWithPos p TkThen }
 	else				{ \p s -> tokenWithPos p TkElse }
 	false				{ \p s -> tokenWithPos p TkFalse }
+	return				{ \p s -> tokenWithPos p TkReturn }
 	true				{ \p s -> tokenWithPos p TkTrue }
 	for				{ \p s -> tokenWithPos p TkFor }
 	while				{ \p s -> tokenWithPos p TkWhile }
@@ -84,6 +85,7 @@ data BaseToken = TkAnd
 	| TkNull
 	| TkOr 
 	| TkPlus 
+	| TkReturn
 	| TkRAParen
 	| TkRCParen
 	| TkRSParen

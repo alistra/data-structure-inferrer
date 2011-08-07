@@ -27,6 +27,7 @@ data Term = And Term Term               -- ^ Logical and
             | Not Term                  -- ^ Logical not
             | Or Term Term              -- ^ Logical or
             | Record [(Name, Term)]     -- ^ Record
+            | Return Term               -- ^ Return a value from a function
             | Sub Term Term             -- ^ Subtraction
             | Sum Term Term             -- ^ Addition
             | While Term Term           -- ^ While loop

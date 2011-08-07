@@ -45,6 +45,7 @@ import Prelude hiding (True, False)
 	Plus            { (_,TkPlus)  	}
 	RCParen         { (_,TkRCParen) }
 	RSParen		{ (_,TkRSParen) }
+	Return		{ (_,TkReturn)	}
 	RParen          { (_,TkRParen) 	}
 	Semicolon       { (_,TkSemicolon)}
 	Then		{ (_,TkThen) 	}
@@ -105,6 +106,7 @@ expr:		Name Assign valexpr							{ Assign $1 $3 }
 		| For LParen expr Semicolon valexpr Semicolon expr RParen Newline expr 	{ While $5 (Block [$3, $7, $10]) }
 		| While LParen valexpr RParen expr					{ While $3 $5 }
 		| While LParen valexpr RParen Newline expr				{ While $3 $6 }
+		| Return valexpr							{ Return $2 }
 		| shexpr								{ $1 }
 
 shexpr :: { Term }
