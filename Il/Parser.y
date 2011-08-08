@@ -75,9 +75,9 @@ fundef :: { Function }
 fundef:		type Name LParen argdef RParen block		{ FunDef $2 $1 $4 $6 }
 		| type Name LParen argdef RParen Newline block	{ FunDef $2 $1 $4 $7 }
 
-argdef :: { [(Type, Name)] }
-argdef:		type Name Comma argdef		{ ($1, $2):$4 }
-      		| type Name			{ [($1, $2)] }
+argdef :: { [(Name, Type)] }
+argdef:		type Name Comma argdef		{ ($2, $1):$4 }
+      		| type Name			{ [($2, $1)] }
 		| 				{ [] }
 
 type :: { Type }
