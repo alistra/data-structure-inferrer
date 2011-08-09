@@ -6,15 +6,15 @@ import Defs.AST
 import Control.Monad.State
 import Data.Maybe
 
--- | Variables with types and return value for a function
-data TypeState = TS { getStateReturn :: Type, getStateVariables :: [(Name, Type)] }
+-- | Variables with types, return value for a function, other declared functions
+data TypeState = TS { getStateReturn :: Type, getStateFunctions :: [Function], getStateVariables :: [(Name, Type)] } 
 
 -- | State monad to remember the 'TypeState'
 type Typechecker a = State TypeState a
 
 -- | Runs the typechecker on the program 
 typecheckP :: [Function] -> [[Maybe Type]]
-typecheckP fns = map typecheckF fns
+typecheckP fns = map (typecheckF $ fns)  fns
 
 -- | Typecheck a term block
 typecheckB :: [Term] -> Typechecker [Maybe Type]
@@ -31,11 +31,11 @@ assertType t1 tp2 = do
         Nothing -> error $ "Type error: " ++ (show t1) ++ " does not return a value, should return " ++ (show tp2)
 
 -- | Typecheck a function definition
-typecheckF :: Function -> [Maybe Type]
-typecheckF (FunDef name tp args (Block body)) = evalState (typecheckB body) (TS tp args)
+typecheckF :: [Function] ->  Function -> [Maybe Type]
+typecheckF fns (FunDef name tp args (Block body)) = evalState (typecheckB body) (TS tp fns args)
 
 -- | Typecheck a function call
-typecheckFC :: Name -> [Term] -> Typechecker (Maybe Type)
+typecheckFC :: Name -> [Term] -> Typechecker (Maybe Type) --FIXME function declaration make use of
 typecheckFC f [] = return Nothing
 typecheckFC f ts = do
     tps <- typecheckB ts
@@ -50,7 +50,7 @@ typecheckFC f ts = do
         -- DsElem operations
         ("update", DsElem) -> return Nothing
         ("delete", DsElem) -> return Nothing
-        (_, _) -> return Nothing
+        (_, _) -> error $ "Not known function" ++ (show f)
 
 -- | Typecheck one field of the record
 typecheckR :: (Name, Term) -> Typechecker (Name, Type)
@@ -140,7 +140,7 @@ typecheckT (InitAssign v t tp) = do
     case lookup v tcx of
         Just tp1 -> error $ "Variable " ++ v ++ " already initialized with type " ++ (show tp1)
         Nothing -> do
-            put $ TS (getStateReturn s) ((v,tp):tcx)
+            put $ TS (getStateReturn s) (getStateFunctions s) ((v,tp):tcx)
             return Nothing
 
 typecheckT (Leq t1 t2) = do
@@ -204,6 +204,6 @@ typecheckT (VarInit v tp) = do
     case lookup v tcx of
         Just tp -> error $ "Variable " ++ v ++ " already initialized with type " ++ (show tp)
         Nothing -> do
-            put $ TS (getStateReturn s) ((v,tp):tcx)
+            put $ TS (getStateReturn s) (getStateFunctions s) ((v,tp):tcx)
             return Nothing
     

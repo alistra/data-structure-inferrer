@@ -6,6 +6,7 @@ import Defs.Structures
 import Defs.Common
 import Defs.AST
 
+import Typechecker
 import Recommend
 
 import Data.List
@@ -69,6 +70,7 @@ printRecommendationFromAnalysis = mapM_ printDSI
 -- | Runs everything that is needed to analyze a program
 analyze :: [Function] -> [DSInfo]
 analyze fns = let   fnns = map getFunName fns
+                    fnts = typecheckP fns
                     fnsDSU = zip fns (map (\x -> generateDSU fnns x) fns) in
                     generateDSI $ concatMap snd fnsDSU
       
