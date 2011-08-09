@@ -71,7 +71,7 @@ printRecommendationFromAnalysis = mapM_ printDSI
 analyze :: [Function] -> [DSInfo]
 analyze fns = let   fnns = map getFunName fns
                     fnts = typecheckP fns
-                    fnsDSU = zip fns (map (\x -> generateDSU fnns x) fns) in
+                    fnsDSU = zip fns (map (generateDSU fnns) fns) in
                     generateDSI $ concatMap snd fnsDSU
       
 -- | Generate 'DSInfo's for each data structure in the program
@@ -92,7 +92,7 @@ generateSingleDSI allNDSU@((name, _):_) = DSI name static cleanDSU where
 
 -- | Start the state monad to gather 'DSUse's from the AST
 generateDSU :: [Name] -> Function -> AnalyzerOutput
-generateDSU fnns fn = evalState (foldlTerms step [] ([getFunBody fn])) (AS fnns [])
+generateDSU fnns fn = evalState (foldlTerms step [] [getFunBody fn]) (AS fnns [])
 
 -- | Analyze the terms using the state monad
 generateContextDSU :: [Term] -> Analyzer AnalyzerOutput
@@ -157,9 +157,8 @@ step dsus (Funcall name args) = do
     funcallDsu <- case opname of
             Nothing ->  return []
             Just op ->  case head args of
-                            Var varname -> do
-                                if getVar varname s
-                                    then return  [(varname, DSU op False False)]
+                            Var varname -> if getVar varname s
+                                    then return [(varname, DSU op False False)]
                                     else error $ varname ++ " not initialized before use in function " ++ name
                             _           -> error "Not implemented yet"
 

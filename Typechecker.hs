@@ -4,6 +4,7 @@ import Defs.Common
 import Defs.AST
 
 import Control.Monad.State
+import Control.Monad
 import Data.Maybe
 
 -- | Variables with types, return value for a function, other declared functions
@@ -14,7 +15,7 @@ type Typechecker a = State TypeState a
 
 -- | Runs the typechecker on the program 
 typecheckP :: [Function] -> [[Maybe Type]]
-typecheckP fns = map (typecheckF $ fns)  fns
+typecheckP fns = map (typecheckF fns)  fns
 
 -- | Typecheck a term block
 typecheckB :: [Term] -> Typechecker [Maybe Type]
@@ -25,10 +26,8 @@ assertType :: Term -> Type -> Typechecker ()
 assertType t1 tp2 = do
     tp1' <- typecheckT t1
     case tp1' of
-        Just tp1 ->  if tp1 /= tp2
-            then error $ "Type error: " ++ (show t1) ++ " is type " ++ (show tp1) ++ ", should be" ++ (show tp2)
-            else return ()
-        Nothing -> error $ "Type error: " ++ (show t1) ++ " does not return a value, should return " ++ (show tp2)
+        Just tp1 -> when (tp1 /= tp2) (error $ "Type error: " ++ show t1 ++ " is type " ++ show tp1 ++ ", should be" ++ show tp2)
+        Nothing -> error $ "Type error: " ++ show t1 ++ " does not return a value, should return " ++ show tp2
 
 -- | Typecheck a function definition
 typecheckF :: [Function] ->  Function -> [Maybe Type]
@@ -50,14 +49,14 @@ typecheckFC f ts = do
         -- DsElem operations
         ("update", DsElem) -> return Nothing
         ("delete", DsElem) -> return Nothing
-        (_, _) -> error $ "Not known function" ++ (show f)
+        (_, _) -> error $ "Not known function" ++ show f
 
 -- | Typecheck one field of the record
 typecheckR :: (Name, Term) -> Typechecker (Name, Type)
 typecheckR (n, t) = do
     tp <- typecheckT t
     case tp of
-        Nothing -> error $ "Type error: " ++ (show t) ++ " returning no value in a record field"
+        Nothing -> error $ "Type error: " ++ show t ++ " returning no value in a record field"
         Just tp1 -> return (n, tp1)
 
 -- | Typecheck a term, 'Nothing' symbolizes the expressions without a value
@@ -85,8 +84,8 @@ typecheckT (Dec v) = do
     let tcx = getStateVariables s
     case lookup v tcx of
         Just TInt -> return $ Just TInt
-        Just tp | tp /= TInt -> error $ "Type error: " ++ v ++ " has type " ++ (show tp) ++ "instead of " ++ (show TInt)
-        Nothing -> error $ "Type error: " ++ v ++ " is not initilized, should be initialized as " ++ (show TInt)
+        Just tp | tp /= TInt -> error $ "Type error: " ++ v ++ " has type " ++ show tp ++ "instead of " ++ show TInt
+        Nothing -> error $ "Type error: " ++ v ++ " is not initilized, should be initialized as " ++ show TInt
 
 typecheckT (Div t1 t2) = do
     assertType t1 TInt
@@ -128,8 +127,8 @@ typecheckT (Inc v) = do
     let tcx = getStateVariables s
     case lookup v tcx of
         Just TInt -> return $ Just TInt
-        Just tp | tp /= TInt -> error $ "Type error: " ++ v ++ " has type " ++ (show tp) ++ "instead of " ++ (show TInt)
-        Nothing -> error $ "Type error: " ++ v ++ " is not initilized, should be initialized as " ++ (show TInt)
+        Just tp | tp /= TInt -> error $ "Type error: " ++ v ++ " has type " ++ show tp ++ "instead of " ++ show TInt
+        Nothing -> error $ "Type error: " ++ v ++ " is not initilized, should be initialized as " ++ show TInt
 
 typecheckT (Int n) = return $ Just TInt
 
@@ -138,7 +137,7 @@ typecheckT (InitAssign v t tp) = do
     s <- get
     let tcx = getStateVariables s
     case lookup v tcx of
-        Just tp1 -> error $ "Variable " ++ v ++ " already initialized with type " ++ (show tp1)
+        Just tp1 -> error $ "Variable " ++ v ++ " already initialized with type " ++ show tp1
         Nothing -> do
             put $ TS (getStateReturn s) (getStateFunctions s) ((v,tp):tcx)
             return Nothing
@@ -167,8 +166,7 @@ typecheckT (Or t1 t2) = do
     assertType t2 TBool
     return $ Just TBool
 
-typecheckT (Record rs) = do
-    mapM typecheckR rs >>= return . Just . TRec
+typecheckT (Record rs) = fmap (Just . TRec) (mapM typecheckR rs)
 
 typecheckT (Return t) = do
     s <- get
@@ -202,7 +200,7 @@ typecheckT (VarInit v tp) = do
     s <- get
     let tcx = getStateVariables s
     case lookup v tcx of
-        Just tp -> error $ "Variable " ++ v ++ " already initialized with type " ++ (show tp)
+        Just tp -> error $ "Variable " ++ v ++ " already initialized with type " ++ show tp
         Nothing -> do
             put $ TS (getStateReturn s) (getStateFunctions s) ((v,tp):tcx)
             return Nothing
