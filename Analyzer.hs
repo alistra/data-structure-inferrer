@@ -109,7 +109,7 @@ foldlTerms f start (r:rest) = do
 putVar :: Name -> Analyzer ()
 putVar name = do
     state <- get 
-    put $ AS (getStateFunNames state) (name:(getStateContext state))
+    put $ AS (getStateFunNames state) (name:getStateContext state)
 
 -- | Function returning 'True' if the variable is already defined
 getVar :: Name -> AnalyzerState -> Bool
@@ -176,7 +176,7 @@ step dsus (If cond t1 t2) = do
     dsuT2 <- generateContextDSU  [t2]
     stateT2 <- get 
 
-    put $ AS (getStateFunNames stateT1) (union (getStateContext stateT1) (getStateContext stateT2)) 
+    put $ AS (getStateFunNames stateT1) (getStateContext stateT1 `union` getStateContext stateT2)
     return $ dsus ++ concat [dsuCond, dsuT1, dsuT2]
 
 step dsus _ = return dsus

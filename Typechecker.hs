@@ -61,10 +61,7 @@ typecheckR (n, t) = do
 
 -- | Typecheck a term, 'Nothing' symbolizes the expressions without a value
 typecheckT :: Term -> Typechecker (Maybe Type)
-typecheckT (And t1 t2) = do
-    assertType t1 TBool
-    assertType t2 TBool
-    return $ Just TBool
+typecheckT (And t1 t2) = logOp t1 t2
 
 typecheckT (Assign v t1) = do
     s <- get 
@@ -87,15 +84,9 @@ typecheckT (Dec v) = do
         Just tp | tp /= TInt -> error $ "Type error: " ++ v ++ " has type " ++ show tp ++ "instead of " ++ show TInt
         Nothing -> error $ "Type error: " ++ v ++ " is not initilized, should be initialized as " ++ show TInt
 
-typecheckT (Div t1 t2) = do
-    assertType t1 TInt
-    assertType t2 TInt
-    return $ Just TInt
+typecheckT (Div t1 t2) = mathOp t1 t2
 
-typecheckT (Eq t1 t2) = do
-    assertType t1 TInt
-    assertType t2 TInt
-    return $ Just TBool
+typecheckT (Eq t1 t2) = relOp t1 t2
 
 typecheckT (For t1 t2 t3 t4) = do
     typecheckT t1
@@ -106,15 +97,9 @@ typecheckT (For t1 t2 t3 t4) = do
 
 typecheckT (Funcall f ts) = typecheckFC f ts
     
-typecheckT (Geq t1 t2) = do
-    assertType t1 TInt
-    assertType t2 TInt
-    return $ Just TBool
+typecheckT (Geq t1 t2) = relOp t1 t2
 
-typecheckT (Gt t1 t2) = do
-    assertType t1 TInt
-    assertType t2 TInt
-    return $ Just TBool
+typecheckT (Gt t1 t2) = relOp t1 t2
 
 typecheckT (If t1 t2 t3) = do
     assertType t1 TBool
@@ -142,29 +127,17 @@ typecheckT (InitAssign v t tp) = do
             put $ TS (getStateReturn s) (getStateFunctions s) ((v,tp):tcx)
             return Nothing
 
-typecheckT (Leq t1 t2) = do
-    assertType t1 TInt
-    assertType t2 TInt
-    return $ Just TBool
+typecheckT (Leq t1 t2) = relOp t1 t2
 
-typecheckT (Lt t1 t2) = do
-    assertType t1 TInt
-    assertType t2 TInt
-    return $ Just TBool
+typecheckT (Lt t1 t2) = relOp t1 t2
 
-typecheckT (Mul t1 t2) = do
-    assertType t1 TInt
-    assertType t2 TInt
-    return $ Just TInt
+typecheckT (Mul t1 t2) = mathOp t1 t2
 
 typecheckT (Not t1) = do
     assertType t1 TBool
     return $ Just TBool
 
-typecheckT (Or t1 t2) = do
-    assertType t1 TBool
-    assertType t2 TBool
-    return $ Just TBool
+typecheckT (Or t1 t2) = logOp t1 t2
 
 typecheckT (Record rs) = fmap (Just . TRec) (mapM typecheckR rs)
 
@@ -174,15 +147,9 @@ typecheckT (Return t) = do
     assertType t rt
     return Nothing
 
-typecheckT (Sub t1 t2) = do
-    assertType t1 TInt
-    assertType t2 TInt
-    return $ Just TInt
+typecheckT (Sub t1 t2) = mathOp t1 t2
 
-typecheckT (Sum t1 t2) = do
-    assertType t1 TInt
-    assertType t2 TInt
-    return $ Just TInt
+typecheckT (Sum t1 t2) = mathOp t1 t2
 
 typecheckT (While t1 t2) = do
     assertType t1 TBool
@@ -204,4 +171,21 @@ typecheckT (VarInit v tp) = do
         Nothing -> do
             put $ TS (getStateReturn s) (getStateFunctions s) ((v,tp):tcx)
             return Nothing
-    
+
+relOp :: Term -> Term -> Typechecker (Maybe Type)
+relOp t1 t2 = do
+    assertType t1 TInt
+    assertType t2 TInt
+    return $ Just TBool
+
+mathOp :: Term -> Term -> Typechecker (Maybe Type)
+mathOp t1 t2 = do
+    assertType t1 TInt
+    assertType t2 TInt
+    return $ Just TInt
+
+logOp :: Term -> Term -> Typechecker (Maybe Type)
+logOp t1 t2 = do
+    assertType t1 TBool
+    assertType t2 TBool
+    return $ Just TBool
