@@ -76,13 +76,16 @@ fundef:		type Name LParen argdef RParen block		{ FunDef $2 $1 $4 $6 }
 		| type Name LParen argdef RParen Newline block	{ FunDef $2 $1 $4 $7 }
 
 argdef :: { [(Name, Type)] }
-argdef:		type Name Comma argdef		{ ($2, $1):$4 }
-      		| type Name			{ [($2, $1)] }
+argdef:		nvtype Name Comma argdef	{ ($2, $1):$4 }
+      		| nvtype Name			{ [($2, $1)] }
 		| 				{ [] }
 
-type :: { Type }
-type:		TVoid				{ TVoid }
-    		| TInt				{ TInt }
+type :: { Maybe Type }
+type:		TVoid				{ Nothing }
+    		| nvtype			{ Just $1 }
+
+nvtype :: { Type }
+nvtype:		TInt				{ TInt }
     		| TBool				{ TBool }
 		| Ds				{ Ds }
 		| DsElem			{ DsElem }
@@ -93,12 +96,12 @@ trecordintern:	trecordpair Comma trecordintern { $1 : $3 }
 	     	| trecordpair 			{ [$1] }
 
 trecordpair :: { (Name, Type) }
-trecordpair:	type Name 			{ ($2, $1) }
+trecordpair:	nvtype Name 			{ ($2, $1) }
 
 expr :: { Term }
 expr:		Name Assign valexpr							{ Assign $1 $3 }
-		| type Name Assign valexpr						{ InitAssign $2 $4 $1 }
-		| type Name								{ VarInit $2 $1 }
+		| nvtype Name Assign valexpr						{ InitAssign $2 $4 $1 }
+		| nvtype Name								{ VarInit $2 $1 }
 		| block									{ $1 }
 		| If valexpr Then expr Else expr 					{ If $2 $4 $6 }
 		| If valexpr Newline Then expr Newline Else expr 			{ If $2 $5 $8 }

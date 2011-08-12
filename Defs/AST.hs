@@ -4,7 +4,7 @@ module Defs.AST where
 import Defs.Common
 
 -- | Type for function definitions
-data Function = FunDef { getFunName :: Name, getFunType :: Type, getFunArgs :: [(Name, Type)], getFunBody :: Term } deriving (Show, Eq)
+data Function = FunDef { getFunName :: Name, getFunType :: Maybe Type, getFunArgs :: [(Name, Type)], getFunBody :: Term } deriving (Show, Eq)
 
 -- | Type for language operations
 data Term = And Term Term               -- ^ Logical and
@@ -38,7 +38,6 @@ data Term = And Term Term               -- ^ Logical and
 -- | Type for the language values
 data Type = TInt                    -- ^ Integer
             | TBool                 -- ^ Boolean
-            | TVoid                 -- ^ Void
             | Ds                    -- ^ Data structure reference
             | DsElem                -- ^ Data structure element reference
             | TRec [(Name, Type)]   -- ^ Record

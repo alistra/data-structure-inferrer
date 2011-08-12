@@ -8,7 +8,7 @@ import Control.Monad
 import Data.Maybe
 
 -- | Variables with types, return value for a function, other declared functions
-data TypeState = TS { getStateReturn :: Type, getStateFunctions :: [Function], getStateVariables :: [(Name, Type)] } 
+data TypeState = TS { getStateReturn :: Maybe Type, getStateFunctions :: [Function], getStateVariables :: [(Name, Type)] } 
 
 -- | State monad to remember the 'TypeState'
 type Typechecker a = State TypeState a
@@ -35,21 +35,30 @@ typecheckF fns (FunDef name tp args (Block body)) = evalState (typecheckB body) 
 
 -- | Typecheck a function call
 typecheckFC :: Name -> [Term] -> Typechecker (Maybe Type) --FIXME function declaration make use of
-typecheckFC f [] = return Nothing
+typecheckFC f [] = do
+    s <- get
+    let fn = head $ filter (\x -> getFunName x == f) (getStateFunctions s)
+    return $ getFunType fn
+
 typecheckFC f ts = do
+    s <- get
+    let fn = head $ filter (\x -> getFunName x == f) (getStateFunctions s)
     tps <- typecheckB ts
-    case (f, fromJust $ head tps) of
-        -- Ds operations
-        ("update", Ds) -> return Nothing
-        ("insert", Ds) -> return $ Just DsElem
-        ("delete", Ds) -> return Nothing
-        ("max", Ds) -> return $ Just DsElem
-        ("min", Ds) -> return $ Just DsElem
-        ("delete_max", Ds) -> return $ Just DsElem
-        -- DsElem operations
-        ("update", DsElem) -> return Nothing
-        ("delete", DsElem) -> return Nothing
-        (_, _) -> error $ "Not known function" ++ show f
+    if (map fromJust tps) /= (map snd (getFunArgs fn))
+        then error $ "Argument type mismatch for function " ++ f
+        else
+            case (f, fromJust $ head tps) of
+            -- Ds operations
+            ("update", Ds) -> return Nothing
+            ("insert", Ds) -> return $ Just DsElem
+            ("delete", Ds) -> return Nothing
+            ("max", Ds) -> return $ Just DsElem
+            ("min", Ds) -> return $ Just DsElem
+            ("delete_max", Ds) -> return $ Just DsElem
+            -- DsElem operations
+            ("update", DsElem) -> return Nothing
+            ("delete", DsElem) -> return Nothing
+            (_, _) -> error $ "Not known function" ++ show f
 
 -- | Typecheck one field of the record
 typecheckR :: (Name, Term) -> Typechecker (Name, Type)
@@ -143,7 +152,7 @@ typecheckT (Record rs) = fmap (Just . TRec) (mapM typecheckR rs)
 
 typecheckT (Return t) = do
     s <- get
-    let rt = getStateReturn s
+    let rt = fromJust $ getStateReturn s
     assertType t rt
     return Nothing
 
