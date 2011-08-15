@@ -70,7 +70,6 @@ printRecommendationFromAnalysis = mapM_ printDSI
 -- | Runs everything that is needed to analyze a program
 analyze :: [Function] -> [DSInfo]
 analyze fns = let   fnns = map getFunName fns
-                    fnts = typecheckP fns
                     fnsDSU = zip fns (map (generateDSU fnns) fns) in
                     generateDSI $ concatMap snd fnsDSU
       

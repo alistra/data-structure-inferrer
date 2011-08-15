@@ -25,7 +25,7 @@ tokens :-
 	null				{ \p s -> tokenWithPos p TkNull }
 	or				{ \p s -> tokenWithPos p TkOr }
 	ds				{ \p s -> tokenWithPos p TkDs }
-	dsElem				{ \p s -> tokenWithPos p TkDsElem }
+	dselem				{ \p s -> tokenWithPos p TkDsElem }
 	int				{ \p s -> tokenWithPos p TkTInt }
 	bool				{ \p s -> tokenWithPos p TkTBool }
 	void				{ \p s -> tokenWithPos p TkTVoid }

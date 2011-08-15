@@ -1,12 +1,14 @@
 int main()
 {
 	ds d1
-
+	int i
+	dselem e
 	for(i = 0; i < 20; i++)
 	{
 		insert(d1, i)
-		update(d1, i, 2*i)
+		e = search(d1, i)
+		update(e, 2*i)
 	}
 
-	print(max(d1))
+	max(d1)
 }

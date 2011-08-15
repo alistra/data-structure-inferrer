@@ -13,9 +13,17 @@ data TypeState = TS { getStateReturn :: Maybe Type, getStateFunctions :: [Functi
 -- | State monad to remember the 'TypeState'
 type Typechecker a = State TypeState a
 
--- | Runs the typechecker on the program 
-typecheckP :: [Function] -> [[Maybe Type]]
-typecheckP fns = map (typecheckF fns)  fns
+dsinfFunctions = [
+    Function "update"     Nothing        [("ds", Ds), ("oldval", TInt), ("newval", TInt)]   (Block []),
+    Function "insert"     (Just DsElem)  [("ds", Ds), ("elem", TInt)]                       (Block []),
+    Function "delete"     Nothing        [("ds", Ds), ("elem", TInt)]                       (Block []),
+    Function "max"        (Just DsElem)  [("ds", Ds)]                                       (Block []),
+    Function "min"        (Just DsElem)  [("ds", Ds)]                                       (Block []),
+    Function "delete_max" Nothing        [("ds", Ds)]                                       (Block []),
+    Function "search"     (Just DsElem)  [("ds", Ds), ("elem", TInt)]                       (Block []),
+    Function "update"     Nothing        [("elem", DsElem), ("newval", TInt)]               (Block []),
+    Function "delete"     Nothing        [("elem", DsElem)]                                 (Block [])
+    ]
 
 -- | Typecheck a term block
 typecheckB :: [Term] -> Typechecker [Maybe Type]
@@ -31,34 +39,18 @@ assertType t1 tp2 = do
 
 -- | Typecheck a function definition
 typecheckF :: [Function] ->  Function -> [Maybe Type]
-typecheckF fns (FunDef name tp args (Block body)) = evalState (typecheckB body) (TS tp fns args)
+typecheckF fns (Function name tp args (Block body)) = evalState (typecheckB body) (TS tp (dsinfFunctions ++ fns) args)
 
 -- | Typecheck a function call
-typecheckFC :: Name -> [Term] -> Typechecker (Maybe Type) --FIXME function declaration make use of
-typecheckFC f [] = do
-    s <- get
-    let fn = head $ filter (\x -> getFunName x == f) (getStateFunctions s)
-    return $ getFunType fn
-
+typecheckFC :: Name -> [Term] -> Typechecker (Maybe Type) 
 typecheckFC f ts = do
     s <- get
-    let fn = head $ filter (\x -> getFunName x == f) (getStateFunctions s)
     tps <- typecheckB ts
-    if (map fromJust tps) /= (map snd (getFunArgs fn))
-        then error $ "Argument type mismatch for function " ++ f
-        else
-            case (f, fromJust $ head tps) of
-            -- Ds operations
-            ("update", Ds) -> return Nothing
-            ("insert", Ds) -> return $ Just DsElem
-            ("delete", Ds) -> return Nothing
-            ("max", Ds) -> return $ Just DsElem
-            ("min", Ds) -> return $ Just DsElem
-            ("delete_max", Ds) -> return $ Just DsElem
-            -- DsElem operations
-            ("update", DsElem) -> return Nothing
-            ("delete", DsElem) -> return Nothing
-            (_, _) -> error $ "Not known function" ++ show f
+    let fns = filter (\x -> getFunName x == f && (map fromJust tps) == (map snd (getFunArgs x))) (getStateFunctions s)
+    case fns of
+        [] -> error $ "No matching function: " ++ f
+        fn:fnss | fnss == [] -> return $ getFunType fn
+        fn:fnss | fnss /= [] -> error $ "More than one function matching: " ++ (show $ fn:fnss)
 
 -- | Typecheck one field of the record
 typecheckR :: (Name, Term) -> Typechecker (Name, Type)

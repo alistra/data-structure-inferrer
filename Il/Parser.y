@@ -72,8 +72,8 @@ funlist:	fundef Newline funlist		{ $1:$3 }
 		| 				{ [] }
 
 fundef :: { Function }
-fundef:		type Name LParen argdef RParen block		{ FunDef $2 $1 $4 $6 }
-		| type Name LParen argdef RParen Newline block	{ FunDef $2 $1 $4 $7 }
+fundef:		type Name LParen argdef RParen block		{ Function $2 $1 $4 $6 }
+		| type Name LParen argdef RParen Newline block	{ Function $2 $1 $4 $7 }
 
 argdef :: { [(Name, Type)] }
 argdef:		nvtype Name Comma argdef	{ ($2, $1):$4 }

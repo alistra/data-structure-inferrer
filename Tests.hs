@@ -9,9 +9,10 @@ import Defs.Common
 import Analyzer
 import Typechecker
 
+import Control.Exception
 import System.IO
 import System.Directory
-import Prelude hiding (lex)
+import Prelude hiding (lex, catch)
 
 -- | Runs all Il tests
 runIlTests :: IO ()
@@ -41,14 +42,17 @@ listFiles path = do
 
 -- | Wrapper for openFile adding exception catching
 openTestFile :: FilePath -> IO Handle
-openTestFile name = catch (openFile name ReadMode) (\_ -> error $ "Cannot open "++ name)
-        
+openTestFile name = catch (openFile name ReadMode) (\e -> do print (e :: IOException)
+                                                             error $ "Cannot open "++ name)
+checkTest a = a `catch` (\e -> do 
+                print "Test failed"
+                print (e :: IOException))
+
 -- | Lexes, parses, analyzes and pretty prints test results
 test :: String -> IO()
 test src = do
     let fns = (parse.lex) src
-    let tps = typecheckP fns
-    mapM_ print tps
-    (printRecommendationFromAnalysis.analyze) fns
+    map (\fn -> checkTest $ print $ typecheckF fns fn) fns
+--    (printRecommendationFromAnalysis.analyze) fns
     return ()
 

@@ -1,6 +1,7 @@
 int main()
 {
 	ds d1
+	int i
 
 	[int key, int val] rec = [key = 5, val = 1337]
 	[int key, int val] rec2 = [key = 10, val = 1337]
@@ -11,5 +12,5 @@ int main()
 		update(d1, rec, rec2)
 	}
 
-	print(max(d1))
+	max(d1)
 }
