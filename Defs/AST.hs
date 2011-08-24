@@ -4,7 +4,11 @@ module Defs.AST where
 import Defs.Common
 
 -- | Type for function definitions
-data Function = Function { getFunName :: Name, getFunType :: Maybe Type, getFunArgs :: [(Name, Type)], getFunBody :: Term } deriving (Show, Eq)
+data Function = Function {  getFunName :: Name,             -- ^ Name of the function
+                            getFunType :: Maybe Type,       -- ^ Return type, Nothing when void
+                            getFunArgs :: [(Name, Type)],   -- ^ Names and types of the function arguments
+                            getFunBody :: Term }            -- ^ Body of the function
+                            deriving (Show, Eq)
 
 -- | Type for language operations
 data Term = And Term Term               -- ^ Logical and

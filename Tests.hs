@@ -44,7 +44,7 @@ listFiles path = do
 openTestFile :: FilePath -> IO Handle
 openTestFile name = catch (openFile name ReadMode) (\e -> do print (e :: IOException)
                                                              error $ "Cannot open "++ name)
-checkTest a = a `catch` (\e -> do 
+checkTest a = print a `catch` (\e -> do 
                 print "Test failed"
                 print (e :: IOException))
 
@@ -52,7 +52,7 @@ checkTest a = a `catch` (\e -> do
 test :: String -> IO()
 test src = do
     let fns = (parse.lex) src
-    map (\fn -> checkTest $ print $ typecheckF fns fn) fns
+    mapM_ (\fn -> checkTest $ typecheckF fns fn) fns
 --    (printRecommendationFromAnalysis.analyze) fns
-    return ()
+--    return ()
 

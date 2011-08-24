@@ -14,18 +14,18 @@ import Control.Arrow
 import Control.Monad.State
 
 -- | Data structure analysis info type
-data DSInfo =   DSI { getDSIName :: Name,    -- ^ Variable holding the data structure
+data DSInfo = DSI { getDSIName :: Name,    -- ^ Variable holding the data structure
                     isStatic :: Bool,           -- ^ Is the variable static or dynamic
                     getDSU :: [DSUse]           -- ^ Data structure use cases
                     } deriving (Show, Eq)
 
-data DSFun = DSF {  getDSFName :: Name,
+data DSFun = DSF {  getDSFDef :: Function,
                     getDSFCalls :: [Function],
                     getDSFDSU :: [DSUse]
                     } deriving (Show, Eq)
 
 -- | Data structure use case type
-data DSUse =    DSU { getDSUName :: OperationName,  -- ^ Operation used
+data DSUse = DSU {  getDSUName :: OperationName,  -- ^ Operation used
                     isHeavilyUsed :: Bool,          -- ^ Is it heavily used
                     isUserDependent :: Bool         -- ^ Is it dependent on some external input (user, network, random, signals, etc.)
                     } deriving (Show, Eq)
@@ -40,10 +40,12 @@ type Analyzer a = State AnalyzerState a
 data AnalyzerState = AS { getStateFunNames :: FunNames, getStateContext :: Context }
 
 -- | Type for storing the function names defined in a program
-type FunNames = [Name]
+type FunctionNames = [Name]
 
 -- | Analyzer context containing variable names with data structures
 type Context = [Name]
+
+filter (\x -> getFunName x == f && (map fromJust tps) == (map snd (getFunArgs x))) (getStateFunctions s)
 
 setHeavyUsage (DSU opname _ ud) = DSU opname True ud
 setUserDependance (DSU opname hu _) = DSU opname hu True
@@ -69,8 +71,8 @@ printRecommendationFromAnalysis = mapM_ printDSI
 
 -- | Runs everything that is needed to analyze a program
 analyze :: [Function] -> [DSInfo]
-analyze fns = let   fnns = map getFunName fns
-                    fnsDSU = zip fns (map (generateDSU fnns) fns) in
+analyze fns = let   fnsNs = map getFunName fns
+                    fnsDSU = zip fnsNs (map (generateDSU fnns) fns) in
                     generateDSI $ concatMap snd fnsDSU
       
 -- | Generate 'DSInfo's for each data structure in the program
