@@ -43,26 +43,68 @@
 
 \section{Data structure inference}
 	\subsection{Example imperative language}
+		We define an imperative language, on which we will show examples of the algorithm.
 	\subsection{The framework}
-\section{Extensions of the idea}
-	\subsection{Big load}
-	\subsection{Data structure modifications}
-		max elem cache
-	\subsection{Linked data structures}
-		keeping records
-	\subsection{Transforming datastructures on-line}
-		what it said
-	\subsection{Upper bound on the element count}
-	so we can choose between malloc and static allocation
-	\subsection{Outer-world input}
+	   	We define a set $DataStructureOperations$. We can further extend this set, but for now assume that
+		\begin{eqnarray}
+		  	DataStructureOperations = \{Insert, \; Update, \; Delete, \; FindMax,\; DeleteMax, \; \dots\}.
+		\end{eqnarray}
+		Each of the $DataStructureOperations$ elements symbolizes an operation you can accomplish on a data structure.
 
-\section{Program}
-	\subsection{Recommendation mode}
-		prints recommendations 
-	\subsection{Advice mode}
-		prints advice
-	\subsection{Compile mode}
-		linkes appropriate lib
+		Asymptotical complexity of an operation we store as a pair of type:
+		\begin{eqnarray}
+			AsymptoticalComplexity = Int \times Int,
+		\end{eqnarray}
+		where
+		\begin{eqnarray}
+			(k, \; l) \; means \; O(n^k \log^l{ n}).
+		\end{eqnarray}
+		The reason to choose such a type is that it's easier to compare than the general case (we can do a lexicographical comparison of the two numbers) and it distincts most of the data structure operation complexities.
+		
+		Sometimes we have to use some qualified complexities:
+		\begin{eqnarray}
+			ComplexityType = \{ Normal, \; Amortized, \; Amortized \;Expected, \; Expected \}
+		\end{eqnarray}
 
-\end{document}
+		The overall complexity can be seen as a type:
+		\begin{eqnarray}
+			Complexity = AsymptoticalComplexity \times ComplexityType
+		\end{eqnarray}
+		Here we can also use a lexicographical comparison, but we have to say that
+		\begin{eqnarray}
+			Normal > Amortized,\\
+			Amortized > Expected,\\
+			Expected > Amortized \; Expected,\\
+		\end{eqnarray}
+		and that $>$ is transitive.
 
+		We also always choose the smallest asymptotic-complexity-wise complexity. For example, we have a search operation on a splay tree. It's $O(n)$, but $O(\log n)$ amortized, so it's represented as $((0,1),Amortized)$.
+
+
+			
+
+	   \section{Extensions of the idea}
+	   \subsection{Second extremal element}
+	   \subsection{Big load}
+	   change in the algorithm
+	   \subsection{Data structure modifications}
+	   max elem cache
+	   \subsection{Linked data structures}
+	   keeping records
+	   \subsection{Transforming datastructures on-line}
+	   what it said
+	   \subsection{Upper bound on the element count}
+	   so we can choose between malloc and static allocation
+	   \subsection{Outer-world input}
+	   detecting scanf and sockets and so on
+
+	   \section{Program}
+	   \subsection{Recommendation mode}
+	   prints recommendations 
+	   \subsection{Advice mode}
+	   prints advice
+	   \subsection{Compile mode}
+	   linkes appropriate lib
+	   \subsection{Typechecker}
+
+	   \end{document}
