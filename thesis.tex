@@ -89,6 +89,10 @@
 		When trying to find the best suited data structure for a given program $P$, we look for data structure uses in $P$. Let $DSU(P)$ be the set of $DataStructureOperations$ elements, that are used somewhere in the source code of $P$.
 
 		We define a parametrized comparison operator for data structures $<_{DSU(P)}$ defined as:
+		\begin{eqnarray}
+			d_1 <_{DSU(P)} d_2 \Leftrightarrow \{(o, c) \in d_1 |\; o \in DSU(P)\}
+		\end{eqnarray}
+		
 
 
 \section{Extensions of the idea}
