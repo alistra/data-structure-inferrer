@@ -40,6 +40,7 @@
 \end{abstract}
 
 \section{Introduction}
+	
 	\subsection{Example imperative language}
 		We define an imperative language, on which we will show examples of the algorithm.
 
@@ -90,25 +91,42 @@
 
 		We define a parametrized comparison operator for data structures $<_{DSU(P)}$ defined as:
 		\begin{eqnarray}
-			d_1 <_{DSU(P)} d_2 \Leftrightarrow \{(o, c) \in d_1 |\; o \in DSU(P)\}
+			d_1 <_{DSU(P)} d_2 \Leftrightarrow o \in DSU(P) \wedge \\
+			|\{(o, c_1) \in d_1 | (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < \{(o, c_2) \in d_2 | (o,c_1) \in d_1 \wedge c_2 < c_1 \} 
 		\end{eqnarray}
+		If we fix P, we have a preorder on data structures induced by $<_{DSU(P)}$ and we can sort those data structures using this order. The maximum element is the best data structure for the task.
 		
 
 
 \section{Extensions of the idea}
 	\subsection{Second extremal element}
+		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are for. 
+		If we want to find the minimal element we can use a min-heap. What happens if we want to find the max and the min element in one program? 
+		How to modify our framework to handle this kind of situations?
+		\begin{equation}
+		  	DataStructureOperations = \{\dots \; FindFirstExtremalElement,\; DeleteFirstExtremalElement, \; \\
+			FindSecondExtremalElement,\; DeleteSecondExtremalElement, \; \dots\}.
+		\end{equation}
+		Now we can add two complexity costs to the data structure definition, the cheaper one can be used primarily, and the second one can be used in above situations.
 	\subsection{Big load}
 		change in the algorithm
 	\subsection{Data structure modifications}
+		
 		max elem cache
+	\subsection{Different element types}
+		Currently the framework works only for integer elements. We can extend it to each type that has a compare function,
+		because there's no difference if the types are numerical or not.
+		If we analyzed haskell, we would use types that are in the Ord class,
+		if we analyzed C, we would ask the programmer to write an acompanying cmp function to the type and pass the pointer to the function that creates the data structure.
 	\subsection{Linked data structures}
-		keeping records
+		If we wanted to keep records (structs) in our data structure and find an element by one field and some other time by some other field, we would have to do this:
 	\subsection{Transforming datastructures on-line}
 		what it said
 	\subsection{Upper bound on the element count}
 		so we can choose between malloc and static allocation
 	\subsection{Outer-world input}
 		detecting scanf and sockets and so on
+	\subsection{Minimal element count treshold}
 
 \section{Program}
 	\subsection{Recommendation mode}
