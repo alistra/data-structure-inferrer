@@ -39,6 +39,8 @@
 \begin{abstract}
 \end{abstract}
 
+\tableofcontents
+
 \section{Introduction}
 	
 	\subsection{Example imperative language}
@@ -101,7 +103,7 @@
 \section{Extensions of the idea}
 	\subsection{Second extremal element}
 		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are for. 
-		If we want to find the minimal element we can use a min-heap. What happens if we want to find the max and the min element in one program? 
+		If we want to find the minimal element we can use a min-heap. What happens if we want to find the max and the min element in the duration of one program? 
 		How to modify our framework to handle this kind of situations?
 		\begin{equation}
 		  	DataStructureOperations = \{\dots \; FindFirstExtremalElement,\; DeleteFirstExtremalElement, \; \\
@@ -127,7 +129,9 @@
 	\subsection{Outer-world input}
 		detecting scanf and sockets and so on
 	\subsection{Minimal element count treshold}
+		It's worth noticing that we compare only the asymptotical complexity of data structures. Some awfully complicated structures can have good asymptotical results, but the constant is quite high. We can avoid this problem by setting a treshold for each structure, what is the smallest number of elements to use this data structure. 
 
+		Another problem arises, how to know at compile time, how many elements a data structure will have at runtime. We can ask the user to explicitely specify the number during compilation or we can try to detect how big the declared data is.
 \section{Program}
 	\subsection{Recommendation mode}
 		prints recommendations 
