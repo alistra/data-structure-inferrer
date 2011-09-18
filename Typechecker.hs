@@ -8,22 +8,14 @@ import Control.Monad
 import Data.Maybe
 
 -- | Variables with types, return value for a function, other declared functions
-data TypeState = TS { getStateReturn :: Maybe Type, getStateFunctions :: [Function], getStateVariables :: [(Name, Type)] } 
+data TypeState = TS {
+    getStateReturn :: Maybe Type,
+    getStateFunctions :: [Function],
+    getStateVariables :: [(VariableName, Type)] } 
 
 -- | State monad to remember the 'TypeState'
 type Typechecker a = State TypeState a
 
-dsinfFunctions = [
-    Function "update"     Nothing        [("ds", Ds), ("oldval", TInt), ("newval", TInt)]   (Block []),
-    Function "insert"     (Just DsElem)  [("ds", Ds), ("elem", TInt)]                       (Block []),
-    Function "delete"     Nothing        [("ds", Ds), ("elem", TInt)]                       (Block []),
-    Function "max"        (Just DsElem)  [("ds", Ds)]                                       (Block []),
-    Function "min"        (Just DsElem)  [("ds", Ds)]                                       (Block []),
-    Function "delete_max" Nothing        [("ds", Ds)]                                       (Block []),
-    Function "search"     (Just DsElem)  [("ds", Ds), ("elem", TInt)]                       (Block []),
-    Function "update"     Nothing        [("elem", DsElem), ("newval", TInt)]               (Block []),
-    Function "delete"     Nothing        [("elem", DsElem)]                                 (Block [])
-    ]
 
 -- | Typecheck a term block
 typecheckB :: [Term] -> Typechecker [Maybe Type]
@@ -42,7 +34,7 @@ typecheckF :: [Function] ->  Function -> [Maybe Type]
 typecheckF fns (Function name tp args (Block body)) = evalState (typecheckB body) (TS tp (dsinfFunctions ++ fns) args)
 
 -- | Typecheck a function call
-typecheckFC :: Name -> [Term] -> Typechecker (Maybe Type) 
+typecheckFC :: FunctionName -> [Term] -> Typechecker (Maybe Type) 
 typecheckFC f ts = do
     s <- get
     tps <- typecheckB ts
@@ -53,7 +45,7 @@ typecheckFC f ts = do
         fn:fnss | fnss /= [] -> error $ "More than one function matching: " ++ (show $ fn:fnss)
 
 -- | Typecheck one field of the record
-typecheckR :: (Name, Term) -> Typechecker (Name, Type)
+typecheckR :: (String, Term) -> Typechecker (String, Type)
 typecheckR (n, t) = do
     tp <- typecheckT t
     case tp of

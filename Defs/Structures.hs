@@ -2,10 +2,10 @@ module Defs.Structures where
 
 import Data.List
 import Data.Ord
-import Defs.Common
+import Defs.Util
 
 -- | Data structure for keeping data structures
-data Structure = DS {   getDSName :: Name, -- ^ name of the data structure
+data Structure = DS {   getDSName :: String, -- ^ name of the data structure
                         getDSOps :: [DSOperation] -- ^ operations along with their complexities
                         } deriving Eq
 
