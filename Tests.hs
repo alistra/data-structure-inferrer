@@ -4,7 +4,7 @@ module Tests
 
 import Il.Lexer
 import Il.Parser
-import Defs.Common
+import Defs.Util
 
 import Analyzer
 import Typechecker

@@ -1,7 +1,6 @@
 module Defs.Common where
 -- | Type for names
--- type Name =  String
-
+type Name =  String
 
 -- | Type for storing the variable names defined in a program
 type VariableName = String

@@ -5,7 +5,7 @@ module Advice
         adviceDS',
         printAdvice' ) where
 
-import Defs.Common
+import Defs.Util
 import Defs.Structures
 
 import AllStructures
