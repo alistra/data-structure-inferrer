@@ -1,0 +1,20 @@
+\contentsline {section}{\numberline {1}Introduction}{2}
+\contentsline {subsection}{\numberline {1.1}Example imperative language}{2}
+\contentsline {section}{\numberline {2}Data structure inference}{2}
+\contentsline {subsection}{\numberline {2.1}Comparison of the complexities}{2}
+\contentsline {subsection}{\numberline {2.2}Choosing the best data structure}{3}
+\contentsline {section}{\numberline {3}Extensions of the idea}{3}
+\contentsline {subsection}{\numberline {3.1}Second extremal element}{3}
+\contentsline {subsection}{\numberline {3.2}Big load}{3}
+\contentsline {subsection}{\numberline {3.3}Data structure modifications}{3}
+\contentsline {subsection}{\numberline {3.4}Different element types}{4}
+\contentsline {subsection}{\numberline {3.5}Linked data structures}{4}
+\contentsline {subsection}{\numberline {3.6}Transforming datastructures on-line}{4}
+\contentsline {subsection}{\numberline {3.7}Upper bound on the element count}{4}
+\contentsline {subsection}{\numberline {3.8}Outer-world input}{4}
+\contentsline {subsection}{\numberline {3.9}Minimal element count treshold}{4}
+\contentsline {section}{\numberline {4}Program}{4}
+\contentsline {subsection}{\numberline {4.1}Recommendation mode}{4}
+\contentsline {subsection}{\numberline {4.2}Advice mode}{5}
+\contentsline {subsection}{\numberline {4.3}Compile mode}{5}
+\contentsline {subsection}{\numberline {4.4}Typechecker}{5}
