@@ -82,27 +82,28 @@ closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
     concatMap (\var -> closeDSIs' startingDSF var []) dsiVars where
 
         closeDSIs' :: DSFun -> VariableName -> [FunctionName] -> [DSInfo]
-        closeDSIs' dsf var accu = if getFunName (getDSFFun dsf) `elem` accu 
-            then []
-            else let funcalls = getDSFCalls dsf in
-                let varConts  = concatMap bindFuncall funcalls in 
-                --let currDsi = lookup in dsis
-                --foldl1 mergeDSI (currDSI:closeDSIs' (lookupFun fn) vn ((getFunName $ getDSFFun dsf):accu) na kazdym varConts?
-                undefined where
+        closeDSIs' dsf var accu = let funname = getFunName (getDSFFun dsf) in
+            if funname `elem` accu 
+                then []
+                else let funcalls = getDSFCalls dsf in
+                    let varConts  = concatMap bindFuncall funcalls in 
+                    --let currDsi = lookup in dsis
+                    --currDsi:
+                    map (\(fn, vn) -> foldl1 mergeDSI (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts where
 
-                    bindFuncall :: (FunctionName, [Maybe VariableName]) -> [(VariableName, VariableName)]
-                    bindFuncall  = bindFuncall' 1 
+                        bindFuncall :: (FunctionName, [Maybe VariableName]) -> [(VariableName, VariableName)]
+                        bindFuncall  = bindFuncall' 1 
 
-                    bindFuncall' :: Int -> (FunctionName, [Maybe VariableName]) -> [(FunctionName, VariableName)]
-                    bindFuncall' n (fn, Just vn:vns) = if vn == var 
-                        then (fn, getNewVarName fn n): bindFuncall' (n+1) (fn, vns)
-                        else bindFuncall' (n+1) (fn, vns)
-                    bindFuncall' n (fn, Nothing:vns) = bindFuncall' (n+1) (fn, vns)
-                    bindFuncall' n (fn, []) = []
+                        bindFuncall' :: Int -> (FunctionName, [Maybe VariableName]) -> [(FunctionName, VariableName)]
+                        bindFuncall' n (fn, Just vn:vns) = if vn == var 
+                            then (fn, getNewVarName fn n): bindFuncall' (n+1) (fn, vns)
+                            else bindFuncall' (n+1) (fn, vns)
+                        bindFuncall' n (fn, Nothing:vns) = bindFuncall' (n+1) (fn, vns)
+                        bindFuncall' n (fn, []) = []
 
 
-        mergeDSIs :: DSInfo -> DSInfo -> DSInfo 
-        mergeDSIs (DSI n1 d1) (DSI n2 d2) = DSI (n1++n2) (nub $ d1++d2)
+                        mergeDSI :: DSInfo -> DSInfo -> DSInfo 
+                        mergeDSI (DSI n1 d1) (DSI n2 d2) = DSI (n1++n2) (nub $ d1++d2)
         
             
         lookupFun :: FunctionName -> DSFun
@@ -187,24 +188,24 @@ step dsus (While cond body) = do
 step dsus (Funcall name args) = do 
     s <- get 
     let opname = case name of                   -- FIXME nicer with usage of dsinfFunctions from Common
-            "insert"        -> Just InsertVal
-            "find"          -> Just FindByVal
-            "update"        -> Just UpdateByRef 
-            "max"           -> Just ExtremalVal
-            "delete_max"    -> Just DeleteExtremalVal
-            _               -> Nothing 
-                                                -- FIXME add reading the function calls
+        "insert"        -> Just InsertVal
+        "find"          -> Just FindByVal
+        "update"        -> Just UpdateByRef 
+        "max"           -> Just ExtremalVal
+        "delete_max"    -> Just DeleteExtremalVal
+        _               -> Nothing 
+                                            -- FIXME add reading the function calls
     argDsus <- stepBlock args
 
     funcallDsu <- case opname of
-            Nothing ->  do
-                putCall name args
-                return []
-            Just op ->  case head args of       -- FIXME dsinfFunctions ds argument recognition
-                            Var varname -> if getVar varname s
-                                    then return [(varname, DSU op False False)]
-                                    else error $ varname ++ " not initialized before use in function " ++ name
-                            _           -> error "Not implemented yet"
+        Nothing ->  do
+            putCall name args
+            return []
+        Just op ->  case head args of       -- FIXME dsinfFunctions ds argument recognition
+            Var varname -> if getVar varname s
+                then return [(varname, DSU op False False)]
+                else error $ varname ++ " not initialized before use in function " ++ name
+            _           -> error "Not implemented yet"
 
     return $ argDsus ++ funcallDsu ++ dsus
 
