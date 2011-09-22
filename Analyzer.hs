@@ -91,7 +91,7 @@ closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
                     let dsis = getDSFDSI dsf in
                     let currDSI = lookupDSI dsis funname var in
                     let otherDSI = dsis \\ [currDSI] in
-                    (foldl1 mergeDSI $ concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts):otherDSI where
+                    (foldl1 mergeDSI $ currDSI:(concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts)):otherDSI where
 
                         bindFuncall :: (FunctionName, [Maybe VariableName]) -> [(VariableName, VariableName)]
                         bindFuncall  = bindFuncall' 1 
