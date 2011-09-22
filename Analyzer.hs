@@ -16,12 +16,12 @@ import Control.Monad.State
 -- | Data structure for analysis info
 data DSInfo = DSI { 
     getDSIName  :: [(FunctionName, VariableName)],  -- ^ Variable holding the data structure --FIXME pointer copying
-    getDSU      :: [DSUse]                          -- ^ Data structure use cases
+    getDSIDSU      :: [DSUse]                          -- ^ Data structure use cases
     } deriving (Show, Eq)
 
 -- | Data structure for function info
 data DSFun = DSF { 
-    getDSFDef   :: Function,      
+    getDSFFun   :: Function,      
     getDSFCalls :: [(FunctionName, [Maybe VariableName])],
     getDSFDSI   :: [DSInfo]
     } deriving (Show, Eq)
@@ -62,7 +62,7 @@ printDSI dsi = do
     recommendedDS >>= print
     resetColor where
         recommendedDS = do 
-            let opns = map getDSUName $ getDSU dsi
+            let opns = map getDSUName $ getDSIDSU dsi
             recommendDS opns
 
 -- | Pretty printer for the analyzer effects
@@ -77,9 +77,43 @@ analyze functions = let functionNames = map getFunName functions in
     
 -- | Merges the simple 'DSInfo's based on function calls from the functions
 closeDSIs :: [DSFun] -> [DSInfo]
-closeDSIs = undefined
+closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
+    let dsiVars = map snd $ filter (\(fn,vn) -> fn == startingFunction) $ concatMap getDSIName $ getDSFDSI startingDSF in 
+    concatMap (\var -> closeDSIs' startingDSF var []) dsiVars where
+
+        closeDSIs' :: DSFun -> VariableName -> [FunctionName] -> [DSInfo]
+        closeDSIs' dsf var accu = if (getFunName $ getDSFFun dsf) `elem` accu 
+            then []
+            else let funcalls = getDSFCalls dsf in
+                let varConts  = concatMap (bindFuncall) funcalls in 
+                --let currDsi = lookup in dsis
+                --foldl1 mergeDSI (currDSI:closeDSIs' (lookupFun fn) vn ((getFunName $ getDSFFun dsf):accu) na kazdym varConts?
+                undefined where
+
+                    bindFuncall :: (FunctionName, [Maybe VariableName]) -> [(VariableName, VariableName)]
+                    bindFuncall fc = bindFuncall' 1 fc
+
+                    bindFuncall' :: Int -> (FunctionName, [Maybe VariableName]) -> [(FunctionName, VariableName)]
+                    bindFuncall' n (fn, Just vn:vns) = if vn == var 
+                        then (fn, getNewVarName fn n): bindFuncall' (n+1) (fn, vns)
+                        else bindFuncall' (n+1) (fn, vns)
+                    bindFuncall' n (fn, Nothing:vns) = bindFuncall' (n+1) (fn, vns)
+                    bindFuncall' n (fn, []) = []
 
 
+        mergeDSIs :: DSInfo -> DSInfo -> DSInfo 
+        mergeDSIs (DSI n1 d1) (DSI n2 d2) = DSI (n1++n2) (nub $ d1++d2)
+        
+            
+        lookupFun :: FunctionName -> DSFun
+        lookupFun name = let goodDsfs = filter (\dsf -> (getFunName $ getDSFFun dsf) == name) dsfs in
+            if (length goodDsfs /= 1)
+                then error $ "None or too many matching functions " ++ name
+                else head $ goodDsfs
+
+        getNewVarName :: FunctionName -> Int -> VariableName
+        getNewVarName fn n = let fun = getDSFFun $ lookupFun fn in
+           fst $ (getFunArgs fun) !! n
 
 -- | Generates simple 'DSInfo's without the info from function calls
 generateDSI :: Function -> [(VariableName, DSUse)] -> [DSInfo]
@@ -144,7 +178,7 @@ step dsus (InitAssign name term Ds) = do
         then error $ name ++ " already initialized"
         else putVar name >> return dsus 
 
-step dsus (InitAssign name term _ ) = return dsus
+step dsus (InitAssign name term _) = return dsus
 
 step dsus (While cond body) = do
     newDSU <- stepBlock [cond,body] 
