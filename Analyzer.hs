@@ -1,6 +1,7 @@
-module Analyzer 
-  ( printRecommendationFromAnalysis,
-    analyze) where
+module Analyzer (
+    printRecommendationFromAnalysis,
+    analyze
+    ) where
 
 import Defs.Structures
 import Defs.Util
@@ -15,7 +16,7 @@ import Control.Monad.State
 
 -- | Data structure for analysis info
 data DSInfo = DSI { 
-    getDSIName  :: [(FunctionName, VariableName)],  -- ^ Variable holding the data structure --FIXME pointer copying
+    getDSINames  :: [(FunctionName, VariableName)],  -- ^ Variable holding the data structure --FIXME pointer copying
     getDSIDSU      :: [DSUse]                          -- ^ Data structure use cases
     } deriving (Show, Eq)
 
@@ -55,7 +56,7 @@ printDSI :: DSInfo -> IO()
 printDSI dsi = do
     putStr "The recommended structure for "
     redColor
-    print $ getDSIName dsi
+    print $ getDSINames dsi
     resetColor 
     putStrLn " is:"
     cyanColor
@@ -78,7 +79,7 @@ analyze functions = let functionNames = map getFunName functions in
 -- | Merges the simple 'DSInfo's based on function calls from the functions
 closeDSIs :: [DSFun] -> [DSInfo]
 closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
-    let dsiVars = map snd $ filter (\(fn,vn) -> fn == startingFunction) $ concatMap getDSIName $ getDSFDSI startingDSF in 
+    let dsiVars = map snd $ filter (\(fn,vn) -> fn == startingFunction) $ concatMap getDSINames $ getDSFDSI startingDSF in 
     concatMap (\var -> closeDSIs' startingDSF var []) dsiVars where
 
         closeDSIs' :: DSFun -> VariableName -> [FunctionName] -> [DSInfo]
@@ -86,10 +87,11 @@ closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
             if funname `elem` accu 
                 then []
                 else let funcalls = getDSFCalls dsf in
-                    let varConts  = concatMap bindFuncall funcalls in 
-                    --let currDsi = lookup in dsis
-                    --currDsi:
-                    map (\(fn, vn) -> foldl1 mergeDSI (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts where
+                    let varConts = concatMap bindFuncall funcalls in 
+                    let dsis = getDSFDSI dsf in
+                    let currDSI = lookupDSI dsis funname var in
+                    let otherDSI = dsis \\ [currDSI] in
+                    (foldl1 mergeDSI $ concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts):otherDSI where
 
                         bindFuncall :: (FunctionName, [Maybe VariableName]) -> [(VariableName, VariableName)]
                         bindFuncall  = bindFuncall' 1 
@@ -105,7 +107,13 @@ closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
                         mergeDSI :: DSInfo -> DSInfo -> DSInfo 
                         mergeDSI (DSI n1 d1) (DSI n2 d2) = DSI (n1++n2) (nub $ d1++d2)
         
-            
+                        lookupDSI :: [DSInfo] -> FunctionName -> VariableName -> DSInfo 
+                        lookupDSI dsis funname var = let goodDSI = filter (\dsi -> (funname, var) `elem` getDSINames dsi) dsis in
+                            if length goodDSI /= 1
+                                then error $ "None or too many matching DSI " ++ show (funname, var)
+                                else head goodDSI
+
+
         lookupFun :: FunctionName -> DSFun
         lookupFun name = let goodDsfs = filter (\dsf -> getFunName (getDSFFun dsf) == name) dsfs in
             if length goodDsfs /= 1
@@ -187,13 +195,13 @@ step dsus (While cond body) = do
 
 step dsus (Funcall name args) = do 
     s <- get 
-    let opname = case name of                   -- FIXME nicer with usage of dsinfFunctions from Common
-        "insert"        -> Just InsertVal
-        "find"          -> Just FindByVal
-        "update"        -> Just UpdateByRef 
-        "max"           -> Just ExtremalVal
-        "delete_max"    -> Just DeleteExtremalVal
-        _               -> Nothing 
+    let opname = case name of -- FIXME nicer with usage of dsinfFunctions from Common
+            "insert"        -> Just InsertVal
+            "find"          -> Just FindByVal
+            "update"        -> Just UpdateByRef 
+            "max"           -> Just ExtremalVal
+            "delete_max"    -> Just DeleteExtremalVal
+            _               -> Nothing 
                                             -- FIXME add reading the function calls
     argDsus <- stepBlock args
 
