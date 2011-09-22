@@ -82,16 +82,16 @@ closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
     concatMap (\var -> closeDSIs' startingDSF var []) dsiVars where
 
         closeDSIs' :: DSFun -> VariableName -> [FunctionName] -> [DSInfo]
-        closeDSIs' dsf var accu = if (getFunName $ getDSFFun dsf) `elem` accu 
+        closeDSIs' dsf var accu = if getFunName (getDSFFun dsf) `elem` accu 
             then []
             else let funcalls = getDSFCalls dsf in
-                let varConts  = concatMap (bindFuncall) funcalls in 
+                let varConts  = concatMap bindFuncall funcalls in 
                 --let currDsi = lookup in dsis
                 --foldl1 mergeDSI (currDSI:closeDSIs' (lookupFun fn) vn ((getFunName $ getDSFFun dsf):accu) na kazdym varConts?
                 undefined where
 
                     bindFuncall :: (FunctionName, [Maybe VariableName]) -> [(VariableName, VariableName)]
-                    bindFuncall fc = bindFuncall' 1 fc
+                    bindFuncall  = bindFuncall' 1 
 
                     bindFuncall' :: Int -> (FunctionName, [Maybe VariableName]) -> [(FunctionName, VariableName)]
                     bindFuncall' n (fn, Just vn:vns) = if vn == var 
@@ -106,14 +106,14 @@ closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
         
             
         lookupFun :: FunctionName -> DSFun
-        lookupFun name = let goodDsfs = filter (\dsf -> (getFunName $ getDSFFun dsf) == name) dsfs in
-            if (length goodDsfs /= 1)
+        lookupFun name = let goodDsfs = filter (\dsf -> getFunName (getDSFFun dsf) == name) dsfs in
+            if length goodDsfs /= 1
                 then error $ "None or too many matching functions " ++ name
-                else head $ goodDsfs
+                else head goodDsfs
 
         getNewVarName :: FunctionName -> Int -> VariableName
         getNewVarName fn n = let fun = getDSFFun $ lookupFun fn in
-           fst $ (getFunArgs fun) !! n
+           fst $ getFunArgs fun !! n
 
 -- | Generates simple 'DSInfo's without the info from function calls
 generateDSI :: Function -> [(VariableName, DSUse)] -> [DSInfo]
