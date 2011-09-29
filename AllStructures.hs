@@ -12,16 +12,16 @@ import Data.List
 import Data.Maybe
 
 -- | A function that adds an extremal element cache to a data structure
-extremalElemCache :: Structure -> Structure 
+extremalElemCache :: Structure -> Structure
 extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") ops' where
     extVal = fromJust $ find (\dsop -> getOpName dsop == ExtremalVal) ops
     delByRef = fromJust $ find (\dsop -> getOpName dsop == DeleteByRef) ops
     ops' = [Op DeleteByRef (max (getComplexity extVal) (getComplexity delByRef)),
-            Op ExtremalVal (LinLog 0 0, N)] ++ 
+            Op ExtremalVal (LinLog 0 0, N)] ++
             filter (\dsop -> getOpName dsop `notElem` [ExtremalVal, DeleteByRef]) ops
 
 -- | A function that links the elements of a data structure
-linkedLeaves :: Structure -> Structure 
+linkedLeaves :: Structure -> Structure
 linkedLeaves (DS name ops) = DS (name ++ " with linked leaves") ops' where
     bndByRef = fromJust $ find (\dsop -> getOpName dsop == BoundByRef) ops
     insVal = fromJust $ find (\dsop -> getOpName dsop == InsertVal) ops
@@ -36,7 +36,7 @@ linkedLeaves (DS name ops) = DS (name ++ " with linked leaves") ops' where
                             Op DeleteByRef
                             Op DeleteExtremalVal
                             Op Difference
-                            Op Empty 
+                            Op Empty
                             Op ExtremalVal
                             Op FindByVal
                             Op InsertVal
@@ -54,7 +54,7 @@ ll = DS "Linked List"       [
                             Op BoundByRef           (LinLog 1 0, N),
                             Op DecreaseValByRef     (LinLog 0 0, N),
                             Op DeleteByRef          (LinLog 0 0, N),
-                            Op DeleteExtremalVal    (LinLog 1 0, N), 
+                            Op DeleteExtremalVal    (LinLog 1 0, N),
                             Op Difference           (LinLog 2 0, N),
                             Op Empty                (LinLog 0 0, N),
                             Op ExtremalVal          (LinLog 1 0, N),
@@ -67,7 +67,7 @@ ll = DS "Linked List"       [
                             Op Union                (LinLog 0 0, N),
                             Op UpdateByRef          (LinLog 0 0, N)
                                                                     ]
--- | Red Black Trees 
+-- | Red Black Trees
 rbt :: Structure
 rbt = DS "Red-Black Trees"  [
                             Op BoundByRef           (LinLog 0 1, N),
@@ -86,7 +86,7 @@ rbt = DS "Red-Black Trees"  [
                             Op Union                (LinLog 1 1, N),
                             Op UpdateByRef          (LinLog 0 1, N)
                                                                     ]
--- | Hashtable                                                      
+-- | Hashtable
 hash :: Structure
 hash = DS "Hashtable"       [
                             Op BoundByRef           (LinLog 1 0, N),
