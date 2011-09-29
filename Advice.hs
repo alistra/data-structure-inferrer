@@ -1,5 +1,5 @@
 -- | Module providing helpful tips about minimizing the complexity of the chosen data structure
-module Advice 
+module Advice
       ( adviceDS,
         printAdvice,
         adviceDS',
@@ -30,7 +30,7 @@ better s1 s2 opns   | s1 == s2 = True
                     | otherwise = compareDS s1 s2 opns == GT
 -- | Checks if the structure @s1@ is better than each of the structures in @ss@ on operations @opns@
 betterThanEach :: Structure -> [Structure] -> [OperationName] -> Bool
-betterThanEach s1 ss opns = all (\s2-> better s1 s2 opns) ss 
+betterThanEach s1 ss opns = all (\s2-> better s1 s2 opns) ss
 
 -- | Removes already recommended data structures @recs@ from the advised structures
 filterAdviceForRecommended :: [Structure] -> [Advice] -> [Advice]
@@ -40,7 +40,7 @@ filterAdviceForRecommended recs = filter (\(Advice ds _ _) -> ds `notElem` recs)
 adviceDS' :: Integer -> [OperationName] -> [Advice]
 adviceDS' n opns =  let recOrig = recommendAllDs opns
                         opnsSeqs = sequencesOfLen opns (genericLength opns - n)
-                        recSeqs = concatMap (\seq -> map (\x -> Advice x seq opns) $ filter (\ds-> betterThanEach ds recOrig seq) (recommendAllDs seq)) opnsSeqs 
+                        recSeqs = concatMap (\seq -> map (\x -> Advice x seq opns) $ filter (\ds-> betterThanEach ds recOrig seq) (recommendAllDs seq)) opnsSeqs
                             in filterAdviceForRecommended recOrig recSeqs
 
 -- | Returns advice data for operations @opns@
@@ -49,13 +49,13 @@ adviceDS = adviceDS' 1
 
 -- | Pretty prints effects of 'adviceDS''
 printAdvice' :: Integer -> [OperationName] -> IO ()
-printAdvice' n opns =   do    
+printAdvice' n opns =   do
     yellowColor
-    let adv = adviceDS' n opns 
+    let adv = adviceDS' n opns
     let rec = recommendAllDs opns
     if length rec == 1
-        then    do  
-                    putStr "Currently, the recommended data structure is: " 
+        then    do
+                    putStr "Currently, the recommended data structure is: "
                     cyanColor
                     putStrLn (getDSName $ head rec)
                     yellowColor
@@ -70,7 +70,7 @@ printAdvice' n opns =   do
 -- | Prints one 'Advice' element
 printAdviceStructure :: Advice -> IO()
 printAdviceStructure (Advice s seq opns) = do
-    putStr  "You could use " 
+    putStr  "You could use "
     greenColor
     putStr $ getDSName s
     yellowColor

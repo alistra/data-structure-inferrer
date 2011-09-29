@@ -13,6 +13,7 @@ import Recommend
 
 import Data.List
 import Control.Monad.State
+import Control.Arrow
 
 -- | Data structure for analysis info
 data DSInfo = DSI {
@@ -91,7 +92,7 @@ closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
                     let dsis = getDSFDSI dsf in
                     let currDSI = lookupDSI dsis funname var in
                     let otherDSI = dsis \\ [currDSI] in
-                    (foldl1 mergeDSI $ currDSI:(concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts)):otherDSI where
+                    foldl1 mergeDSI (currDSI:concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts):otherDSI where
 
                         bindFuncall :: (FunctionName, [Maybe VariableName]) -> [(VariableName, VariableName)]
                         bindFuncall  = bindFuncall' 1
@@ -191,7 +192,7 @@ step dsus (InitAssign name term _) = return dsus
 
 step dsus (While cond body) = do
     newDSU <- stepBlock [cond,body]
-    return $ dsus ++ map (\(b,c) -> (b,setHeavyUsage c)) newDSU -- FIXME smarter heavy load recognition
+    return $ dsus ++ map (second setHeavyUsage) newDSU -- FIXME smarter heavy load recognition
 
 step dsus (Funcall name args) = do
     s <- get
