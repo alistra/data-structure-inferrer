@@ -42,8 +42,8 @@ listFiles path = do
 test :: String -> IO()
 test src = do
     let fns = (parse.lex) src
-    typechecking fns `catch` (handler "\nTyping failed")
-    analysis fns `catch` (handler "\nAnalysis failed")
+    typechecking fns `catch` handler "\nTyping failed"
+    analysis fns `catch` handler "\nAnalysis failed"
 
 -- | Tests analysis
 analysis ::  [Function] -> IO ()
