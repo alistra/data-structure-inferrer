@@ -11,6 +11,7 @@ import Defs.AST
 import Typechecker
 import Recommend
 
+
 import Data.List
 import Control.Monad.State
 import Control.Arrow
@@ -233,4 +234,4 @@ step dsus (If cond t1 t2) = do
     put $ AS (getStateFunction stateT1) (getStateFunNames stateT1) (getStateVarNames stateT1 `union` getStateVarNames stateT2) (getStateCalls stateT1 `union` getStateCalls stateT2)
     return $ dsus ++ concat [dsuCond, dsuT1, dsuT2]
 
---step dsus _ = return dsus
+--step dsus _ =

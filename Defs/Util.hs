@@ -1,11 +1,13 @@
 module Defs.Util where
-
 import System.Console.ANSI
 import Data.List
 
 -- | Changes the color of the terminal output to green
 greenColor :: IO()
 greenColor = setSGR [SetColor Foreground Vivid Green]
+-- | Changes the color of the terminal output to blue
+blueColor :: IO()
+blueColor = setSGR [SetColor Foreground Vivid Blue]
 -- | Changes the color of the terminal output to yellow
 yellowColor :: IO()
 yellowColor = setSGR [SetColor Foreground Dull Yellow]

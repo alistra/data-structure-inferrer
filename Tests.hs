@@ -5,12 +5,12 @@ module Tests
 import Il.Lexer
 import Il.Parser
 import Defs.Util
-
+import Defs.AST
 import Analyzer
 import Typechecker
 
 import Control.Exception
-import System.IO
+import Data.List
 import System.Directory
 import Prelude hiding (lex, catch)
 
@@ -28,31 +28,43 @@ runTest name = do
     yellowColor
     putStrLn $ "Test File " ++ name
     resetColor
-    handle <- openTestFile name
-    contents <- hGetContents handle
+    contents <- readFile name
     test contents
-    hClose handle
 
 -- | Lists all filenames in a given directory
 listFiles :: FilePath -> IO [FilePath]
 listFiles path = do
     allfiles <- getDirectoryContents path
-    let files = filter (\s -> last (split "/" s) `notElem` [".", ".."]) allfiles
+    let files = sort $ filter (\s -> last (split "/" s) `notElem` [".", ".."]) allfiles
     return $ map (path++) files
-
--- | Wrapper for openFile adding exception catching
-openTestFile :: FilePath -> IO Handle
-openTestFile name = catch (openFile name ReadMode) (\e -> do print (e :: IOException)
-                                                             error $ "Cannot open "++ name)
-checkTest a = print a `catch` (\e -> do
-                print "Test failed"
-                print (e :: IOException))
 
 -- | Lexes, parses, analyzes and pretty prints test results
 test :: String -> IO()
 test src = do
     let fns = (parse.lex) src
-    mapM_ (checkTest . typecheckF fns) fns
---    (printRecommendationFromAnalysis.analyze) fns
---    return ()
+    typechecking fns `catch` (handler "\nTyping failed")
+    analysis fns `catch` (handler "\nAnalysis failed")
 
+-- | Tests analysis
+analysis ::  [Function] -> IO ()
+analysis fns = do
+    printRecommendationFromAnalysis.analyze $ fns
+    greenColor
+    putStrLn "Passed"
+    resetColor
+
+-- | Tests typechecking
+typechecking ::  [Function] -> IO ()
+typechecking fns = mapM_ (\fn -> do
+    print $ typecheckF fns fn
+    blueColor
+    putStrLn "Typed"
+    resetColor) fns
+
+-- | Handles failing tests
+handler ::  String -> SomeException -> IO ()
+handler msg e = do
+    redColor
+    putStrLn msg
+    print (e :: SomeException)
+    resetColor
