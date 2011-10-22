@@ -14,15 +14,15 @@ import Recommend
 import Data.List
 
 -- | Type for advice data
-data Advice = Advice {  advisedDS :: Structure,                 -- ^ Structure to be advised
-                        reducedOperations :: [OperationName],   -- ^ Operations on which the structure is better than the recommended one
-                        operations :: [OperationName]           -- ^ Original operations (we can get recommendations from them)
-                                                        } deriving Show
+data Advice = Advice {
+    advisedDS :: Structure,                 -- ^ Structure to be advised
+    reducedOperations :: [OperationName],   -- ^ Operations on which the structure is better than the recommended one
+    operations :: [OperationName]           -- ^ Original operations (we can get recommendations from them)
+    } deriving Show
 
 -- | Checks if structure @s1@ is not worse than structure @s2@ on operations @opns@
 notWorse :: Structure -> Structure -> [OperationName] -> Bool
 notWorse s1 s2 opns = compareDS s1 s2 opns /= LT
-
 
 -- | Checks if the structure @s1@ is better than the structure @s2@ on operations @opns@
 better :: Structure -> Structure -> [OperationName] -> Bool
@@ -38,10 +38,11 @@ filterAdviceForRecommended recs = filter (\(Advice ds _ _) -> ds `notElem` recs)
 
 -- | Returns advice data for operations @opns@ and at most @n@ operations to forget about
 adviceDS' :: Integer -> [OperationName] -> [Advice]
-adviceDS' n opns =  let recOrig = recommendAllDs opns
-                        opnsSeqs = sequencesOfLen opns (genericLength opns - n)
-                        recSeqs = concatMap (\seq -> map (\x -> Advice x seq opns) $ filter (\ds-> betterThanEach ds recOrig seq) (recommendAllDs seq)) opnsSeqs
-                            in filterAdviceForRecommended recOrig recSeqs
+adviceDS' n opns = let
+    recOrig = recommendAllDs opns
+    opnsSeqs = sequencesOfLen opns (genericLength opns - n)
+    recSeqs = concatMap (\seq -> map (\x -> Advice x seq opns) $ filter (\ds-> betterThanEach ds recOrig seq) (recommendAllDs seq)) opnsSeqs
+    in filterAdviceForRecommended recOrig recSeqs
 
 -- | Returns advice data for operations @opns@
 adviceDS :: [OperationName] -> [Advice]
@@ -54,16 +55,16 @@ printAdvice' n opns =   do
     let adv = adviceDS' n opns
     let rec = recommendAllDs opns
     if length rec == 1
-        then    do
-                    putStr "Currently, the recommended data structure is: "
-                    cyanColor
-                    putStrLn (getDSName $ head rec)
-                    yellowColor
-        else    do
-                    putStr "Currently, the recommended data structures are: "
-                    cyanColor
-                    putStrLn (foldl (\str ds -> (str ++ ", " ++ getDSName ds)) "" rec)
-                    yellowColor
+        then do
+            putStr "Currently, the recommended data structure is: "
+            cyanColor
+            putStrLn (getDSName $ head rec)
+            yellowColor
+        else do
+            putStr "Currently, the recommended data structures are: "
+            cyanColor
+            putStrLn (foldl (\str ds -> (str ++ ", " ++ getDSName ds)) "" rec)
+            yellowColor
     mapM_ printAdviceStructure adv
     resetColor
 
