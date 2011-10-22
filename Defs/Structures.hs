@@ -1,6 +1,5 @@
 module Defs.Structures where
 
-import Data.List
 import Data.Ord
 import Defs.Util
 
@@ -29,7 +28,7 @@ data OperationName =  InsertVal         -- ^ Insert an element
                     | Size              -- ^ Checking the size
                     | Empty             -- ^ Checking the empiness
                     deriving (Show, Eq)
-                    
+
 -- | Additional complexity qualifiers
 data ComplexityCharacteristics = AE -- ^ Amortized expected time
                                 | E -- ^ Expected time

@@ -8,9 +8,7 @@ import Defs.Util
 import Defs.Common
 import Defs.AST
 
-import Typechecker
 import Recommend
-
 
 import Data.List
 import Control.Monad.State
@@ -49,9 +47,12 @@ data AnalyzerState = AS {
     getStateCalls    :: [(FunctionName, [Maybe VariableName])]  -- ^ Function calls gathered through the analysis
     } deriving (Show, Eq)
 
-
+setHeavyUsage ::  DSUse -> DSUse
 setHeavyUsage (DSU opname _ ud) = DSU opname True ud
+{- TODO lenses?
+setUserDependance ::  DSUse -> DSUse
 setUserDependance (DSU opname hu _) = DSU opname hu True
+-}
 
 -- | Pretty print single 'DSInfo'
 printDSI :: DSInfo -> IO()
@@ -81,7 +82,7 @@ analyze functions = let functionNames = map getFunName functions in
 -- | Merges the simple 'DSInfo's based on function calls from the functions
 closeDSIs :: [DSFun] -> [DSInfo]
 closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
-    let dsiVars = map snd $ filter (\(fn,vn) -> fn == startingFunction) $ concatMap getDSINames $ getDSFDSI startingDSF in
+    let dsiVars = map snd $ filter (\(fn,_) -> fn == startingFunction) $ concatMap getDSINames $ getDSFDSI startingDSF in
     concatMap (\var -> closeDSIs' startingDSF var []) dsiVars where
 
         closeDSIs' :: DSFun -> VariableName -> [FunctionName] -> [DSInfo]
@@ -103,16 +104,16 @@ closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
                             then (fn, getNewVarName fn n): bindFuncall' (n+1) (fn, vns)
                             else bindFuncall' (n+1) (fn, vns)
                         bindFuncall' n (fn, Nothing:vns) = bindFuncall' (n+1) (fn, vns)
-                        bindFuncall' n (fn, []) = []
+                        bindFuncall' _ (_, []) = []
 
 
                         mergeDSI :: DSInfo -> DSInfo -> DSInfo
                         mergeDSI (DSI n1 d1) (DSI n2 d2) = DSI (n1++n2) (nub $ d1++d2)
 
                         lookupDSI :: [DSInfo] -> FunctionName -> VariableName -> DSInfo
-                        lookupDSI dsis funname var = let goodDSI = filter (\dsi -> (funname, var) `elem` getDSINames dsi) dsis in
+                        lookupDSI dsis funname var1 = let goodDSI = filter (\dsi -> (funname, var1) `elem` getDSINames dsi) dsis in
                             if length goodDSI /= 1
-                                then error $ "None or too many matching DSI " ++ show (funname, var)
+                                then error $ "None or too many matching DSI " ++ show (funname, var1)
                                 else head goodDSI
 
 
@@ -142,7 +143,7 @@ stepBlock = foldlTerms step [] where
 
 -- | Foldl 'Term's using the 'step' function to generate 'AnalyzerOutput'
 foldlTerms :: (AnalyzerOutput -> Term -> Analyzer AnalyzerOutput) -> AnalyzerOutput -> [Term] -> Analyzer AnalyzerOutput
-foldlTerms f start [] = return start
+foldlTerms _ start [] = return start
 foldlTerms f start (r:rest) = do
     dsus <- f start r
     foldlTerms f dsus rest
@@ -150,26 +151,29 @@ foldlTerms f start (r:rest) = do
 -- | Function putting a variable definition in the context
 putVar :: VariableName -> Analyzer ()
 putVar name = do
-    state <- get
-    put $ AS (getStateFunction state) (getStateFunNames state) (name:getStateVarNames state) (getStateCalls state)
+    s <- get
+    put $ AS (getStateFunction s) (getStateFunNames s) (name:getStateVarNames s) (getStateCalls s)
 
 -- | Function returning 'True' if the variable is already defined
 getVar :: VariableName -> AnalyzerState -> Bool
-getVar name state = name `elem` getStateVarNames state
+getVar name s = name `elem` getStateVarNames s
 
 -- | Function putting a function call in the state
 putCall :: FunctionName -> [Term] -> Analyzer ()
 putCall name args = do
-    state <- get
+    s <- get
     let cleanArgs = map justifyVars args
     let call = (name, cleanArgs)
-    put $ AS (getStateFunction state) (getStateFunNames state) (getStateVarNames state) (call:getStateCalls state) where
+    put $ AS (getStateFunction s) (getStateFunNames s) (getStateVarNames s) (call:getStateCalls s) where
         justifyVars :: Term -> Maybe VariableName
         justifyVars (Var v) = Just v -- FIXME should work on function calls returning dses, not only vars
         justifyVars _ = Nothing
 
 -- | Folding step generating 'DSUse's
 step :: AnalyzerOutput -> Term -> Analyzer AnalyzerOutput
+
+step dsus (And t1 t2) = undefined
+
 
 step dsus (Block body) = do
     newDSU <- stepBlock body
@@ -181,15 +185,15 @@ step dsus (VarInit name Ds) = do
         then error $ name ++ " already initialized"
         else putVar name >> return dsus
 
-step dsus (VarInit name _) = return dsus
+step dsus (VarInit _ _) = return dsus
 
-step dsus (InitAssign name term Ds) = do
+step dsus (InitAssign name _ Ds) = do
     s <- get
     if getVar name s
         then error $ name ++ " already initialized"
         else putVar name >> return dsus
 
-step dsus (InitAssign name term _) = return dsus
+step dsus (InitAssign _ _ _) = return dsus
 
 step dsus (While cond body) = do
     newDSU <- stepBlock [cond,body]
