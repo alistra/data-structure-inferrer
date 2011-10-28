@@ -15,7 +15,6 @@ data TypeState = TS {
 -- | State monad to remember the 'TypeState'
 type Typechecker a = State TypeState a
 
-
 -- | Typecheck a term block
 typecheckB :: [Term] -> Typechecker [Maybe Type]
 typecheckB = mapM typecheckT

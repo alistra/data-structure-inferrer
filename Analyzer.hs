@@ -172,8 +172,6 @@ putCall name args = do
 -- | Folding step generating 'DSUse's
 step :: AnalyzerOutput -> Term -> Analyzer AnalyzerOutput
 
-step dsus (And t1 t2) = undefined
-
 
 step dsus (Block body) = do
     newDSU <- stepBlock body

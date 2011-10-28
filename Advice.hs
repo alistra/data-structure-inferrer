@@ -8,7 +8,6 @@ module Advice
 import Defs.Util
 import Defs.Structures
 
-import AllStructures
 import Recommend
 
 import Data.List
@@ -41,7 +40,7 @@ adviceDS' :: Integer -> [OperationName] -> [Advice]
 adviceDS' n opns = let
     recOrig = recommendAllDs opns
     opnsSeqs = sequencesOfLen opns (genericLength opns - n)
-    recSeqs = concatMap (\seq -> map (\x -> Advice x seq opns) $ filter (\ds-> betterThanEach ds recOrig seq) (recommendAllDs seq)) opnsSeqs
+    recSeqs = concatMap (\sq -> map (\x -> Advice x sq opns) $ filter (\ds-> betterThanEach ds recOrig sq) (recommendAllDs sq)) opnsSeqs
     in filterAdviceForRecommended recOrig recSeqs
 
 -- | Returns advice data for operations @opns@
@@ -70,14 +69,14 @@ printAdvice' n opns =   do
 
 -- | Prints one 'Advice' element
 printAdviceStructure :: Advice -> IO()
-printAdviceStructure (Advice s seq opns) = do
+printAdviceStructure (Advice s betterOpns opns) = do
     putStr  "You could use "
     greenColor
     putStr $ getDSName s
     yellowColor
     putStrLn ", if you removed the following operations:"
     redColor
-    putStr $ concatMap (\opn -> "* " ++ show opn ++ "\n") (opns \\ seq)
+    putStr $ concatMap (\opn -> "* " ++ show opn ++ "\n") (opns \\ betterOpns)
     resetColor
 
 -- | Pretty prints effects of 'adviceDS'

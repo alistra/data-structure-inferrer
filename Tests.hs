@@ -9,6 +9,7 @@ import Defs.AST
 import Analyzer
 import Typechecker
 
+import System.FilePath.Posix
 import Control.Exception
 import Data.List
 import System.Directory
@@ -36,7 +37,7 @@ listFiles :: FilePath -> IO [FilePath]
 listFiles path = do
     allfiles <- getDirectoryContents path
     let files = sort $ filter (\s -> last (split "/" s) `notElem` [".", ".."]) allfiles
-    return $ map (path++) files
+    return $ map (path </>) files
 
 -- | Lexes, parses, analyzes and pretty prints test results
 test :: String -> IO()
