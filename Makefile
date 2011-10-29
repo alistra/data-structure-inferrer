@@ -8,7 +8,7 @@ Il/Parser.hs: Il/Parser.y
 	happy -iIl/grammar.log Il/Parser.y
 
 clean:
-	rm Il/Lexer.hs Il/Parser.hs Il/grammar.log
+	rm Il/Lexer.hs Il/Parser.hs Il/grammar.log thesis.log
 
 fixme:	
 	grep FIXME *hs

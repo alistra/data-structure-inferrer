@@ -6,3 +6,4 @@ doc/
 Parser.hs
 Lexer.hs
 grammar.log
+thesis.log

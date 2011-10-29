@@ -30,7 +30,7 @@ assertType t1 tp2 = do
 -- | Typecheck a function definition
 typecheckF :: [Function] ->  Function -> [Maybe Type]
 typecheckF fns (Function _ tp args (Block body)) = evalState (typecheckB body) (TS tp (dsinfFunctions ++ fns) args)
-typecheckF _ (Function name _ _ _) = error $ "Type error: " ++ name ++ ": wrong function definition, not a block"
+typecheckF _ (Function name _ _ _) = error $ "Function definition for " ++ name ++ " is not a code block"
 
 -- | Typecheck a function call
 typecheckFC :: FunctionName -> [Term] -> Typechecker (Maybe Type)
@@ -40,7 +40,7 @@ typecheckFC f ts = do
     let fns = filter (\x -> getFunName x == f && map fromJust tps == map snd (getFunArgs x)) (getStateFunctions s)
     case fns of
         [] -> error $ "No matching function: " ++ f
-        fn:[] -> return $ getFunType fn
+        fn:[]   -> return $ getFunType fn
         fn:fnss -> error $ "More than one function matching: " ++ show (fn:fnss)
 
 -- | Typecheck one field of the record
