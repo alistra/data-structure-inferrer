@@ -8,7 +8,7 @@ import Defs.Structures
 import AllStructures
 
 import Data.List
-import Random
+import System.Random
 
 -- | Recommends a data structure which is best for given operations @opns@. If there's more than one optimal structure, it chooses one at random
 recommendDS :: [OperationName] -> IO Structure

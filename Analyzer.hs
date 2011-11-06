@@ -11,6 +11,7 @@ import Defs.AST
 import Recommend
 
 import Data.List
+import Data.Monoid
 import Control.Monad.State
 import Control.Arrow
 
@@ -19,6 +20,10 @@ data DSInfo = DSI {
     getDSINames  :: [(FunctionName, VariableName)],  -- ^ Variable holding the data structure --FIXME pointer copying
     getDSIDSU      :: [DSUse]                          -- ^ Data structure use cases
     } deriving (Show, Eq)
+
+instance Monoid DSInfo where
+    mempty = DSI [] []
+    mappend (DSI n1 d1) (DSI n2 d2) = DSI (n1++n2) (nub $ d1++d2)
 
 -- | Data structure for function info
 data DSFun = DSF {
@@ -94,7 +99,7 @@ closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
                     let dsis = getDSFDSI dsf in
                     let currDSI = lookupDSI dsis funname var in
                     let otherDSI = dsis \\ [currDSI] in
-                    foldl1 mergeDSI (currDSI:concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts):otherDSI where
+                    mconcat (currDSI:concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts):otherDSI where
 
                         bindFuncall :: (FunctionName, [Maybe VariableName]) -> [(VariableName, VariableName)]
                         bindFuncall  = bindFuncall' 1
@@ -107,8 +112,6 @@ closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
                         bindFuncall' _ (_, []) = []
 
 
-                        mergeDSI :: DSInfo -> DSInfo -> DSInfo
-                        mergeDSI (DSI n1 d1) (DSI n2 d2) = DSI (n1++n2) (nub $ d1++d2)
 
                         lookupDSI :: [DSInfo] -> FunctionName -> VariableName -> DSInfo
                         lookupDSI dsis funname var1 = let goodDSI = filter (\dsi -> (funname, var1) `elem` getDSINames dsi) dsis in
@@ -183,7 +186,6 @@ step dsus (VarInit name Ds) = do
         then error $ name ++ " already initialized"
         else putVar name >> return dsus
 
-step dsus (VarInit _ _) = return dsus
 
 step dsus (InitAssign name _ Ds) = do
     s <- get
@@ -236,4 +238,11 @@ step dsus (If cond t1 t2) = do
     put $ AS (getStateFunction stateT1) (getStateFunNames stateT1) (getStateVarNames stateT1 `union` getStateVarNames stateT2) (getStateCalls stateT1 `union` getStateCalls stateT2)
     return $ dsus ++ concat [dsuCond, dsuT1, dsuT2]
 
---step dsus _ =
+
+-- Dummy steps
+step dsus t = case t of
+    Var _ -> return dsus
+    VarInit _ _ -> return dsus
+    Inc _ -> return dsus
+    Dec _ -> return dsus
+    s -> error $ "No step for " ++ show s

@@ -5,6 +5,7 @@ import System.Environment
 import System.IO
 import System.Exit
 import Control.Monad
+import Tests
 
 data Options = Options  { optVerbose    :: Bool
                         , optInput      :: IO String

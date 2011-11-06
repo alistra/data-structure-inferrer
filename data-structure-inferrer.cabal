@@ -53,6 +53,12 @@ Executable data-structure-inferrer
   -- Packages needed in order to build this package.
   Build-depends:         ansi-terminal            >= 0.5.0
                        , base                     >= 4.3.0
+                       , random
+                       , directory
+                       , language-c
+                       , filepath
+                       , mtl
+                       , array
   
   -- Modules not exported by this package.
   -- Other-modules:       
