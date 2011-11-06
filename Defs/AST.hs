@@ -48,7 +48,7 @@ data Type = TInt                    -- ^ Integer
             deriving (Show, Eq)
 
 -- | Basic functions for data-structure access
-dsinfFunctions ::  [Function]
+dsinfFunctions :: [Function]
 dsinfFunctions = [
     Function "update"     Nothing        [("ds", Ds), ("oldval", TInt), ("newval", TInt)]   (Block []),
     Function "insert"     (Just DsElem)  [("ds", Ds), ("elem", TInt)]                       (Block []),
@@ -62,6 +62,6 @@ dsinfFunctions = [
     ]
 
 -- | Functions that are easilly decomposed into 'dsinfFunctions' functions
-dsinfAliasFunctions ::  [Function]
+dsinfAliasFunctions :: [Function]
 dsinfAliasFunctions = []
 
