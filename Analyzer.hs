@@ -92,25 +92,29 @@ analyze functions = let functionNames = map getFunName functions in
 closeDSIs :: [DSFun] -> [DSInfo]
 closeDSIs dsfs = let startingDSF = lookupJustNote ("No definition of starting function " ++ startingFunction)
                         startingFunction (zip (map (getFunName.getDSFFun) dsfs) dsfs) in
+    let functions = map getDSFFun dsfs in
     let startingVars = map snd $ concatMap getDSINames $ getDSFDSI startingDSF in
-    concatMap (\var -> closeDSIs' startingDSF var []) startingVars where
+    concatMap (\var -> closeDSIs' functions startingDSF var []) startingVars where
 
-        closeDSIs' :: DSFun -> VariableName -> [FunctionName] -> [DSInfo]
-        closeDSIs' dsf variable accumulator = let functionName = getFunName.getDSFFun $ dsf in
+        closeDSIs' :: [Function] -> DSFun -> VariableName -> [FunctionName] -> [DSInfo]
+        closeDSIs' functions dsf variable accumulator = let functionName = getFunName.getDSFFun $ dsf in
             if functionName `elem` accumulator
                 then []
                 else let functionCalls = getDSFCalls dsf in
+                    let relevantFunctionCalls = filter (\(funName, funArgs) -> Just variable `elem` funArgs) functionCalls in
                     let dsis = getDSFDSI dsf in
                     let currDSI = lookupDSI dsis functionName variable in
                     let otherDSI = dsis \\ [currDSI] in
+                    let variableBindings = map (\(funName, funArgs) -> (funName, bindFuncall functions variable funArgs)) relevantFunctionCalls in 
                     undefined {-
+                    
                     let varConts = concatMap bindFuncall functionCalls in
                     mconcat (currDSI:concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts):otherDSI where
 -}
 
 -- | Lookup DSI wrapper FIXME: probably some nicer lookup function
-lookupDSI :: [DSInfo] -> FunctionName -> VariableName -> DSInfo
-lookupDSI dsis functionName variable = let goodDSI = filter (\dsi -> (functionName, variable) `elem` getDSINames dsi) dsis in
+lookupDSI :: [DSInfo] -> VariableName -> FunctionName -> DSInfo
+lookupDSI dsis variable functionName = let goodDSI = filter (\dsi -> (functionName, variable) `elem` getDSINames dsi) dsis in
     if length goodDSI /= 1
         then error $ "None or too many matching DSI " ++ show (functionName, variable)
         else head goodDSI

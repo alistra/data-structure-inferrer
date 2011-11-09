@@ -59,6 +59,7 @@ Executable data-structure-inferrer
                        , filepath
                        , mtl
                        , array
+                       , safe
   
   -- Modules not exported by this package.
   -- Other-modules:       
