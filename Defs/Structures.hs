@@ -52,9 +52,9 @@ instance Ord AsymptoticalComplexity where
 instance Show AsymptoticalComplexity where
     show (LinLog 0 0)   = "O(1)"
     show (LinLog 1 0)   = "O(n)"
-    show (LinLog 0 n)   = "O("   ++ logs n ++ " n)" 
-    show (LinLog 1 n)   = "O(n " ++ logs n ++ " n)" 
-    show (LinLog n 0)   = "O(n^" ++ show n ++ ")" 
+    show (LinLog 0 n)   = "O("   ++ logs n ++ " n)"
+    show (LinLog 1 n)   = "O(n " ++ logs n ++ " n)"
+    show (LinLog n 0)   = "O(n^" ++ show n ++ ")"
     show (LinLog n m)   = "O(n^" ++ show n ++ " " ++ logs m ++ " n)"
 
 -- | Function to pretty print stacked logarithms

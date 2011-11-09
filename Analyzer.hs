@@ -14,16 +14,17 @@ import Data.List
 import Data.Monoid
 import Control.Monad.State
 import Control.Arrow
+import Safe
 
 -- | Data structure for analysis info
 data DSInfo = DSI {
-    getDSINames  :: [(FunctionName, VariableName)],  -- ^ Variable holding the data structure --FIXME pointer copying
-    getDSIDSU      :: [DSUse]                          -- ^ Data structure use cases
+    getDSINames  :: [(FunctionName, VariableName)],     -- ^ Variable holding the data structure --FIXME pointer copying
+    getDSIDSU      :: [DSUse]                           -- ^ Data structure use cases
     } deriving (Show, Eq)
 
 instance Monoid DSInfo where
     mempty = DSI [] []
-    mappend (DSI n1 d1) (DSI n2 d2) = DSI (n1++n2) (nub $ d1++d2)
+    mappend (DSI n1 d1) (DSI n2 d2) = DSI (n1 `union` n2) (d1 `union` d2)
 
 -- | Data structure for function info
 data DSFun = DSF {
@@ -51,6 +52,9 @@ data AnalyzerState = AS {
     getStateVarNames :: [VariableName],                         -- ^ All the variable names
     getStateCalls    :: [(FunctionName, [Maybe VariableName])]  -- ^ Function calls gathered through the analysis
     } deriving (Show, Eq)
+
+append :: AnalyzerState -> AnalyzerState -> AnalyzerState
+append (AS f1 fns1 vns1 cs1) (AS _ _ vns2 cs2) = AS f1 fns1 (vns1 `union` vns2) (cs1 `union` cs2)
 
 setHeavyUsage ::  DSUse -> DSUse
 setHeavyUsage (DSU opname _ ud) = DSU opname True ud
@@ -86,49 +90,47 @@ analyze functions = let functionNames = map getFunName functions in
 
 -- | Merges the simple 'DSInfo's based on function calls from the functions
 closeDSIs :: [DSFun] -> [DSInfo]
-closeDSIs dsfs = let startingDSF = lookupFun startingFunction in
-    let dsiVars = map snd $ filter (\(fn,_) -> fn == startingFunction) $ concatMap getDSINames $ getDSFDSI startingDSF in
-    concatMap (\var -> closeDSIs' startingDSF var []) dsiVars where
+closeDSIs dsfs = let startingDSF = lookupJustNote ("No definition of starting function " ++ startingFunction)
+                        startingFunction (zip (map (getFunName.getDSFFun) dsfs) dsfs) in
+    let startingVars = map snd $ concatMap getDSINames $ getDSFDSI startingDSF in
+    concatMap (\var -> closeDSIs' startingDSF var []) startingVars where
 
         closeDSIs' :: DSFun -> VariableName -> [FunctionName] -> [DSInfo]
-        closeDSIs' dsf var accu = let funname = getFunName (getDSFFun dsf) in
-            if funname `elem` accu
+        closeDSIs' dsf variable accumulator = let functionName = getFunName.getDSFFun $ dsf in
+            if functionName `elem` accumulator
                 then []
-                else let funcalls = getDSFCalls dsf in
-                    let varConts = concatMap bindFuncall funcalls in
+                else let functionCalls = getDSFCalls dsf in
                     let dsis = getDSFDSI dsf in
-                    let currDSI = lookupDSI dsis funname var in
+                    let currDSI = lookupDSI dsis functionName variable in
                     let otherDSI = dsis \\ [currDSI] in
+                    undefined {-
+                    let varConts = concatMap bindFuncall functionCalls in
                     mconcat (currDSI:concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts):otherDSI where
+-}
 
-                        bindFuncall :: (FunctionName, [Maybe VariableName]) -> [(VariableName, VariableName)]
-                        bindFuncall  = bindFuncall' 1
+-- | Lookup DSI wrapper FIXME: probably some nicer lookup function
+lookupDSI :: [DSInfo] -> FunctionName -> VariableName -> DSInfo
+lookupDSI dsis functionName variable = let goodDSI = filter (\dsi -> (functionName, variable) `elem` getDSINames dsi) dsis in
+    if length goodDSI /= 1
+        then error $ "None or too many matching DSI " ++ show (functionName, variable)
+        else head goodDSI
 
-                        bindFuncall' :: Int -> (FunctionName, [Maybe VariableName]) -> [(FunctionName, VariableName)]
-                        bindFuncall' n (fn, Just vn:vns) = if vn == var
-                            then (fn, getNewVarName fn n): bindFuncall' (n+1) (fn, vns)
-                            else bindFuncall' (n+1) (fn, vns)
-                        bindFuncall' n (fn, Nothing:vns) = bindFuncall' (n+1) (fn, vns)
-                        bindFuncall' _ (_, []) = []
+-- | Returns pairs of local variables bound to variables in a function that is called
+bindFuncall :: [Function] -> FunctionName -> [Maybe VariableName] -> [(VariableName, VariableName)]
+bindFuncall functions functionName vns = let
+    function = lookupJustNote ("Function " ++ show functionName ++ "is called, but not defined")
+        functionName (zip (map getFunName functions) functions) in --FIXME: findJustNote if able
+    maybeZipWith bindZipper vns (map fst (getFunArgs function)) where
+        bindZipper :: Maybe VariableName -> VariableName -> Maybe (VariableName, VariableName)
+        bindZipper (Just a) b = Just (a,b)
+        bindZipper Nothing _ = Nothing
 
-
-
-                        lookupDSI :: [DSInfo] -> FunctionName -> VariableName -> DSInfo
-                        lookupDSI dsis funname var1 = let goodDSI = filter (\dsi -> (funname, var1) `elem` getDSINames dsi) dsis in
-                            if length goodDSI /= 1
-                                then error $ "None or too many matching DSI " ++ show (funname, var1)
-                                else head goodDSI
-
-
-        lookupFun :: FunctionName -> DSFun
-        lookupFun name = let goodDsfs = filter (\dsf -> getFunName (getDSFFun dsf) == name) dsfs in
-            if length goodDsfs /= 1
-                then error $ "None or too many matching functions " ++ name
-                else head goodDsfs
-
-        getNewVarName :: FunctionName -> Int -> VariableName
-        getNewVarName fn n = let fun = getDSFFun $ lookupFun fn in
-           fst $ getFunArgs fun !! n
+-- | Like zipWith only returns only those elements of type 'c' that were qualified with Just
+maybeZipWith :: (a -> b -> Maybe c) -> [a] -> [b] -> [c]
+maybeZipWith f (x:xs) (y:ys) = case f x y of
+    Just z -> z : maybeZipWith f xs ys
+    Nothing -> maybeZipWith f xs ys
+maybeZipWith _ _ _ = []
 
 -- | Generates simple 'DSInfo's without the info from function calls
 generateDSI :: Function -> [(VariableName, DSUse)] -> [DSInfo]
@@ -235,14 +237,16 @@ step dsus (If cond t1 t2) = do
     dsuT2 <- stepBlock  [t2]
     stateT2 <- get
 
-    put $ AS (getStateFunction stateT1) (getStateFunNames stateT1) (getStateVarNames stateT1 `union` getStateVarNames stateT2) (getStateCalls stateT1 `union` getStateCalls stateT2)
+    put (stateT1 `append` stateT2)
     return $ dsus ++ concat [dsuCond, dsuT1, dsuT2]
-
 
 -- Dummy steps
 step dsus t = case t of
     Var _ -> return dsus
-    VarInit _ _ -> return dsus
+    VarInit _ _ -> return dsus --FIXME: recurse on the value
     Inc _ -> return dsus
     Dec _ -> return dsus
+    Assign _ _ -> return dsus
+    Lt _ _ -> return dsus
+    Mul _ _ -> return dsus
     s -> error $ "No step for " ++ show s
