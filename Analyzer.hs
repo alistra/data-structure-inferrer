@@ -12,6 +12,8 @@ import Recommend
 
 import Data.List
 import Data.Monoid
+import Data.Maybe
+import Data.Maybe.HT
 import Control.Monad.State
 import Control.Arrow
 import Safe
@@ -40,20 +42,20 @@ data DSUse = DSU {
     isUserDependent :: Bool             -- ^ Is it dependent on some external input (user, network, random, signals, etc.)
     } deriving (Show, Eq)
 
--- | State monad with 'AnalyzerState'
-type Analyzer a = State AnalyzerState a
+-- | State monad with 'TermAnalyzerState'
+type TermAnalyzer a = State TermAnalyzerState a
 
-type AnalyzerOutput = [(VariableName, DSUse)]
+type TermAnalyzerOutput = [(VariableName, DSUse)]
 
 -- | State of the analyzer
-data AnalyzerState = AS {
+data TermAnalyzerState = AS {
     getStateFunction :: Function,                               -- ^ Current function being analyzed
     getStateFunNames :: [FunctionName],                         -- ^ All the other function names
     getStateVarNames :: [VariableName],                         -- ^ All the variable names
     getStateCalls    :: [(FunctionName, [Maybe VariableName])]  -- ^ Function calls gathered through the analysis
     } deriving (Show, Eq)
 
-append :: AnalyzerState -> AnalyzerState -> AnalyzerState
+append :: TermAnalyzerState -> TermAnalyzerState -> TermAnalyzerState
 append (AS f1 fns1 vns1 cs1) (AS _ _ vns2 cs2) = AS f1 fns1 (vns1 `union` vns2) (cs1 `union` cs2)
 
 setHeavyUsage ::  DSUse -> DSUse
@@ -86,38 +88,40 @@ printRecommendationFromAnalysis = mapM_ printDSI
 analyze :: [Function] -> [DSInfo]
 analyze functions = let functionNames = map getFunName functions in
     let dsfs = map (generateDSF functionNames) functions in
-    closeDSIs dsfs
+    analyzeFunctions dsfs
 
 -- | Merges the simple 'DSInfo's based on function calls from the functions
-closeDSIs :: [DSFun] -> [DSInfo]
-closeDSIs dsfs = let startingDSF = lookupJustNote ("No definition of starting function " ++ startingFunction)
-                        startingFunction (zip (map (getFunName.getDSFFun) dsfs) dsfs) in
+analyzeFunctions :: [DSFun] -> [DSInfo]
+analyzeFunctions dsfs = let startingDSF = lookupDSF dsfs startingFunction in
     let functions = map getDSFFun dsfs in
     let startingVars = map snd $ concatMap getDSINames $ getDSFDSI startingDSF in
-    concatMap (\var -> closeDSIs' functions startingDSF var []) startingVars where
+    let runMain = mapMaybe (\var -> analyzeFunction functions startingDSF var []) startingVars in --update the accumulator
+    concatMap (uncurry (:)) runMain where
 
-        closeDSIs' :: [Function] -> DSFun -> VariableName -> [FunctionName] -> [DSInfo]
-        closeDSIs' functions dsf variable accumulator = let functionName = getFunName.getDSFFun $ dsf in
-            if functionName `elem` accumulator
-                then []
-                else let functionCalls = getDSFCalls dsf in
-                    let relevantFunctionCalls = filter (\(funName, funArgs) -> Just variable `elem` funArgs) functionCalls in
-                    let irrelevantFunctionCalls = functionCalls \\ relevantFunctionCalls in
+        analyzeFunction :: [Function] -> DSFun -> VariableName -> [FunctionName] -> Maybe (DSInfo, [DSInfo])
+        analyzeFunction functions dsf variable accumulator = let functionName = getFunName.getDSFFun $ dsf in
+            toMaybe (functionName `notElem` accumulator) (let functionCalls = getDSFCalls dsf in
+                    let relevantFunctionCalls = filter (\(_, funArgs) -> Just variable `elem` funArgs) functionCalls in
+                    let irrelevantFunctionCalls = functionCalls \\ relevantFunctionCalls in --TODO remodel so we also analyze those
                     let dsis = getDSFDSI dsf in
-                    let currDSI = lookupDSI dsis functionName variable in
-                    let otherDSI = dsis \\ [currDSI] in
-                    let variableBindings = map (\(funName, funArgs) -> (funName, bindFuncall functions variable funArgs)) relevantFunctionCalls in
-                    undefined {-
+                    let thisVariableDSI = lookupDSI dsis variable functionName in
+                    let otherVariablesDSIs = dsis \\ [thisVariableDSI] in
+                    let variableBindings = map (second $ bindFuncall functions variable) relevantFunctionCalls in
+                    let recursiveCalls = mapMaybe (\(funName, varPairs) -> (analyzeFunction functions (lookupDSF dsfs funName) (lookupJust variable varPairs) (funName:accumulator))) variableBindings in
+                    let relevantRecursiveDSI = mconcat $ map fst recursiveCalls in
+                    let irrelevantRecursiveDSI = concatMap snd recursiveCalls in
+                    (thisVariableDSI `mappend` relevantRecursiveDSI, otherVariablesDSIs `union` irrelevantRecursiveDSI))
 
-                    let varConts = concatMap bindFuncall functionCalls in
-                    mconcat (currDSI:concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts):otherDSI where
--}
+-- | Lookup DSF FIXME: probably some nicer lookup function
+lookupDSF :: [DSFun] -> FunctionName -> DSFun
+lookupDSF dsfs functionName = lookupJustNote ("No DSF for a function " ++ functionName)
+                        functionName (zip (map (getFunName.getDSFFun) dsfs) dsfs) --FIXME: nicer find from Safe patch
 
--- | Lookup DSI wrapper FIXME: probably some nicer lookup function
+-- | Lookup DSI FIXME: probably some nicer lookup function
 lookupDSI :: [DSInfo] -> VariableName -> FunctionName -> DSInfo
 lookupDSI dsis variable functionName = let goodDSI = filter (\dsi -> (functionName, variable) `elem` getDSINames dsi) dsis in
     if length goodDSI /= 1
-        then error $ "None or too many matching DSI " ++ show (functionName, variable)
+        then error $ "None or too many matching DSI " ++ show (functionName, variable, length goodDSI, dsis)
         else head goodDSI
 
 -- | Returns pairs of local variables bound to variables in a function that is called
@@ -148,28 +152,28 @@ generateDSF fnns fn = let (dsus, st) = runState (foldlTerms step [] [getFunBody 
     DSF fn (getStateCalls st) (generateDSI fn dsus)
 
 -- | Analyze a block of terms using the state monad
-stepBlock :: [Term] -> Analyzer AnalyzerOutput
+stepBlock :: [Term] -> TermAnalyzer TermAnalyzerOutput
 stepBlock = foldlTerms step [] where
 
--- | Foldl 'Term's using the 'step' function to generate 'AnalyzerOutput'
-foldlTerms :: (AnalyzerOutput -> Term -> Analyzer AnalyzerOutput) -> AnalyzerOutput -> [Term] -> Analyzer AnalyzerOutput
+-- | Foldl 'Term's using the 'step' function to generate 'TermAnalyzerOutput'
+foldlTerms :: (TermAnalyzerOutput -> Term -> TermAnalyzer TermAnalyzerOutput) -> TermAnalyzerOutput -> [Term] -> TermAnalyzer TermAnalyzerOutput
 foldlTerms _ start [] = return start
 foldlTerms f start (r:rest) = do
     dsus <- f start r
     foldlTerms f dsus rest
 
 -- | Function putting a variable definition in the context
-putVar :: VariableName -> Analyzer ()
+putVar :: VariableName -> TermAnalyzer ()
 putVar name = do
     s <- get
     put $ AS (getStateFunction s) (getStateFunNames s) (name:getStateVarNames s) (getStateCalls s)
 
 -- | Function returning 'True' if the variable is already defined
-getVar :: VariableName -> AnalyzerState -> Bool
+getVar :: VariableName -> TermAnalyzerState -> Bool
 getVar name s = name `elem` getStateVarNames s
 
 -- | Function putting a function call in the state
-putCall :: FunctionName -> [Term] -> Analyzer ()
+putCall :: FunctionName -> [Term] -> TermAnalyzer ()
 putCall name args = do
     s <- get
     let cleanArgs = map justifyVars args
@@ -180,7 +184,7 @@ putCall name args = do
         justifyVars _ = Nothing
 
 -- | Folding step generating 'DSUse's
-step :: AnalyzerOutput -> Term -> Analyzer AnalyzerOutput
+step :: TermAnalyzerOutput -> Term -> TermAnalyzer TermAnalyzerOutput
 
 
 step dsus (Block body) = do

@@ -60,6 +60,7 @@ Executable data-structure-inferrer
                        , mtl
                        , array
                        , safe
+                       , utility-ht
   
   -- Modules not exported by this package.
   -- Other-modules:       
