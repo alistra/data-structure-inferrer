@@ -102,12 +102,13 @@ closeDSIs dsfs = let startingDSF = lookupJustNote ("No definition of starting fu
                 then []
                 else let functionCalls = getDSFCalls dsf in
                     let relevantFunctionCalls = filter (\(funName, funArgs) -> Just variable `elem` funArgs) functionCalls in
+                    let irrelevantFunctionCalls = functionCalls \\ relevantFunctionCalls in
                     let dsis = getDSFDSI dsf in
                     let currDSI = lookupDSI dsis functionName variable in
                     let otherDSI = dsis \\ [currDSI] in
-                    let variableBindings = map (\(funName, funArgs) -> (funName, bindFuncall functions variable funArgs)) relevantFunctionCalls in 
+                    let variableBindings = map (\(funName, funArgs) -> (funName, bindFuncall functions variable funArgs)) relevantFunctionCalls in
                     undefined {-
-                    
+
                     let varConts = concatMap bindFuncall functionCalls in
                     mconcat (currDSI:concatMap (\(fn, vn) -> (closeDSIs' (lookupFun fn) vn (funname:accu))) varConts):otherDSI where
 -}
