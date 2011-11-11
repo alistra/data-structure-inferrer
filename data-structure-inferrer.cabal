@@ -59,12 +59,12 @@ Executable data-structure-inferrer
                        , filepath
                        , mtl
                        , array
-                       , safe
-                       , utility-ht               >= 0.3.1
+                       , safe                     >= 0.3.1
+                       , utility-ht
+                       , deepseq
 
   -- Modules not exported by this package.
   -- Other-modules
 
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   Build-tools:         alex, happy
-

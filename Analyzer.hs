@@ -112,7 +112,7 @@ analyzeFunctions dsfs = let startingDSF = lookupDSF dsfs startingFunction in
                     let dsis = getDSFDSI dsf in
                     let thisVariableDSI = lookupDSI dsis variable functionName in
                     let otherVariablesDSIs = dsis \\ [thisVariableDSI] in
-                    let variableBindings = map (second $ bindFuncall functions variable) relevantFunctionCalls in
+                    let variableBindings = map (\call@(funName, _) -> second (bindFuncall functions funName) call) relevantFunctionCalls in
                     let recursiveCalls = mapMaybe (\(funName, varPairs) -> (analyzeFunction functions (lookupDSF dsfs funName) (lookupJust variable varPairs) (funName:accumulator))) variableBindings in
                     let relevantRecursiveDSI = mconcat $ map fst recursiveCalls in
                     let irrelevantRecursiveDSI = concatMap snd recursiveCalls in
@@ -129,8 +129,7 @@ lookupDSI dsis variable functionName = findJust (\dsi -> (functionName, variable
 -- | Returns pairs of local variables bound to variables in a function that is called
 bindFuncall :: [Function] -> FunctionName -> [Maybe VariableName] -> [(VariableName, VariableName)]
 bindFuncall functions functionName vns = let
-    function = lookupJustNote ("Function " ++ show functionName ++ "is called, but not defined")
-        functionName (zip (map getFunName functions) functions) in --FIXME: findJustNote if able
+    function = findJust (\function -> getFunName function == functionName) functions in
     maybeZipWith bindZipper vns (map fst (getFunArgs function)) where
         bindZipper :: Maybe VariableName -> VariableName -> Maybe (VariableName, VariableName)
         bindZipper (Just a) b = Just (a,b)
@@ -196,14 +195,14 @@ step dsus (Block body) = do
 step dsus (VarInit name Ds) = do
     s <- get
     if getVar name s
-        then error $ name ++ " already initialized"
+        then error $ show name ++ " already initialized"
         else putVar name >> return dsus
 
 
 step dsus (InitAssign name _ Ds) = do
     s <- get
     if getVar name s
-        then error $ name ++ " already initialized"
+        then error $ show name ++ " already initialized"
         else putVar name >> return dsus
 
 step dsus (InitAssign _ _ _) = return dsus
@@ -215,11 +214,11 @@ step dsus (While cond body) = do
 step dsus (Funcall name args) = do
     s <- get
     let opname = case name of -- FIXME nicer with usage of dsinfFunctions from Common
-            "insert"        -> Just InsertVal
-            "find"          -> Just FindByVal
-            "update"        -> Just UpdateByRef
-            "max"           -> Just ExtremalVal
-            "delete_max"    -> Just DeleteExtremalVal
+            F "insert"        -> Just InsertVal
+            F "find"          -> Just FindByVal
+            F "update"        -> Just UpdateByRef
+            F "max"           -> Just ExtremalVal
+            F "delete_max"    -> Just DeleteExtremalVal
             _               -> Nothing
                                             -- FIXME add reading the function calls
     argDsus <- stepBlock args
@@ -231,7 +230,7 @@ step dsus (Funcall name args) = do
         Just op ->  case head args of       -- FIXME dsinfFunctions ds argument recognition
             Var varname -> if getVar varname s
                 then return [(varname, DSU op False False)]
-                else error $ varname ++ " not initialized before use in function " ++ name
+                else error $ show varname ++ " not initialized before use in function " ++ show name
             _           -> error "Not implemented yet"
 
     return $ argDsus ++ funcallDsu ++ dsus

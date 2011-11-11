@@ -64,7 +64,7 @@ import Prelude hiding (True, False)
 %left Mul Div
 %nonassoc Inc Dec
 %nonassoc Newline
-%%                    
+%%
 
 funlist :: { [Function] }
 funlist:	fundef funlist			{ $1:$2 }
@@ -72,12 +72,12 @@ funlist:	fundef Newline funlist		{ $1:$3 }
 		| 				{ [] }
 
 fundef :: { Function }
-fundef:		type Name LParen argdef RParen block		{ Function $2 $1 $4 $6 }
-		| type Name LParen argdef RParen Newline block	{ Function $2 $1 $4 $7 }
+fundef:		type Name LParen argdef RParen block		{ Function (F $2) $1 $4 $6 }
+		| type Name LParen argdef RParen Newline block	{ Function (F $2) $1 $4 $7 }
 
-argdef :: { [(Name, Type)] }
-argdef:		nvtype Name Comma argdef	{ ($2, $1):$4 }
-      		| nvtype Name			{ [($2, $1)] }
+argdef :: { [(VariableName, Type)] }
+argdef:		nvtype Name Comma argdef	{ (V $2, $1):$4 }
+      		| nvtype Name			{ [(V $2, $1)] }
 		| 				{ [] }
 
 type :: { Maybe Type }
@@ -99,9 +99,9 @@ trecordpair :: { (Name, Type) }
 trecordpair:	nvtype Name 			{ ($2, $1) }
 
 expr :: { Term }
-expr:		Name Assign valexpr							{ Assign $1 $3 }
-		| nvtype Name Assign valexpr						{ InitAssign $2 $4 $1 }
-		| nvtype Name								{ VarInit $2 $1 }
+expr:		Name Assign valexpr							{ Assign (V $1) $3 }
+		| nvtype Name Assign valexpr						{ InitAssign (V $2) $4 $1 }
+		| nvtype Name								{ VarInit (V $2) $1 }
 		| block									{ $1 }
 		| If valexpr Then expr Else expr 					{ If $2 $4 $6 }
 		| If valexpr Newline Then expr Newline Else expr 			{ If $2 $5 $8 }
@@ -113,14 +113,14 @@ expr:		Name Assign valexpr							{ Assign $1 $3 }
 		| shexpr								{ $1 }
 
 shexpr :: { Term }
-shexpr:		Inc Name				{ Inc $2 }
-		| Name Inc				{ Inc $1 }
-		| Dec Name				{ Dec $2 }
-		| Name Dec				{ Dec $1 }
-		| Name LParen commaseparatedlist RParen { Funcall $1 $3 }
+shexpr:		Inc Name				{ Inc (V $2) }
+		| Name Inc				{ Inc (V $1) }
+		| Dec Name				{ Dec (V $2) }
+		| Name Dec				{ Dec (V $1) }
+		| Name LParen commaseparatedlist RParen { Funcall (F $1) $3 }
 
 valexpr :: { Term }
-valexpr:	Name					{ Var $1 }
+valexpr:	Name					{ Var (V $1) }
     		| Null					{ Int 0 }
     		| Int					{ Int $1 }
 		| False					{ Int 0 }
@@ -140,7 +140,7 @@ valexpr:	Name					{ Var $1 }
 		| LParen valexpr RParen			{ $2 }
 		| record				{ $1 }
 		| shexpr				{ $1 }
-       		
+
 record :: { Term }
 record:		LSParen RSParen 			{ Record [] }
       		| LSParen recordintern RSParen		{ Record $2 }

@@ -1,5 +1,8 @@
+{-# OPTIONS_GHC -pgmF drift-ghc -F #-}
 -- | Module with Abstract Syntax Tree syntax
 module Defs.AST where
+
+import Control.DeepSeq
 
 import Defs.Common
 
@@ -40,6 +43,7 @@ data Term = And Term Term                           -- ^ Logical and
             deriving (Show, Eq)
 
 -- | Type for the language values
+{-! for Type derive : NFData !-}
 data Type = TInt                    -- ^ Integer
             | TBool                 -- ^ Boolean
             | Ds                    -- ^ Data structure reference
@@ -50,15 +54,15 @@ data Type = TInt                    -- ^ Integer
 -- | Basic functions for data-structure access
 dsinfFunctions :: [Function]
 dsinfFunctions = [
-    Function "update"     Nothing        [("ds", Ds), ("oldval", TInt), ("newval", TInt)]   (Block []),
-    Function "insert"     (Just DsElem)  [("ds", Ds), ("elem", TInt)]                       (Block []),
-    Function "delete"     Nothing        [("ds", Ds), ("elem", TInt)]                       (Block []),
-    Function "max"        (Just DsElem)  [("ds", Ds)]                                       (Block []),
-    Function "min"        (Just DsElem)  [("ds", Ds)]                                       (Block []),
-    Function "delete_max" Nothing        [("ds", Ds)]                                       (Block []),
-    Function "search"     (Just DsElem)  [("ds", Ds), ("elem", TInt)]                       (Block []),
-    Function "update"     Nothing        [("elem", DsElem), ("newval", TInt)]               (Block []),
-    Function "delete"     Nothing        [("elem", DsElem)]                                 (Block [])
+    Function (F "update")     Nothing        [((V "ds"), Ds), ((V "oldval"), TInt), ((V "newval"), TInt)]   (Block []),
+    Function (F "insert")     (Just DsElem)  [((V "ds"), Ds), ((V "elem"), TInt)]                           (Block []),
+    Function (F "delete")     Nothing        [((V "ds"), Ds), ((V "elem"), TInt)]                           (Block []),
+    Function (F "max")        (Just DsElem)  [((V "ds"), Ds)]                                               (Block []),
+    Function (F "min")        (Just DsElem)  [((V "ds"), Ds)]                                               (Block []),
+    Function (F "delete_max") Nothing        [((V "ds"), Ds)]                                               (Block []),
+    Function (F "search")     (Just DsElem)  [((V "ds"), Ds), ((V "elem"), TInt)]                           (Block []),
+    Function (F "update")     Nothing        [((V "elem"), DsElem), ((V "newval"), TInt)]                   (Block []),
+    Function (F "delete")     Nothing        [((V "elem"), DsElem)]                                         (Block [])
     ]
 
 -- | Functions that are easilly decomposed into 'dsinfFunctions' functions

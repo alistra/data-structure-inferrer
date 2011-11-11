@@ -10,9 +10,6 @@ Il/Parser.hs: Il/Parser.y
 clean:
 	rm Il/Lexer.hs Il/Parser.hs Il/grammar.log thesis.log
 
-fixme:	
-	grep FIXME *hs
-
 doc:	*.hs
 	haddock -t "Data Structure Inferrer" -o doc -h *.hs
 	git checkout gh-pages

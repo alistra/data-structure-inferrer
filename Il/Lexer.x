@@ -8,7 +8,7 @@ import Prelude hiding (lex)
 $digit = 0-9
 $alpha = [a-zA-Z]
 
-tokens :- 
+tokens :-
 	(\n)+				{ \p s -> tokenWithPos p TkNewline }
 	($white # \n)+			;
     	$digit+				{ \p s -> tokenWithPos p (TkInt (read s)) }
@@ -46,19 +46,19 @@ tokens :-
 	"{"				{ \p s -> tokenWithPos p TkLCParen }
 	"["				{ \p s -> tokenWithPos p TkLSParen }
 	"<"				{ \p s -> tokenWithPos p TkLess }
-	")"				{ \p s -> tokenWithPos p TkRParen }      
+	")"				{ \p s -> tokenWithPos p TkRParen }
 	"}"				{ \p s -> tokenWithPos p TkRCParen }
 	"]"				{ \p s -> tokenWithPos p TkRSParen }
 	">"				{ \p s -> tokenWithPos p TkGreater }
 	$alpha (_ | $digit | $alpha)* 	{ \p s -> tokenWithPos p (TkName s) }
-{                                                 
-data BaseToken = TkAnd 
+{
+data BaseToken = TkAnd
 	| TkAssign
-	| TkColon 
-	| TkComma 
+	| TkColon
+	| TkComma
 	| TkDec
 	| TkDiv
-	| TkDot 
+	| TkDot
 	| TkDs
 	| TkDsElem
 	| TkElse
@@ -75,21 +75,21 @@ data BaseToken = TkAnd
 	| TkLSParen
 	| TkLEqual
 	| TkLess
-	| TkLParen 
-	| TkMinus                              
+	| TkLParen
+	| TkMinus
 	| TkMul
-	| TkName String                     
+	| TkName String
 	| TkNewline
 	| TkNot
 	| TkNull
-	| TkOr 
-	| TkPlus 
+	| TkOr
+	| TkPlus
 	| TkReturn
 	| TkRAParen
 	| TkRCParen
 	| TkRSParen
 	| TkRParen
-	| TkSemicolon 
+	| TkSemicolon
 	| TkThen
 	| TkTrue
 	| TkTInt
@@ -97,7 +97,7 @@ data BaseToken = TkAnd
 	| TkTVoid
 	| TkWhile
 	deriving (Show, Eq)
-          
+
 type Token = ((Int,Int), BaseToken)
 
 tokenWithPos :: AlexPosn -> BaseToken -> Token

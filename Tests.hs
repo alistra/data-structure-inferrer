@@ -8,6 +8,7 @@ import Defs.Util
 import Defs.AST
 import Analyzer
 import Typechecker
+import Control.DeepSeq
 
 import System.FilePath.Posix
 import Control.Exception
@@ -57,9 +58,8 @@ analysis fns = do
 -- | Tests typechecking
 typechecking ::  [Function] -> IO ()
 typechecking fns = mapM_ (\fn -> do
-    print $ typecheckF fns fn
     blueColor
-    putStrLn "Typed"
+    deepseq (typecheckF fns fn) (putStrLn "Typed")
     resetColor) fns
 
 -- | Handles failing tests

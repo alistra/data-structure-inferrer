@@ -1,14 +1,12 @@
 module Defs.Common where
 -- | Type for names
-type Name =  String
+type Name = String
 
 -- | Type for storing the variable names defined in a program
-type VariableName = String
+newtype VariableName = V { unV :: String } deriving (Show, Eq)
 -- | Type for storing the function names defined in a program
-type FunctionName = String
+newtype FunctionName = F { unF :: String } deriving (Show, Eq)
 
 -- | Name of the starting function
 startingFunction :: FunctionName
-startingFunction = "main"
-
-
+startingFunction = F "main"
