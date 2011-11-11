@@ -13,7 +13,7 @@ Version:             0.1
 Synopsis:            Program that infers the fastest data structure available for your program
 
 -- A longer description of the package.
--- Description:         
+-- Description:
 
 -- URL for the project homepage or repository.
 Homepage:            http://github.com/alistra/data-structure-inferrer
@@ -29,10 +29,10 @@ Author:              Aleksander Balicki
 
 -- An email address to which users can send suggestions, bug reports,
 -- and patches.
-Maintainer:          balicki.aleksander@gmail.com
+Maintainer:          Aleksander Balicki <balicki.aleksander@gmail.com>
 
 -- A copyright notice.
--- Copyright:           
+-- Copyright:
 
 Category:            Development
 
@@ -40,7 +40,7 @@ Build-type:          Simple
 
 -- Extra files to be distributed with the package, such as examples or
 -- a README.
--- Extra-source-files:  
+-- Extra-source-files:
 
 -- Constraint on the version of Cabal needed to build this package.
 Cabal-version:       >=1.2
@@ -49,7 +49,7 @@ Cabal-version:       >=1.2
 Executable data-structure-inferrer
   -- .hs or .lhs file containing the Main module.
   Main-is:             Main.hs
-  
+
   -- Packages needed in order to build this package.
   Build-depends:         ansi-terminal            >= 0.5.0
                        , base                     >= 4.3.0
@@ -60,11 +60,11 @@ Executable data-structure-inferrer
                        , mtl
                        , array
                        , safe
-                       , utility-ht
-  
+                       , utility-ht               >= 0.3.1
+
   -- Modules not exported by this package.
-  -- Other-modules:       
-  
+  -- Other-modules
+
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   Build-tools:         alex, happy
-  
+

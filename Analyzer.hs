@@ -84,11 +84,17 @@ printDSI dsi = do
 printRecommendationFromAnalysis :: [DSInfo] -> IO()
 printRecommendationFromAnalysis = mapM_ printDSI
 
+-- | Stupid merging of dsis --TODO remove this function, rewrite analyzeFunctions correctly
+stupidMerge ::  [DSInfo] -> [DSInfo]
+stupidMerge (dsi:dsis) = let (same, different) = partition (\dsi' -> getDSINames dsi `intersect` getDSINames dsi' /= []) dsis in
+    mconcat (dsi:same) : stupidMerge different
+stupidMerge [] = []
+
 -- | Runs everything that is needed to analyze a program
 analyze :: [Function] -> [DSInfo]
 analyze functions = let functionNames = map getFunName functions in
     let dsfs = map (generateDSF functionNames) functions in
-    analyzeFunctions dsfs
+    stupidMerge $ analyzeFunctions dsfs
 
 -- | Merges the simple 'DSInfo's based on function calls from the functions
 analyzeFunctions :: [DSFun] -> [DSInfo]
@@ -112,17 +118,13 @@ analyzeFunctions dsfs = let startingDSF = lookupDSF dsfs startingFunction in
                     let irrelevantRecursiveDSI = concatMap snd recursiveCalls in
                     (thisVariableDSI `mappend` relevantRecursiveDSI, otherVariablesDSIs `union` irrelevantRecursiveDSI))
 
--- | Lookup DSF FIXME: probably some nicer lookup function
+-- | Lookup 'DSFun' by 'FunctionName'
 lookupDSF :: [DSFun] -> FunctionName -> DSFun
-lookupDSF dsfs functionName = lookupJustNote ("No DSF for a function " ++ functionName)
-                        functionName (zip (map (getFunName.getDSFFun) dsfs) dsfs) --FIXME: nicer find from Safe patch
+lookupDSF dsfs functionName = lookupJust functionName (zip (map (getFunName.getDSFFun) dsfs) dsfs)
 
--- | Lookup DSI FIXME: probably some nicer lookup function
+-- | Lookup 'DSInfo' by 'FunctionName' and 'VariableName'
 lookupDSI :: [DSInfo] -> VariableName -> FunctionName -> DSInfo
-lookupDSI dsis variable functionName = let goodDSI = filter (\dsi -> (functionName, variable) `elem` getDSINames dsi) dsis in
-    if length goodDSI /= 1
-        then error $ "None or too many matching DSI " ++ show (functionName, variable, length goodDSI, dsis)
-        else head goodDSI
+lookupDSI dsis variable functionName = findJust (\dsi -> (functionName, variable) `elem` getDSINames dsi) dsis
 
 -- | Returns pairs of local variables bound to variables in a function that is called
 bindFuncall :: [Function] -> FunctionName -> [Maybe VariableName] -> [(VariableName, VariableName)]
