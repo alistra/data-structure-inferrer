@@ -1,4 +1,5 @@
 {
+{-# OPTIONS_GHC -w #-}
 module Il.Lexer where
 import Prelude hiding (lex)
 }

@@ -1,5 +1,8 @@
+{-# OPTIONS_GHC -fno-warn-unused-binds #-} --TODO
+
 module Analyzer (
     printRecommendationFromAnalysis,
+    printAdviceFromAnalysis,
     analyze
     ) where
 
@@ -9,6 +12,7 @@ import Defs.Common
 import Defs.AST
 
 import Recommend
+import Advice
 
 import Data.List
 import Data.Monoid
@@ -80,9 +84,17 @@ printDSI dsi = do
             let opns = map getDSUName $ getDSIDSU dsi
             recommendDS opns
 
+printDSIAdvice :: DSInfo -> IO()
+printDSIAdvice dsi = do
+    let opns = map getDSUName $ getDSIDSU dsi
+    printAdvice opns
+
 -- | Pretty printer for the analyzer effects
 printRecommendationFromAnalysis :: [DSInfo] -> IO()
 printRecommendationFromAnalysis = mapM_ printDSI
+
+printAdviceFromAnalysis :: [DSInfo] -> IO ()
+printAdviceFromAnalysis = mapM_ printDSIAdvice
 
 -- | Stupid merging of dsis --TODO remove this function, rewrite analyzeFunctions correctly
 stupidMerge ::  [DSInfo] -> [DSInfo]
