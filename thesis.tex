@@ -42,7 +42,7 @@
 \tableofcontents
 
 \section{Introduction}
-	
+
 	\subsection{Example imperative language}
 		We define an imperative language, on which we will show examples of the algorithm.
 
@@ -57,7 +57,7 @@
 			(k, \; l) \; means \; O(n^k \log^l{ n}).
 		\end{eqnarray}
 		The reason to choose such a type is that it's easier to compare than the general case (we can do a lexicographical comparison of the two numbers) and it distincts most of the data structure operation complexities.
-		
+
 		Sometimes we have to use some qualified complexities:
 		\begin{eqnarray}
 			ComplexityType = \{ Normal, \; Amortized, \; Amortized \;Expected, \; Expected \}
@@ -97,7 +97,7 @@
 			|\{(o, c_1) \in d_1 | (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < \{(o, c_2) \in d_2 | (o,c_1) \in d_1 \wedge c_2 < c_1 \}
 		\end{eqnarray}
 		If we fix P, we have a preorder on data structures induced by $<_{DSU(P)}$ and we can sort those data structures using this order. The maximum element is the best data structure for the task.
-		
+
 
 
 \section{Extensions of the idea}
@@ -113,9 +113,10 @@
 	\subsection{Detecting importance of an operation}
 		change in the algorithm
 		\subsubsection{Profile-guided optimization}
+			Profile-guided optimization is an optimization method in compilers. -definition-. Here we can check how many times an operation is executed on our test-data and then choose the recommended structure accordingly.
 		\subsubsection{Transforming datastructures on-line}
 	\subsection{Generic data structure modifications}
-		
+
 		max elem cache
 	\subsection{Different element types}
 		Currently the framework works only for integer elements. We can extend it to each type that has a compare function,

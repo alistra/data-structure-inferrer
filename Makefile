@@ -3,3 +3,5 @@ thesis:
 
 clean:
 	-rm thesis.aux thesis.log thesis.toc
+	-rm *.hi
+	-rm *.o
