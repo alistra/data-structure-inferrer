@@ -3,5 +3,9 @@ thesis:
 
 clean:
 	-rm thesis.aux thesis.log thesis.toc
-	-rm *.hi
-	-rm *.o
+	-rm *.hi *.o
+	-rm Il/Lexer.hs Il/Parser.hs Il/grammar.log
+
+mrproper: clean
+	-rm dsinf
+	-rm thesis.pdf
