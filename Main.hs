@@ -8,16 +8,22 @@ import Control.Monad
 
 import Il.Lexer
 import Il.Parser
-import Typechecker
 import Analyzer
-import Advice
 
 import Prelude hiding (lex)
 
 data Action = AAdvice
+    | ADefaultRecommend
     | ARecommend
     | ACompile
-    | AInline
+    | AInline deriving (Eq)
+
+instance Show Action where
+    show AAdvice = "advice (-a)"
+    show ADefaultRecommend = show ARecommend
+    show ARecommend = "recommend (-r)"
+    show ACompile = "compile (-c)"
+    show AInline = "inline (-i)"
 
 data Options = Options  { optVerbose    :: Bool
                         , optInput      :: IO String
@@ -31,6 +37,11 @@ startOptions = Options  { optVerbose    = False
                         , optOutput     = putStr
                         , optAction     = ARecommend
                         }
+
+checkArgs :: Options -> Action -> IO ()
+checkArgs (Options { optAction = ADefaultRecommend }) _ = return ()
+checkArgs (Options { optAction = action }) oldAction | action == oldAction = return ()
+checkArgs (Options { optAction = action }) oldAction = error $ (show action) ++ " switch is incompatible with " ++ (show oldAction) ++ " switch"
 
 options :: [ OptDescr (Options -> IO Options) ]
 options =
@@ -47,19 +58,19 @@ options =
         "Input string"
 
     , Option "r" ["recommend"]
-        (NoArg  (\opt -> return opt { optAction = ARecommend }))
+        (NoArg  (\opt -> checkArgs opt ARecommend >> return opt { optAction = ARecommend }))
         "Give recommendations about the data structure in the supplied code (default)"
 
     , Option "a" ["advice"]
-        (NoArg  (\opt -> return opt { optAction = AAdvice }))
+        (NoArg  (\opt -> checkArgs opt AAdvice >> return opt { optAction = AAdvice }))
         "Give advice about the data structure in the supplied code"
 
     , Option "c" ["compile"]
-        (NoArg  (\opt -> return opt { optAction = ACompile }))
+        (NoArg  (\opt -> checkArgs opt ACompile >> return opt { optAction = ACompile }))
         "Compile the code with recommended structure linked"
 
     , Option "i" ["inline"]
-        (NoArg  (\opt -> return opt { optAction = AInline }))
+        (NoArg  (\opt -> checkArgs opt AInline >> return opt { optAction = AInline }))
         "Inline the code implementing the recommended structure in the supplied code"
 
     , Option "v" ["verbose"]
@@ -88,6 +99,7 @@ main = do
             let ast = analyze.parse.lex $ s
             case action of
                 AAdvice -> printAdviceFromAnalysis ast
+                ADefaultRecommend -> printRecommendationFromAnalysis ast
                 ARecommend -> printRecommendationFromAnalysis ast
                 ACompile -> putStrLn "Not implemented yet"
                 AInline -> putStrLn "Not implemented yet"
