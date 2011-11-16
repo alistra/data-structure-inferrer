@@ -23,7 +23,7 @@ clean:
 	-rm *.o
 
 doc:	*.hs
-	haddock -t "Data Structure Inferrer" -o doc -h *.hs
+	haddock -t "Data Structure Inferrer" -o doc -h Main.hs
 	git checkout gh-pages
 	cp -r doc/* .
 	git add .
