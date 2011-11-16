@@ -25,36 +25,39 @@ instance Show Action where
     show ACompile = "compile (-c)"
     show AInline = "inline (-i)"
 
+data Input = IStdin
+    | IFile [FilePath]
+    | IString String deriving (Eq)
+
+instance Show Input where
+    show (IFile _) = "file arguments"
+    show (IString _) = "string argument (-s)"
+    show (IStdin) = "standard input argument (default)"
+
 data Options = Options  { optVerbose    :: Bool
-                        , optInput      :: IO String
+                        , optInput      :: Input
                         , optOutput     :: String -> IO ()
                         , optAction     :: Action
                         }
 
-startOptions :: Options
-startOptions = Options  { optVerbose    = False
-                        , optInput      = getContents
-                        , optOutput     = putStr
-                        , optAction     = ARecommend
-                        }
+
+checkInput :: Options -> Input -> IO ()
+checkInput (Options { optInput = files@(IFile _)}) input = error $ show input ++ " incompatible with " ++ show files
+checkInput _ _ = return ()
 
 checkArgs :: Options -> Action -> IO ()
 checkArgs (Options { optAction = ADefaultRecommend }) _ = return ()
 checkArgs (Options { optAction = action }) oldAction | action == oldAction = return ()
-checkArgs (Options { optAction = action }) oldAction = error $ (show action) ++ " switch is incompatible with " ++ (show oldAction) ++ " switch"
+checkArgs (Options { optAction = action }) oldAction = error $ (show action) ++ " incompatible with " ++ (show oldAction)
 
 options :: [ OptDescr (Options -> IO Options) ]
 options =
-    [ Option "i" ["input"]
-        (ReqArg (\arg opt -> return opt { optInput = readFile arg }) "file")
-        "Input file"
-
-    , Option "o" ["output"]
+    [ Option "o" ["output"]
         (ReqArg (\arg opt -> return opt { optOutput = writeFile arg }) "file")
         "Output file"
 
     , Option "s" ["string"]
-        (ReqArg (\arg opt -> return opt { optInput = return arg }) "string")
+        (ReqArg (\arg opt -> checkInput opt (IString arg) >> return opt { optInput = IString arg}) "string")
         "Input string"
 
     , Option "r" ["recommend"]
@@ -89,12 +92,21 @@ main :: IO ()
 main = do
     args <- getArgs
     case getOpt RequireOrder options args of
-        (actions, [], []) -> do
+        (actions, files, []) -> do
+            let startOptions = Options { optVerbose    = False
+                                       , optInput      = if null files then IStdin else IFile files
+                                       , optOutput     = putStr
+                                       , optAction     = ARecommend
+                                       }
             opts <- foldl (>>=) (return startOptions) actions
             let Options { optVerbose = verbose
-                        , optInput = input
+                        , optInput = oinput
                         , optOutput = output
                         , optAction = action } = opts
+            let input = case oinput of
+                    IStdin -> getContents
+                    IFile f -> readFile (head f) --FIXME generalize with all files
+                    IString s -> return s
             s <- input
             let ast = analyze.parse.lex $ s
             case action of
