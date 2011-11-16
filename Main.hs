@@ -14,7 +14,10 @@ import Advice
 
 import Prelude hiding (lex)
 
-data Action = AAdvice | ARecommend | ACompile
+data Action = AAdvice
+    | ARecommend
+    | ACompile
+    | AInline
 
 data Options = Options  { optVerbose    :: Bool
                         , optInput      :: IO String
@@ -47,13 +50,17 @@ options =
         (NoArg  (\opt -> return opt { optAction = ARecommend }))
         "Give recommendations about the data structure in the supplied code (default)"
 
+    , Option "a" ["advice"]
+        (NoArg  (\opt -> return opt { optAction = AAdvice }))
+        "Give advice about the data structure in the supplied code"
+
     , Option "c" ["compile"]
         (NoArg  (\opt -> return opt { optAction = ACompile }))
         "Compile the code with recommended structure linked"
 
-    , Option "a" ["advice"]
-        (NoArg  (\opt -> return opt { optAction = AAdvice }))
-        "Give advice about the data structure in the supplied code"
+    , Option "i" ["inline"]
+        (NoArg  (\opt -> return opt { optAction = AInline }))
+        "Inline the code implementing the recommended structure in the supplied code"
 
     , Option "v" ["verbose"]
         (NoArg  (\opt -> return opt { optVerbose = True }))
@@ -82,14 +89,14 @@ main = do
             case action of
                 AAdvice -> printAdviceFromAnalysis ast
                 ARecommend -> printRecommendationFromAnalysis ast
-                ACompile -> do
-                    putStrLn "Not implemented yet"
+                ACompile -> putStrLn "Not implemented yet"
+                AInline -> putStrLn "Not implemented yet"
             exitSuccess
 
         (_, nonOptions, errors) -> do
             unless (errors == []) (putStrLn "Command line errors:")
-            mapM_ (\s -> putStrLn ("\t" ++ s)) errors
+            mapM_ (\s -> putStrLn ('\t' : s)) errors
             unless (nonOptions == []) (putStrLn "Command line non-options present:")
-            mapM_ (\s -> putStrLn ("\t" ++ s)) nonOptions
+            mapM_ (\s -> putStrLn ('\t' : s)) nonOptions
             exitFailure
 
