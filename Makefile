@@ -19,8 +19,8 @@ clean:
 	-rm Il/grammar.log
 	-rm thesis.log
 	-rm *.hi
-	-rm dsinf
 	-rm *.o
+	-rm dsinf
 
 doc:	*.hs
 	haddock -t "Data Structure Inferrer" -o doc -h Main.hs
