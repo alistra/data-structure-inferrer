@@ -83,7 +83,7 @@
 		\end{eqnarray}
 		Each of the $DataStructureOperations$ elements symbolizes an operation you can accomplish on a data structure.
 
-		The type 
+		The type
 		\begin{eqnarray}
 			DataStructure \subset DataStructureOperations \times Complexity
 		\end{eqnarray}
@@ -94,7 +94,7 @@
 		We define a parametrized comparison operator for data structures $<_{DSU(P)}$ defined as:
 		\begin{eqnarray}
 			d_1 <_{DSU(P)} d_2 \Leftrightarrow o \in DSU(P) \wedge \\
-			|\{(o, c_1) \in d_1 | (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < \{(o, c_2) \in d_2 | (o,c_1) \in d_1 \wedge c_2 < c_1 \} 
+			|\{(o, c_1) \in d_1 | (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < \{(o, c_2) \in d_2 | (o,c_1) \in d_1 \wedge c_2 < c_1 \}
 		\end{eqnarray}
 		If we fix P, we have a preorder on data structures induced by $<_{DSU(P)}$ and we can sort those data structures using this order. The maximum element is the best data structure for the task.
 		
@@ -102,17 +102,19 @@
 
 \section{Extensions of the idea}
 	\subsection{Second extremal element}
-		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are for. 
-		If we want to find the minimal element we can use a min-heap. What happens if we want to find the max and the min element in the duration of one program? 
+		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are for.
+		If we want to find the minimal element we can use a min-heap. What happens if we want to find the max and the min element in the duration of one program?
 		How to modify our framework to handle this kind of situations?
 		\begin{equation}
 		  	DataStructureOperations = \{\dots \; FindFirstExtremalElement,\; DeleteFirstExtremalElement, \; \\
 			FindSecondExtremalElement,\; DeleteSecondExtremalElement, \; \dots\}.
 		\end{equation}
 		Now we can add two complexity costs to the data structure definition, the cheaper one can be used primarily, and the second one can be used in above situations.
-	\subsection{Big load}
+	\subsection{Detecting importance of an operation}
 		change in the algorithm
-	\subsection{Data structure modifications}
+		\subsubsection{Profile-guided optimization}
+		\subsubsection{Transforming datastructures on-line}
+	\subsection{Generic data structure modifications}
 		
 		max elem cache
 	\subsection{Different element types}
@@ -122,19 +124,17 @@
 		if we analyzed C, we would ask the programmer to write an acompanying cmp function to the type and pass the pointer to the function that creates the data structure.
 	\subsection{Linked data structures}
 		If we wanted to keep records (structs) in our data structure and find an element by one field and some other time by some other field, we would have to do this:
-	\subsection{Transforming datastructures on-line}
-		what it said
 	\subsection{Upper bound on the element count}
 		so we can choose between malloc and static allocation
 	\subsection{Outer-world input}
 		detecting scanf and sockets and so on
 	\subsection{Minimal element count treshold}
-		It's worth noticing that we compare only the asymptotical complexity of data structures. Some awfully complicated structures can have good asymptotical results, but the constant is quite high. We can avoid this problem by setting a treshold for each structure, what is the smallest number of elements to use this data structure. 
+		It's worth noticing that we compare only the asymptotical complexity of data structures. Some awfully complicated structures can have good asymptotical results, but the constant is quite high. We can avoid this problem by setting a treshold for each structure, what is the smallest number of elements to use this data structure.
 
 		Another problem arises, how to know at compile time, how many elements a data structure will have at runtime. We can ask the user to explicitely specify the number during compilation or we can try to detect how big the declared data is.
 \section{Program}
 	\subsection{Recommendation mode}
-		prints recommendations 
+		prints recommendations
 	\subsection{Advice mode}
 		prints advice
 	\subsection{Compile mode}

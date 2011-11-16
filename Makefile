@@ -2,4 +2,4 @@ thesis:
 	rubber -d thesis.tex
 
 clean:
-	rm thesis.aux thesis.log
+	-rm thesis.aux thesis.log thesis.toc
