@@ -53,7 +53,7 @@ checkArgs (Options { optAction = action }) oldAction = error $ (show action) ++ 
 options :: [ OptDescr (Options -> IO Options) ]
 options =
     [ Option "o" ["output"]
-        (ReqArg (\arg opt -> return opt { optOutput = writeFile arg }) "file")
+        (ReqArg (\arg opt -> writeFile arg "" >> return opt { optOutput = appendFile arg }) "file")
         "Output file"
 
     , Option "s" ["string"]
@@ -110,9 +110,9 @@ main = do
             s <- input
             let ast = analyze.parse.lex $ s
             case action of
-                AAdvice -> printAdviceFromAnalysis ast
-                ADefaultRecommend -> printRecommendationFromAnalysis ast
-                ARecommend -> printRecommendationFromAnalysis ast
+                AAdvice -> printAdviceFromAnalysis output ast
+                ADefaultRecommend -> printRecommendationFromAnalysis output ast
+                ARecommend -> printRecommendationFromAnalysis output ast
                 ACompile -> putStrLn "Not implemented yet"
                 AInline -> putStrLn "Not implemented yet"
             exitSuccess

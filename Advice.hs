@@ -48,37 +48,37 @@ adviceDS :: [OperationName] -> [Advice]
 adviceDS = adviceDS' 1
 
 -- | Pretty prints effects of 'adviceDS''
-printAdvice' :: Integer -> [OperationName] -> IO ()
-printAdvice' n opns =   do
+printAdvice' :: (String -> IO ()) -> Integer -> [OperationName] -> IO ()
+printAdvice' output n opns =   do
     yellowColor
     let adv = adviceDS' n opns
     let rec = recommendAllDs opns
     if length rec == 1
         then do
-            putStr "Currently, the recommended data structure is: "
+            output "Currently, the recommended data structure is: "
             cyanColor
-            putStrLn (getDSName $ head rec)
+            output $ (getDSName $ head rec) ++ "\n"
             yellowColor
         else do
-            putStr "Currently, the recommended data structures are: "
+            output "Currently, the recommended data structures are: "
             cyanColor
-            putStrLn (foldl (\str ds -> (str ++ ", " ++ getDSName ds)) "" rec)
+            output $ (foldl (\str ds -> (str ++ ", " ++ getDSName ds)) "" rec) ++ "\n"
             yellowColor
-    mapM_ printAdviceStructure adv
+    mapM_ (printAdviceStructure output) adv
     resetColor
 
 -- | Prints one 'Advice' element
-printAdviceStructure :: Advice -> IO()
-printAdviceStructure (Advice s betterOpns opns) = do
-    putStr  "You could use "
+printAdviceStructure :: (String -> IO ()) -> Advice -> IO()
+printAdviceStructure output (Advice s betterOpns opns) = do
+    output  "You could use "
     greenColor
-    putStr $ getDSName s
+    output $ getDSName s
     yellowColor
-    putStrLn ", if you removed the following operations:"
+    output ", if you removed the following operations:\n"
     redColor
-    putStr $ concatMap (\opn -> "* " ++ show opn ++ "\n") (opns \\ betterOpns)
+    output $ concatMap (\opn -> "* " ++ show opn ++ "\n") (opns \\ betterOpns)
     resetColor
 
 -- | Pretty prints effects of 'adviceDS'
-printAdvice :: [OperationName] -> IO ()
-printAdvice = printAdvice' 1
+printAdvice :: (String -> IO ()) -> [OperationName] -> IO ()
+printAdvice output = printAdvice' output 1

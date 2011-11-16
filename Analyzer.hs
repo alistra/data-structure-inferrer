@@ -70,31 +70,31 @@ setUserDependance (DSU opname hu _) = DSU opname hu True
 -}
 
 -- | Pretty print single 'DSInfo'
-printDSI :: DSInfo -> IO()
-printDSI dsi = do
-    putStr "The recommended structure for "
+printDSI :: (String -> IO ()) -> DSInfo -> IO ()
+printDSI output dsi = do
+    output "The recommended structure for "
     redColor
-    print $ getDSINames dsi
+    output $ show (getDSINames dsi) ++ "\n"
     resetColor
-    putStrLn " is:"
+    output " is:"
     cyanColor
-    recommendedDS >>= print
+    recommendedDS >>= output.show
     resetColor where
         recommendedDS = do
             let opns = map getDSUName $ getDSIDSU dsi
             recommendDS opns
 
-printDSIAdvice :: DSInfo -> IO()
-printDSIAdvice dsi = do
+printDSIAdvice :: (String -> IO ()) -> DSInfo -> IO ()
+printDSIAdvice output dsi = do
     let opns = map getDSUName $ getDSIDSU dsi
-    printAdvice opns
+    printAdvice output opns
 
 -- | Pretty printer for the analyzer effects
-printRecommendationFromAnalysis :: [DSInfo] -> IO()
-printRecommendationFromAnalysis = mapM_ printDSI
+printRecommendationFromAnalysis :: (String -> IO ()) -> [DSInfo] -> IO()
+printRecommendationFromAnalysis output = mapM_ (printDSI output)
 
-printAdviceFromAnalysis :: [DSInfo] -> IO ()
-printAdviceFromAnalysis = mapM_ printDSIAdvice
+printAdviceFromAnalysis :: (String -> IO ()) -> [DSInfo] -> IO ()
+printAdviceFromAnalysis output = mapM_ (printDSIAdvice output)
 
 -- | Stupid merging of dsis --TODO remove this function, rewrite analyzeFunctions correctly
 stupidMerge ::  [DSInfo] -> [DSInfo]
