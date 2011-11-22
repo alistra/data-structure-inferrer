@@ -20,12 +20,29 @@ struct ds* new()
 	return d;
 }
 
-
-elem insert(struct ds *d, elem e)
+void insert(struct ds *d, elem e)
 {
+	d->elem_count++;
+
 	struct linkedlist *l = malloc(sizeof (struct linkedlist));
 	l->e = e;
 	l->next = 0;
-	//TODO rest
+
+	struct linkedlist *temp = d->list;
+
+	if(!temp){
+		d->list = l;
+		return;
+	}
+
+	while(temp->next)
+		temp = temp->next;
+
+	temp->next = l;
+}
+
+void delete(struct ds *d, elem e)
+{
+
 }
 
