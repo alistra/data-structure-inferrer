@@ -14,13 +14,13 @@ Il/Parser.hs: Il/Parser.y
 	happy -iIl/grammar.log Il/Parser.y
 
 clean:
-	-rm Il/Lexer.hs -rm Il/Parser.hs -rm Il/grammar.log
-	-rm thesis.log thesis.aux thesis.toc
-	-rm *.hi -rm *.o
+	rm -f Il/Lexer.hs Il/Parser.hs Il/grammar.log
+	rm -f thesis.log thesis.aux thesis.toc
+	rm -f *.hi *.o
 
 cleanbin: clean
-	-rm dsinf
-	-rm thesis.pdf
+	rm -f dsinf
+	rm -f thesis.pdf
 
 doc:	*.hs
 	haddock -t "Data Structure Inferrer" -o doc -h Main.hs
