@@ -1,2 +1,9 @@
 thesis.log
 thesis.aux
+thesis.pdf
+dsinf
+doc/
+dist/
+cabal-dev/
+Defs/
+Il/
