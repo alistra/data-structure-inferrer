@@ -2,10 +2,10 @@ thesis:
 	rubber -d thesis.tex
 
 clean:
-	-rm thesis.aux thesis.log thesis.toc
-	-rm *.hi *.o
-	-rm Il/Lexer.hs Il/Parser.hs Il/grammar.log
+	rm -f thesis.aux thesis.log thesis.toc
+	rm -f *.hi *.o
+	rm -f Il/Lexer.hs Il/Parser.hs Il/grammar.log
 
 cleanbin: clean
-	-rm dsinf
-	-rm thesis.pdf
+	rm -f dsinf
+	rm -f thesis.pdf
