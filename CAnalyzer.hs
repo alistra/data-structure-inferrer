@@ -6,6 +6,9 @@ import Data.Maybe
 
 main = parseMyFile "1.c" >>= analyzeProgram
 
+-- TODO this is the type of something gathering dsuse
+-- fmap concat . sequence
+
 parseMyFile :: FilePath -> IO CTranslUnit
 parseMyFile input_file =
   do parse_result <- parseCFile (newGCC "gcc") Nothing [] input_file
@@ -41,29 +44,54 @@ analyzeCDeclarator declarator = putStrLn "Analyzing CDeclarator" >> print declar
 analyzeCDeclaration declaration = putStrLn "Analyzing CDeclaration" >> print declaration
 
 analyzeCStatement (CLabel ident statement attrib _) = do
-    putStrLn "Analyzing CStatement"
-    print "label"
+    putStrLn "Analyzing CLabel"
+    print ident
+    analyzeCStatement statement
+    print attrib
+
+analyzeCStatement (CCase expr statement _)                  = do
+    putStrLn "Analyzing CCase"
+    analyzeCExpression expr
     analyzeCStatement statement
 
-analyzeCStatement (CCase expr statement _) = putStrLn "Analyzing CStatement" >> print "case" >> analyzeCStatement statement
-analyzeCStatement (CCases expr1 expr2 statement _)          = putStrLn "Analyzing CStatement" >> print "cases"
-analyzeCStatement (CDefault statement _)                    = putStrLn "Analyzing CStatement" >> print "default"
-analyzeCStatement (CExpr mexpr _)                           = putStrLn "Analyzing CStatement" >> analyzeCExpression (fromJust mexpr)
-analyzeCStatement (CCompound idents compoundBlockItems _) = do
+analyzeCStatement (CCases expr1 expr2 statement _)          = do
     putStrLn "Analyzing CStatement"
+    mapM_ analyzeCExpression [expr1, expr2]
+    analyzeCStatement statement
+
+analyzeCStatement (CDefault statement _)                    = putStrLn "Analyzing CDefault" >> analyzeCStatement statement
+
+analyzeCStatement (CExpr mexpr _)                           = putStrLn "Analyzing CExpr" >> analyzeCExpression (fromJust mexpr)
+
+analyzeCStatement (CCompound idents compoundBlockItems _) = do
+    putStrLn "Analyzing CCompound"
     print idents
     mapM_ analyzeCCompoundBlockItem compoundBlockItems
 
-analyzeCStatement (CIf expr statement mstatement _)         = putStrLn "Analyzing CStatement" >> print "if"
-analyzeCStatement (CSwitch expr statement _)                = putStrLn "Analyzing CStatement" >> print "switch"
-analyzeCStatement (CWhile expr statement bool _)            = putStrLn "Analyzing CStatement" >> print "while"
+analyzeCStatement (CIf expr statement mstatement _)         = do
+    putStrLn "Analyzing CIf"
+    analyzeCExpression expr
+    analyzeCStatement statement
+    analyzeCStatement (fromJust mstatement)
+
+analyzeCStatement (CSwitch expr statement _)                = do
+    putStrLn "Analyzing CSwitch"
+    analyzeCExpression expr
+    analyzeCStatement statement
+
+analyzeCStatement (CWhile expr statement bool _)            = do
+    putStrLn "Analyzing CWhile"
+    analyzeCExpression expr
+    analyzeCStatement statement
+    print bool
+
 analyzeCStatement (CFor either mexpr1 mexpr2 statement _)   = putStrLn "Analyzing CStatement" >> print "for"
 analyzeCStatement (CGoto ident _)                           = putStrLn "Analyzing CStatement" >> print "goto"
 analyzeCStatement (CGotoPtr expr _)                         = putStrLn "Analyzing CStatement" >> print "gotoPtr"
 analyzeCStatement (CCont _)                                 = putStrLn "Analyzing CStatement" >> print "continue"
 analyzeCStatement (CBreak _)                                = putStrLn "Analyzing CStatement" >> print "break"
-analyzeCStatement (CReturn mexpr _)                         = putStrLn "Analyzing CStatement" >> print "return"
-analyzeCStatement (CAsm asm _)                              = putStrLn "Analyzing CStatement" >> print "asm"
+analyzeCStatement (CReturn mexpr _)                         = putStrLn "Analyzing CReturn" >> analyzeCExpression (fromJust mexpr)
+analyzeCStatement (CAsm asm _)                              = putStrLn "Analyzing CAsm"
 
 analyzeCCompoundBlockItem (CBlockStmt statement)            = putStrLn "Analyzing CBlockStmt" >> analyzeCStatement statement
 analyzeCCompoundBlockItem (CBlockDecl declaration)          = putStrLn "Analyzing CBlockDecl" >> analyzeCDecl declaration
@@ -82,16 +110,17 @@ analyzeCExpression (CConst const)                           = putStrLn "Analyzin
 analyzeCExpression (CSizeofExpr expr _)                     = putStrLn "Analyzing CSizeofExpr" >> analyzeCExpression expr
 analyzeCExpression (CSizeofType declaration _)              = putStrLn "Analyzing CSizeofType"
 analyzeCExpression (CIndex expr1 expr2 _)                   = putStrLn "Analyzing CIndex" >> mapM_ analyzeCExpression [expr1, expr2]
+analyzeCExpression (CComplexReal expr _)                    = putStrLn "Analyzing CComplexReal" >> analyzeCExpression expr
+analyzeCExpression (CComplexImag expr _)                    = putStrLn "Analyzing CComplexImag" >> analyzeCExpression expr
+
 analyzeCExpression a = error . show $ a
 {-analyzeCExpression CCast (CDeclaration a) (CExpression a) a     
 analyzeCExpression CAlignofExpr (CExpression a) a   
 analyzeCExpression CAlignofType (CDeclaration a) a  
-analyzeCExpression CComplexReal (CExpression a) a   
-analyzeCExpression CComplexImag (CExpression a) a   
 analyzeCExpression CMember (CExpression a) Ident Bool a     
 analyzeCExpression CCompoundLit (CDeclaration a) (CInitializerList a) a    
 analyzeCExpression CStatExpr (CStatement a) a  
-analyzeCExpression CLabAddrExpr Ident a    
+analyzeCExpression CLabAddrExpr Ident a
 analyzeCExpression CBuiltinExpr (CBuiltinThing a)
 -}
 {-

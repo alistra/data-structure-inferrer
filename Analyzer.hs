@@ -64,10 +64,6 @@ append (AS f1 fns1 vns1 cs1) (AS _ _ vns2 cs2) = AS f1 fns1 (vns1 `union` vns2) 
 
 setHeavyUsage ::  DSUse -> DSUse
 setHeavyUsage (DSU opname _ ud) = DSU opname True ud
-{- TODO lenses?
-setUserDependance ::  DSUse -> DSUse
-setUserDependance (DSU opname hu _) = DSU opname hu True
--}
 
 -- | Pretty print single 'DSInfo'
 printDSI :: (String -> IO ()) -> DSInfo -> IO ()
@@ -161,19 +157,16 @@ generateDSI fn dsus = let varGroups = groupBy (\(varname1,_) (varname2,_) -> var
 
 -- | Start the state monad to create a 'DSFun' for function
 generateDSF :: [FunctionName] -> Function -> DSFun
-generateDSF fnns fn = let (dsus, st) = runState (foldlTerms step [] [getFunBody fn]) (AS fn fnns [] []) in
+generateDSF fnns fn = let (dsus, st) = runState (sumTerms step [getFunBody fn]) (AS fn fnns [] []) in
     DSF fn (getStateCalls st) (generateDSI fn dsus)
 
 -- | Analyze a block of terms using the state monad
 stepBlock :: [Term] -> TermAnalyzer TermAnalyzerOutput
-stepBlock = foldlTerms step [] where
+stepBlock = sumTerms step
 
--- | Foldl 'Term's using the 'step' function to generate 'TermAnalyzerOutput'
-foldlTerms :: (TermAnalyzerOutput -> Term -> TermAnalyzer TermAnalyzerOutput) -> TermAnalyzerOutput -> [Term] -> TermAnalyzer TermAnalyzerOutput
-foldlTerms _ start [] = return start
-foldlTerms f start (r:rest) = do
-    dsus <- f start r
-    foldlTerms f dsus rest
+-- | Sums the 'DSUse's using the 'step' function and concating the results
+sumTerms :: (Term -> TermAnalyzer TermAnalyzerOutput) -> [Term] -> TermAnalyzer TermAnalyzerOutput
+sumTerms f ts = fmap concat (mapM f ts)
 
 -- | Function putting a variable definition in the context
 putVar :: VariableName -> TermAnalyzer ()
@@ -196,34 +189,28 @@ putCall name args = do
         justifyVars (Var v) = Just v -- FIXME should work on function calls returning dses, not only vars
         justifyVars _ = Nothing
 
--- | Folding step generating 'DSUse's
-step :: TermAnalyzerOutput -> Term -> TermAnalyzer TermAnalyzerOutput
+
+-- | Generate 'DSUse's for a single 'Term'
+step :: Term -> TermAnalyzer TermAnalyzerOutput
+
+step (Block body) = stepBlock body
+
+step (VarInit name Ds) = do
+    s <- get                        --TODO maybe gets?
+    if getVar name s
+        then error $ show name ++ " already initialized"
+        else putVar name >> return []
 
 
-step dsus (Block body) = do
-    newDSU <- stepBlock body
-    return $ dsus ++ newDSU
-
-step dsus (VarInit name Ds) = do
+step (InitAssign name _ Ds) = do
     s <- get
     if getVar name s
         then error $ show name ++ " already initialized"
-        else putVar name >> return dsus
+        else putVar name >> return []
 
+step (While cond body) = stepBlock [cond,body]
 
-step dsus (InitAssign name _ Ds) = do
-    s <- get
-    if getVar name s
-        then error $ show name ++ " already initialized"
-        else putVar name >> return dsus
-
-step dsus (InitAssign _ _ _) = return dsus
-
-step dsus (While cond body) = do
-    newDSU <- stepBlock [cond,body]
-    return $ dsus ++ map (second setHeavyUsage) newDSU -- FIXME smarter heavy load recognition
-
-step dsus (Funcall name args) = do
+step (Funcall name args) = do
     s <- get
     let opname = case name of -- FIXME nicer with usage of dsinfFunctions from Common
             F "insert"        -> Just InsertVal
@@ -245,9 +232,9 @@ step dsus (Funcall name args) = do
                 else error $ show varname ++ " not initialized before use in function " ++ show name
             _           -> error "Not implemented yet"
 
-    return $ argDsus ++ funcallDsu ++ dsus
+    return $ argDsus ++ funcallDsu
 
-step dsus (If cond t1 t2) = do
+step (If cond t1 t2) = do
     dsuCond <- stepBlock [cond]
     oldState <- get
 
@@ -260,15 +247,15 @@ step dsus (If cond t1 t2) = do
     stateT2 <- get
 
     put (stateT1 `append` stateT2)
-    return $ dsus ++ concat [dsuCond, dsuT1, dsuT2]
+    return $ concat [dsuCond, dsuT1, dsuT2]
 
 -- Dummy steps
-step dsus t = case t of
-    Var _ -> return dsus
-    VarInit _ _ -> return dsus --FIXME: recurse on the value
-    Inc _ -> return dsus
-    Dec _ -> return dsus
-    Assign _ _ -> return dsus
-    Lt _ _ -> return dsus
-    Mul _ _ -> return dsus
+step t = case t of
+    Var _ -> return []
+    VarInit _ _ -> return [] --FIXME: recurse on the value
+    Inc _ -> return []
+    Dec _ -> return []
+    Assign _ _ -> return []
+    Lt _ _ -> return []
+    Mul _ _ -> return []
     s -> error $ "No step for " ++ show s
