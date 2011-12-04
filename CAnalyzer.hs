@@ -2,8 +2,9 @@ module CAnalyzer where
 
 import Language.C
 import Language.C.System.GCC
+import Data.Maybe
 
-main = parseMyFile "1.c" >>=  analyzeProgram
+main = parseMyFile "1.c" >>= analyzeProgram
 
 parseMyFile :: FilePath -> IO CTranslUnit
 parseMyFile input_file =
@@ -12,21 +13,21 @@ parseMyFile input_file =
        Left parse_err -> error (show parse_err)
        Right ast      -> return ast
 
---analyzeProgram = prettyUsingInclude
-analyzeProgram a@(CTranslUnit extDecls _) = putStrLn "Analyzing Translation Unit" >> mapM_ analyzeExtDecl extDecls
+--analyzeProgram = return . prettyUsingInclude
+analyzeProgram (CTranslUnit extDecls _) = putStrLn "Analyzing Translation Unit" >> mapM_ analyzeExtDecl extDecls
 
-analyzeExtDecl a@(CDeclExt cdecl) = putStrLn "Analyzing CDeclExt" >> analyzeCDecl cdecl
-analyzeExtDecl a@(CFDefExt cfundef) = putStrLn "Analyzing CFDefExt" >> analyzeCFunDef cfundef
+analyzeExtDecl (CDeclExt cdecl) = putStrLn "Analyzing CDeclExt" >> analyzeCDecl cdecl
+analyzeExtDecl (CFDefExt cfundef) = putStrLn "Analyzing CFDefExt" >> analyzeCFunDef cfundef
 analyzeExtDecl a@(CAsmExt strLit dunno) = putStrLn "Analyzing CAsmExt" >> print a
 
-analyzeCDecl a@(CDecl specifiers declList _) = do
+analyzeCDecl (CDecl specifiers declList _) = do
     putStrLn "Analyzing CDecl"
     analyzeCDeclSpecifiers specifiers
     analyzeCDeclDeclList declList
 
 analyzeCDeclSpecifiers specifiers = print "specifiers"
 
-analyzeCDeclDeclList declList = print "decl list"
+analyzeCDeclDeclList  = mapM_ analyzeCDeclarator
 
 analyzeCFunDef (CFunDef specifiers declarator declaration statement _) = do
     putStrLn "Analyzing CFunDef"
@@ -47,7 +48,7 @@ analyzeCStatement (CLabel ident statement attrib _) = do
 analyzeCStatement (CCase expr statement _) = putStrLn "Analyzing CStatement" >> print "case" >> analyzeCStatement statement
 analyzeCStatement (CCases expr1 expr2 statement _)          = putStrLn "Analyzing CStatement" >> print "cases"
 analyzeCStatement (CDefault statement _)                    = putStrLn "Analyzing CStatement" >> print "default"
-analyzeCStatement (CExpr mexpr _)                           = putStrLn "Analyzing CStatement" >> print "expr"
+analyzeCStatement (CExpr mexpr _)                           = putStrLn "Analyzing CStatement" >> analyzeCExpression (fromJust mexpr)
 analyzeCStatement (CCompound idents compoundBlockItems _) = do
     putStrLn "Analyzing CStatement"
     print idents
@@ -68,33 +69,32 @@ analyzeCCompoundBlockItem (CBlockStmt statement)            = putStrLn "Analyzin
 analyzeCCompoundBlockItem (CBlockDecl declaration)          = putStrLn "Analyzing CBlockDecl" >> analyzeCDecl declaration
 analyzeCCompoundBlockItem (CNestedFunDef funDef)            = putStrLn "Analyzing CNestedFunDef" >> print funDef
 
-{-analyzeCExpression (CComma exprs _) = putStrLn "Analyzing CExpression" >> putStrLn "Analyzing CComma" >> mapM_ analyzeCExpression exprs
-CAssign CAssignOp (CExpression a) (CExpression a) a  
-CCond (CExpression a) (Maybe (CExpression a)) (CExpression a) a  
-CBinary CBinaryOp (CExpression a) (CExpression a) a  
-CCast (CDeclaration a) (CExpression a) a     
-CUnary CUnaryOp (CExpression a) a    
-CSizeofExpr (CExpression a) a    
-CSizeofType (CDeclaration a) a   
-CAlignofExpr (CExpression a) a   
-CAlignofType (CDeclaration a) a  
-CComplexReal (CExpression a) a   
-CComplexImag (CExpression a) a   
-CIndex (CExpression a) (CExpression a) a     
-CCall (CExpression a) [CExpression a] a  
-CMember (CExpression a) Ident Bool a     
-CVar Ident a     
-CConst (CConstant a)    
-integer, character, floating point and string constants
-CCompoundLit (CDeclaration a) (CInitializerList a) a    
-C99 compound literal
-CStatExpr (CStatement a) a  
-GNU C compound statement as expr
-CLabAddrExpr Ident a    
-GNU C address of label
-CBuiltinExpr (CBuiltinThing a)
+analyzeCConst (CIntConst int _)                             = putStrLn "Analyzing CIntConst" >> print int
 
-
+analyzeCExpression (CComma exprs _)                         = putStrLn "Analyzing CComma" >> mapM_ analyzeCExpression exprs
+analyzeCExpression (CAssign assignop expr1 expr2 _)         = putStrLn "Analyzing CAssign" >> print assignop >> mapM_ analyzeCExpression [expr1, expr2]
+analyzeCExpression (CCond expr1 mexpr expr2 _)              = putStrLn "Analyzing CCond" >> analyzeCExpression (fromJust mexpr) >> mapM_ analyzeCExpression [expr1, expr2]
+analyzeCExpression (CBinary binop expr1 expr2 _)            = putStrLn "Analyzing CBinary" >> print binop >> mapM_ analyzeCExpression [expr1, expr2]  
+analyzeCExpression (CCall expr exprs _)                     = putStrLn "Analyzing CCall" >> mapM_ analyzeCExpression (expr : exprs)
+analyzeCExpression (CVar ident _)                           = putStrLn "Analyzing CVar" >> print ident
+analyzeCExpression (CUnary unop expr _)                     = putStrLn "Analyzing CUnary" >> print unop >> analyzeCExpression expr
+analyzeCExpression (CConst const)                           = putStrLn "Analyzing CConst" >> analyzeCConst const
+analyzeCExpression (CSizeofExpr expr _)                     = putStrLn "Analyzing CSizeofExpr" >> analyzeCExpression expr
+analyzeCExpression (CSizeofType declaration _)              = putStrLn "Analyzing CSizeofType"
+analyzeCExpression (CIndex expr1 expr2 _)                   = putStrLn "Analyzing CIndex" >> mapM_ analyzeCExpression [expr1, expr2]
+analyzeCExpression a = error . show $ a
+{-analyzeCExpression CCast (CDeclaration a) (CExpression a) a     
+analyzeCExpression CAlignofExpr (CExpression a) a   
+analyzeCExpression CAlignofType (CDeclaration a) a  
+analyzeCExpression CComplexReal (CExpression a) a   
+analyzeCExpression CComplexImag (CExpression a) a   
+analyzeCExpression CMember (CExpression a) Ident Bool a     
+analyzeCExpression CCompoundLit (CDeclaration a) (CInitializerList a) a    
+analyzeCExpression CStatExpr (CStatement a) a  
+analyzeCExpression CLabAddrExpr Ident a    
+analyzeCExpression CBuiltinExpr (CBuiltinThing a)
+-}
+{-
 Right (CTranslUnit
 [ CDeclExt (CDecl [CTypeSpec (CSUType (CStruct CStructTag (Just "ds") (Just []) [] ) )] [] )
 , CDeclExt (CDecl [CStorageSpec (CExtern ),CTypeSpec (CVoidType )] [(Just (CDeclr (Just "insert") [CFunDeclr (Right ([CDecl [CTypeSpec (CSUType (CStruct CStructTag (Just "ds") Nothing [] ) )] [(Just (CDeclr Nothing [CPtrDeclr [] ] Nothing [] (OnlyPos <no file> (<no file>,-1))),Nothing,Nothing)] ,CDecl [CTypeSpec (CIntType )] [] ],False)) [] ] Nothing [] ),Nothing,Nothing)] )
