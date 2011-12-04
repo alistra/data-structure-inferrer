@@ -3,7 +3,7 @@
 module Analyzer (
     printRecommendationFromAnalysis,
     printAdviceFromAnalysis,
-    analyze
+    analyze,
     ) where
 
 import Defs.Structures
@@ -15,6 +15,7 @@ import Recommend
 import Advice
 
 import Data.List
+import Data.Function
 import Data.Monoid
 import Data.Maybe
 import Data.Maybe.HT
@@ -61,9 +62,6 @@ data TermAnalyzerState = AS {
 
 append :: TermAnalyzerState -> TermAnalyzerState -> TermAnalyzerState
 append (AS f1 fns1 vns1 cs1) (AS _ _ vns2 cs2) = AS f1 fns1 (vns1 `union` vns2) (cs1 `union` cs2)
-
-setHeavyUsage ::  DSUse -> DSUse
-setHeavyUsage (DSU opname _ ud) = DSU opname True ud
 
 -- | Pretty print single 'DSInfo'
 printDSI :: (String -> IO ()) -> DSInfo -> IO ()
@@ -152,7 +150,7 @@ maybeZipWith _ _ _ = []
 
 -- | Generates simple 'DSInfo's without the info from function calls
 generateDSI :: Function -> [(VariableName, DSUse)] -> [DSInfo]
-generateDSI fn dsus = let varGroups = groupBy (\(varname1,_) (varname2,_) -> varname1 == varname2) dsus in
+generateDSI fn dsus = let varGroups = groupBy (on (==) fst) dsus in
     map (\g -> DSI [(getFunName fn, fst.head $ g)] (map snd g)) varGroups
 
 -- | Start the state monad to create a 'DSFun' for function
@@ -235,15 +233,15 @@ step (Funcall name args) = do
     return $ argDsus ++ funcallDsu
 
 step (If cond t1 t2) = do
-    dsuCond <- stepBlock [cond]
+    dsuCond <- step cond
     oldState <- get
 
-    dsuT1 <- stepBlock [t1]
+    dsuT1 <- step t1
     stateT1 <- get
 
     put oldState
 
-    dsuT2 <- stepBlock  [t2]
+    dsuT2 <- step t2
     stateT2 <- get
 
     put (stateT1 `append` stateT2)
@@ -252,10 +250,11 @@ step (If cond t1 t2) = do
 -- Dummy steps
 step t = case t of
     Var _ -> return []
-    VarInit _ _ -> return [] --FIXME: recurse on the value
+    VarInit _ _ -> return []
     Inc _ -> return []
     Dec _ -> return []
-    Assign _ _ -> return []
-    Lt _ _ -> return []
-    Mul _ _ -> return []
+
+    Assign _ t -> step t
+    Lt t1 t2 -> stepBlock [t1, t2]
+    Mul t1 t2 -> stepBlock [t1, t2]
     s -> error $ "No step for " ++ show s
