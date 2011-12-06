@@ -85,11 +85,11 @@ analyzeCStatement (CWhile expr statement bool _)            = do
     analyzeCStatement statement
     print bool
 
-analyzeCStatement (CFor either mexpr1 mexpr2 statement _)   = putStrLn "Analyzing CStatement" >> print "for"
-analyzeCStatement (CGoto ident _)                           = putStrLn "Analyzing CStatement" >> print "goto"
-analyzeCStatement (CGotoPtr expr _)                         = putStrLn "Analyzing CStatement" >> print "gotoPtr"
-analyzeCStatement (CCont _)                                 = putStrLn "Analyzing CStatement" >> print "continue"
-analyzeCStatement (CBreak _)                                = putStrLn "Analyzing CStatement" >> print "break"
+analyzeCStatement (CFor either mexpr1 mexpr2 statement _)   = putStrLn "Analyzing CStatement" >> print "for" --TODO read doc
+analyzeCStatement (CGoto ident _)                           = putStrLn "Analyzing CGoto"
+analyzeCStatement (CGotoPtr expr _)                         = putStrLn "Analyzing CGotoPtr" >> analyzeCExpression expr
+analyzeCStatement (CCont _)                                 = putStrLn "Analyzing CCont"
+analyzeCStatement (CBreak _)                                = putStrLn "Analyzing CBreak"
 analyzeCStatement (CReturn mexpr _)                         = putStrLn "Analyzing CReturn" >> analyzeCExpression (fromJust mexpr)
 analyzeCStatement (CAsm asm _)                              = putStrLn "Analyzing CAsm"
 
@@ -112,14 +112,15 @@ analyzeCExpression (CSizeofType declaration _)              = putStrLn "Analyzin
 analyzeCExpression (CIndex expr1 expr2 _)                   = putStrLn "Analyzing CIndex" >> mapM_ analyzeCExpression [expr1, expr2]
 analyzeCExpression (CComplexReal expr _)                    = putStrLn "Analyzing CComplexReal" >> analyzeCExpression expr
 analyzeCExpression (CComplexImag expr _)                    = putStrLn "Analyzing CComplexImag" >> analyzeCExpression expr
+analyzeCExpression (CStatExpr statement _)                  = putStrLn "Analyzing CStatExpr" >> analyzeCStatement statement
+analyzeCExpression (CCast declaration expr _)               = putStrLn "Analyzing CCast" >> analyzeCDeclaration >> analyzeCExpression expr     
 
 analyzeCExpression a = error . show $ a
-{-analyzeCExpression CCast (CDeclaration a) (CExpression a) a     
+{-
 analyzeCExpression CAlignofExpr (CExpression a) a   
 analyzeCExpression CAlignofType (CDeclaration a) a  
 analyzeCExpression CMember (CExpression a) Ident Bool a     
 analyzeCExpression CCompoundLit (CDeclaration a) (CInitializerList a) a    
-analyzeCExpression CStatExpr (CStatement a) a  
 analyzeCExpression CLabAddrExpr Ident a
 analyzeCExpression CBuiltinExpr (CBuiltinThing a)
 -}
