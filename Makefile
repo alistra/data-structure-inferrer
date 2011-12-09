@@ -1,4 +1,4 @@
-SRC=Advice.hs AllStructures.hs Analyzer.hs CAnalyzer.hs Recommend.hs Typechecker.hs
+SdRC=Advice.hs AllStructures.hs Analyzer.hs CAnalyzer.hs Recommend.hs Typechecker.hs
 LEXPAR=Il/Lexer.hs Il/Parser.hs
 
 dsinf: ${LEXPAR} ${SRC} Main.hs
@@ -23,7 +23,7 @@ cleanbin: clean
 	rm -f thesis.pdf
 
 doc:	*.hs
-	haddock -t "Data Structure Inferrer" -o doc -h Main.hs
+	haddock --ignore-all-exports -t "Data Structure Inferrer" -o doc -h Main.hs
 	git checkout gh-pages
 	cp -r doc/* .
 	git add .
