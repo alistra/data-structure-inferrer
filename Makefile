@@ -22,7 +22,7 @@ cleanbin: clean
 	rm -f dsinf
 	rm -f thesis.pdf
 
-doc:	*.hs
+doc:
 	haddock --ignore-all-exports -t "Data Structure Inferrer" -o doc -h Main.hs
 	git checkout gh-pages
 	cp -r doc/* .
