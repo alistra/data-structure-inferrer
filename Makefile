@@ -1,4 +1,4 @@
-SdRC=Advice.hs AllStructures.hs Analyzer.hs CAnalyzer.hs Recommend.hs Typechecker.hs
+SRC=Advice.hs AllStructures.hs Analyzer.hs CAnalyzer.hs Recommend.hs Typechecker.hs
 LEXPAR=Il/Lexer.hs Il/Parser.hs
 
 dsinf: ${LEXPAR} ${SRC} Main.hs
