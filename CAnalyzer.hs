@@ -258,17 +258,17 @@ analyzeCStatement (CLabel ident statement attrib _)         = analyzeCStatement 
 analyzeCStatement (CCase expr statement _)                  = fmcs [analyzeCExpression expr, analyzeCStatement statement]
 analyzeCStatement (CCases expr1 expr2 statement _)          = fmcs $ analyzeCStatement statement : map analyzeCExpression [expr1, expr2]
 analyzeCStatement (CDefault statement _)                    = analyzeCStatement statement
-analyzeCStatement (CExpr mexpr _)                           = analyzeCExpression (fromJust mexpr) --TODO read doc why maybe
+analyzeCStatement (CExpr mexpr _)                           = maybe (return []) analyzeCExpression mexpr
 analyzeCStatement (CCompound idents compoundBlockItems _)   = fmcs $ map analyzeCCompoundBlockItem compoundBlockItems
 analyzeCStatement (CIf expr statement mstatement _)         = fmcs [analyzeCExpression expr, analyzeCStatement statement, analyzeCStatement (fromJust mstatement)] --TODO read doc why maybe, and fix to substitute environments for cases
 analyzeCStatement (CSwitch expr statement _)                = fmcs [analyzeCExpression expr, analyzeCStatement statement]
-analyzeCStatement (CWhile expr statement bool _)            = fmcs [analyzeCExpression expr, analyzeCStatement statement] --TODO check doc on bool
+analyzeCStatement (CWhile expr statement isdowhile _)       = fmcs [analyzeCExpression expr, analyzeCStatement statement]
 analyzeCStatement (CFor either mexpr1 mexpr2 statement _)   = fmcs $ map (analyzeCExpression . fromJust) [mexpr1, mexpr2] -- statement  --TODO read doc
 analyzeCStatement (CGoto ident _)                           = return [] --TODO implement goto
 analyzeCStatement (CGotoPtr expr _)                         = analyzeCExpression expr --TODO implement goto
 analyzeCStatement (CCont _)                                 = return []
 analyzeCStatement (CBreak _)                                = return []
-analyzeCStatement (CReturn mexpr _)                         = analyzeCExpression (fromJust mexpr) --TODO read doc why maybe
+analyzeCStatement (CReturn mexpr _)                         = maybe (return []) analyzeCExpression mexpr
 analyzeCStatement (CAsm asm _)                              = return [] --HMMM do i really want to care about somebody's asm?
 
 analyzeCCompoundBlockItem :: CBlockItem -> TermAnalyzer TermAnalyzerOutput
