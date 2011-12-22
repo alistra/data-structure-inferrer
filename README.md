@@ -1,7 +1,24 @@
 # About the project
-This project is meant to be a compiler feature that analyzes your code and chooses the best data structure depending on your source code. It analyzes the functions used on a data structure and chooses a type of structure that minimizes the time complexity. For now it works as a standalone code analyzer that prints the most appropriate structure.
+This project is meant to be a compiler feature/wrapper that analyzes your code and chooses the best data structure depending on your source code. It analyzes the functions used on a wildcard data structure and chooses the type of structure that minimizes the time complexity. It will support C language and hopefully some other languages too.
 
-# Examples
+# Usage
+
+	alistra@bialobrewy data-structure-inferrer % ./dsinf -h
+	dsinf
+	  -o file    --output=file    Output file
+	  -s string  --string=string  Input string
+	  -r         --recommend      Give recommendations about the data structure in the supplied code (default)
+	  -a         --advice         Give advice about the data structure in the supplied code
+	  -c         --compile        Compile the code with recommended structure linked
+	  -i         --inline         Inline the code implementing the recommended structure in the supplied code
+	  -v         --verbose        Enable verbose messages
+	  -h         --help           Show help
+
+# For now
+
+For now it works as a standalone code analyzer for a toy language that prints the most appropriate structure.
+
+## Examples
 
 You can run tests by running runIlTests from the Tests.hs file. These tests (Il/tests subdirectory) are source code in a simple imperative language. The analyzer infers the best data structure for operations used in the test program.
 
@@ -20,7 +37,7 @@ You can run tests by running runIlTests from the Tests.hs file. These tests (Il/
 	The recommended structure for ds2 is:
 	Linked List with extreme element caching
 
-# Low Level
+## Low Level
 
 For now you can get the best structures depending on operations used in your program (if you manually put it in the invocation):
 
@@ -28,7 +45,7 @@ For now you can get the best structures depending on operations used in your pro
 	[Fibonacci Heap,Binomial Heap]
 	*AllStructures> recommendAllDs [InsertVal, FindByVal ]
 	[Hashtable]
-	*AllStructures> recommendAllDs [InsertVal, FindByVal, ExtremalVal]  
+	*AllStructures> recommendAllDs [InsertVal, FindByVal, ExtremalVal]
 	[Red-Black Trees]
 
 There's an advice mode which is formatted more nicely:

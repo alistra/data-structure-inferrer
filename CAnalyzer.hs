@@ -8,7 +8,6 @@ import Language.C.Data.Ident
 import Defs.Structures
 import Defs.Util
 import Defs.Common
-import Defs.AST
 
 import Recommend
 import Advice
@@ -37,7 +36,7 @@ type FunctionCall = (FunctionName, [Maybe VariableName])
 
 -- | Data structure for analysis info of a function definition
 data DSFun = DSF {
-    getDSFFun   :: Function,                                    -- ^ Analyzed function definiton
+    getDSFFun   :: FunctionDeclaration,                         -- ^ Analyzed function declaration
     getDSFCalls :: [FunctionCall],                              -- ^ 'FunctionCall's from the analyzed function
     getDSFDSI   :: [DSInfo]                                     -- ^ 'DSInfo' about the variables inside of the function, at this stage are not yet ready to obtain the information
     } deriving (Show, Eq)
@@ -49,6 +48,13 @@ data DSUse = DSU {
     isUserDependent :: Bool                                     -- ^ Is it dependent on some external input (user, network, random, signals, etc.)
     } deriving (Show, Eq)
 
+-- | Type for function definitions
+data FunctionDeclaration = FunDecl {
+    getFunName :: FunctionName,             -- ^ Name of the function
+    getFunType :: Type,                     -- ^ Return type of the function
+    getFunArgs :: [(VariableName, Type)]    -- ^ Names and types of the function arguments
+    } deriving (Show, Eq)
+
 -- | State monad with 'TermAnalyzerState'
 type TermAnalyzer a = State TermAnalyzerState a
 
@@ -57,7 +63,7 @@ type TermAnalyzerOutput = [(VariableName, DSUse)]
 
 -- | State of the analyzer
 data TermAnalyzerState = AS {
-    getStateFunction :: Maybe Function,                         -- ^ Current function being analyzed
+    getStateFunction :: Maybe FunctionDeclaration,              -- ^ Current function being analyzed
     getStateFunNames :: [FunctionName],                         -- ^ All the function names
     getStateVarNames :: [VariableName],                         -- ^ All the variable names --TODO are they only relevant ones?
     getStateCalls    :: [FunctionCall]                          -- ^ 'FunctionCall's gathered through the analysis
@@ -100,7 +106,7 @@ stupidMerge (dsi:dsis) = let (same, different) = partition (\dsi' -> getDSINames
 stupidMerge [] = []
 
 -- | Runs everything that is needed to analyze a program
-analyze :: [Function] -> [DSInfo]
+analyze :: [FunctionDeclaration] -> [DSInfo]
 analyze functions = let functionNames = map getFunName functions in
     let dsfs = map (generateDSF functionNames) functions in
     stupidMerge $ analyzeFunctions dsfs
@@ -113,7 +119,7 @@ analyzeFunctions dsfs = let startingDSF = lookupDSF dsfs startingFunction in
     let runMain = mapMaybe (\var -> analyzeFunction functions startingDSF var []) startingVars in --update the accumulator
     concatMap (uncurry (:)) runMain where
 
-        analyzeFunction :: [Function] -> DSFun -> VariableName -> [FunctionName] -> Maybe (DSInfo, [DSInfo])
+        analyzeFunction :: [FunctionDeclaration] -> DSFun -> VariableName -> [FunctionName] -> Maybe (DSInfo, [DSInfo])
         analyzeFunction functions dsf variable accumulator = let functionName = getFunName.getDSFFun $ dsf in
             toMaybe (functionName `notElem` accumulator) (let functionCalls = getDSFCalls dsf in
                     let relevantFunctionCalls = filter (\(_, funArgs) -> Just variable `elem` funArgs) functionCalls in
@@ -136,7 +142,7 @@ lookupDSI :: [DSInfo] -> VariableName -> FunctionName -> DSInfo
 lookupDSI dsis variable functionName = findJust (\dsi -> (functionName, variable) `elem` getDSINames dsi) dsis
 
 -- | Returns pairs of local variables bound to variables in a function that is called
-bindFuncall :: [Function] -> FunctionName -> [Maybe VariableName] -> [(VariableName, VariableName)]
+bindFuncall :: [FunctionDeclaration] -> FunctionName -> [Maybe VariableName] -> [(VariableName, VariableName)]
 bindFuncall functions functionName vns = let
     function = findJust (\function -> getFunName function == functionName) functions in
     maybeZipWith bindZipper vns (map fst (getFunArgs function)) where
@@ -152,12 +158,12 @@ maybeZipWith f (x:xs) (y:ys) = case f x y of
 maybeZipWith _ _ _ = []
 
 -- | Generates simple 'DSInfo's without the info from function calls
-generateDSI :: Function -> [(VariableName, DSUse)] -> [DSInfo]
+generateDSI :: FunctionDeclaration -> [(VariableName, DSUse)] -> [DSInfo]
 generateDSI fn dsus = let varGroups = groupBy (on (==) fst) dsus in
     map (\g -> DSI [(getFunName fn, fst.head $ g)] (map snd g)) varGroups
 
 -- | Start the state monad to create a 'DSFun' for function
-generateDSF :: [FunctionName] -> Function -> DSFun
+generateDSF :: [FunctionName] -> FunctionDeclaration -> DSFun
 generateDSF = undefined
 --generateDSF fnns fn = let (dsus, st) = runState (sumTerms step [getFunBody fn]) (AS fn fnns [] []) in
 --    DSF fn (getStateCalls st) (generateDSI fn dsus)
@@ -238,6 +244,7 @@ analyzeCDecl (CDecl specifiers declList _) = fmcs [analyzeCDeclSpecifiers specif
 
 analyzeCDeclSpecifiers specifiers = return [] --TODO read doc on specifiers
 
+analyzeCDeclDeclList :: [CDeclr] -> TermAnalyzer TermAnalyzerOutput
 analyzeCDeclDeclList = fmcs . map analyzeCDeclarator
 
 analyzeCFunDef :: CFunDef -> TermAnalyzer DSFun
@@ -246,8 +253,7 @@ analyzeCFunDef (CFunDef specifiers declarator declarations statement _) = do
         [ analyzeCDeclSpecifiers specifiers
         , analyzeCDeclarator declarator
         , analyzeCStatement statement] ++ map analyzeCDecl declarations
-    return DSF 
-
+    modify $ \s -> undefined
 
 analyzeCDerivedDeclarator :: CDerivedDeclr -> TermAnalyzer TermAnalyzerOutput
 analyzeCDerivedDeclarator (CPtrDeclr qualifs _) = map analyzeCTypeQualifier qualifs
