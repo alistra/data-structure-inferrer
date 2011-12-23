@@ -9,6 +9,7 @@ import Control.Monad
 import Il.Lexer
 import Il.Parser
 import Analyzer
+import qualified CAnalyzer as C
 
 import Prelude hiding (lex)
 

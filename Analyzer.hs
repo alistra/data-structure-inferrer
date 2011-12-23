@@ -141,13 +141,6 @@ bindFuncall functions functionName vns = let
         bindZipper (Just a) b = Just (a,b)
         bindZipper Nothing _ = Nothing
 
--- | Like zipWith only returns only those elements of type 'c' that were qualified with Just
-maybeZipWith :: (a -> b -> Maybe c) -> [a] -> [b] -> [c]
-maybeZipWith f (x:xs) (y:ys) = case f x y of
-    Just z -> z : maybeZipWith f xs ys
-    Nothing -> maybeZipWith f xs ys
-maybeZipWith _ _ _ = []
-
 -- | Generates simple 'DSInfo's without the info from function calls
 generateDSI :: Function -> [(VariableName, DSUse)] -> [DSInfo]
 generateDSI fn dsus = let varGroups = groupBy (on (==) fst) dsus in
