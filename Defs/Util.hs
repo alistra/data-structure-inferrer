@@ -39,3 +39,10 @@ split tok splitme = unfoldr (sp1 tok) splitme
                       Just p -> Just (take (length p - length t) p,
                                       drop (length p) s)
 
+-- | Like zipWith only returns only those elements of type 'c' that were qualified with Just
+maybeZipWith :: (a -> b -> Maybe c) -> [a] -> [b] -> [c]
+maybeZipWith f (x:xs) (y:ys) = case f x y of
+    Just z -> z : maybeZipWith f xs ys
+    Nothing -> maybeZipWith f xs ys
+maybeZipWith _ _ _ = []
+
