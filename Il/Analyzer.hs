@@ -8,7 +8,7 @@ module Il.Analyzer (
 
 import Defs.Structures
 import Defs.Common
-import Defs.AST
+import Il.AST
 
 import Analyzer hiding (getFunName, getFunArgs, getFunType)
 

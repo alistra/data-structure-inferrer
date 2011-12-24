@@ -1,7 +1,7 @@
 module Il.Typechecker where
 
 import Defs.Common
-import Defs.AST
+import Il.AST
 
 import Control.Monad.State
 import Data.Maybe
