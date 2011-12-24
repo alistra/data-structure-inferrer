@@ -45,4 +45,3 @@ maybeZipWith f (x:xs) (y:ys) = case f x y of
     Just z -> z : maybeZipWith f xs ys
     Nothing -> maybeZipWith f xs ys
 maybeZipWith _ _ _ = []
-

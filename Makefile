@@ -1,4 +1,4 @@
-SRC=Advice.hs AllStructures.hs Il/Analyzer.hs CAnalyzer.hs Recommend.hs Typechecker.hs
+SRC=Advice.hs AllStructures.hs Il/Analyzer.hs C/Analyzer.hs Recommend.hs Il/Typechecker.hs
 LEXPAR=Il/Lexer.hs Il/Parser.hs
 
 dsinf: ${LEXPAR} ${SRC} Main.hs
@@ -16,7 +16,7 @@ Il/Parser.hs: Il/Parser.y
 clean:
 	rm -f Il/Lexer.hs Il/Parser.hs Il/grammar.log
 	rm -f thesis.log thesis.aux thesis.toc
-	rm -f *.hi *.o
+	rm -f *.hi *.o Il/*.hi Il/*.o Defs/*.hi Defs/*.o
 
 cleanbin: clean
 	rm -f dsinf

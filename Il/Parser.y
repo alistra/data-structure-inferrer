@@ -81,9 +81,9 @@ argdef:		nvtype Name Comma argdef	{ (V $2, $1):$4 }
       		| nvtype Name			{ [(V $2, $1)] }
 		| 				{ [] }
 
-type :: { Maybe Type }
-type:		TVoid				{ Nothing }
-    		| nvtype			{ Just $1 }
+type :: { Type }
+type:		TVoid				{ TVoid }
+    		| nvtype			{ $1 }
 
 nvtype :: { Type }
 nvtype:		TInt				{ TInt }

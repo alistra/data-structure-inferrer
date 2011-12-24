@@ -8,7 +8,7 @@ import Defs.Common
 
 -- | Type for function definitions
 data Function = Function {  getFunName :: FunctionName,             -- ^ Name of the function
-                            getFunType :: Maybe Type,               -- ^ Return type, Nothing when void
+                            getFunType :: Type,                     -- ^ Return type, Nothing when void
                             getFunArgs :: [(VariableName, Type)],   -- ^ Names and types of the function arguments
                             getFunBody :: Term }                    -- ^ Body of the function
                             deriving (Show, Eq)
@@ -45,6 +45,7 @@ data Term = And Term Term                           -- ^ Logical and
 -- | Type for the language values
 {-! for Type derive : NFData !-}
 data Type = TInt                    -- ^ Integer
+            | TVoid                 -- ^ Void
             | TBool                 -- ^ Boolean
             | Ds                    -- ^ Data structure reference
             | DsElem                -- ^ Data structure element reference
