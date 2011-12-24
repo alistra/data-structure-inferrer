@@ -18,13 +18,13 @@ data OperationName =  InsertVal         -- ^ Insert an element
                     | UpdateByRef       -- ^ Update the value
                     | DeleteExtremalVal -- ^ Delete the extreme value
                     | ExtremalVal       -- ^ Maximum or minimum
-                    | BoundByRef        -- ^ Precedessor or successor 
+                    | BoundByRef        -- ^ Precedessor or successor
                     | DecreaseValByRef  -- ^ Update that decreases the value
                     | Union             -- ^ Union
                     | Intersection      -- ^ Intersection
                     | Difference        -- ^ Difference
                     | SymDifference     -- ^ Symmetric difference
-                    | Map               -- ^ Map elements 
+                    | Map               -- ^ Map elements
                     | Size              -- ^ Checking the size
                     | Empty             -- ^ Checking the empiness
                     deriving (Show, Eq)
