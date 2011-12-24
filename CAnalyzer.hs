@@ -9,8 +9,7 @@ import Defs.Structures
 import Defs.Util
 import Defs.Common
 
-import Recommend
-import Advice
+import Analyzer
 
 import Data.List
 import Data.Function
@@ -22,90 +21,19 @@ import Control.Monad.State
 import Control.Arrow
 import Safe
 
-import Debug.Trace
-
-
--- | Data structure for analysis info for one data-structure (possibly in many forms of different variables in functions)
-data DSInfo = DSI {
-    getDSINames  :: [(FunctionName, VariableName)],             -- ^ Variables, used in functions, holding the analyzed data structure
-    getDSIDSU      :: [DSUse]                                   -- ^ 'DSUse's of the data structure
-    } deriving (Show, Eq)
-
-instance Monoid DSInfo where
-    mempty = DSI [] []
-    mappend (DSI n1 d1) (DSI n2 d2) = DSI (n1 `union` n2) (d1 `union` d2)
-
--- | Function call - name of the function, relevant arguments
-type FunctionCall = (FunctionName, [Maybe VariableName])
-
 -- | Data structure for analysis info of a function definition
 data DSFun = DSF {
-    getDSFFun   :: FunctionDeclaration,                         -- ^ Analyzed function declaration
-    getDSFCalls :: [FunctionCall],                              -- ^ 'FunctionCall's from the analyzed function
-    getDSFDSI   :: [DSInfo]                                     -- ^ 'DSInfo' about the variables inside of the function, at this stage are not yet ready to obtain the information
+    getDSFFun   :: FunctionDeclaration,                       -- ^ Analyzed function declaration
+    getDSFCalls :: [FunctionCall],                            -- ^ 'FunctionCall's from the analyzed function
+    getDSFDSI   :: [DSInfo]                                   -- ^ 'DSInfo' about the variables inside of the function, at this stage are not yet ready to obtain the information
     } deriving (Show)
-
--- | Data structure use case
-data DSUse = DSU {
-    getDSUName      :: OperationName,                           -- ^ Operation used
-    isHeavilyUsed   :: Bool,                                    -- ^ Is it heavily used
-    isUserDependent :: Bool                                     -- ^ Is it dependent on some external input (user, network, random, signals, etc.)
-    } deriving (Show, Eq)
 
 -- | Type for function definitions
 data FunctionDeclaration = FunDecl {
-    getFunName :: FunctionName,                                 -- ^ Name of the function
-    getFunType :: CTypeSpec,                                    -- ^ Return type of the function
-    getFunArgs :: [(VariableName, CTypeSpec)]                   -- ^ Names and types of the function arguments
+    getFunName :: FunctionName,                               -- ^ Name of the function
+    getFunType :: CTypeSpec,                                  -- ^ Return type of the function
+    getFunArgs :: [(VariableName, CTypeSpec)]                 -- ^ Names and types of the function arguments
     } deriving (Show)
-
--- | State monad with 'TermAnalyzerState'
-type TermAnalyzer a = State TermAnalyzerState a
-
--- | Term analyzer basic output, variables and 'DSUse's
-type Output = [(VariableName, DSUse)]
-
--- | State of the analyzer
-data TermAnalyzerState = AS {
-    getStateFunction :: Maybe FunctionDeclaration,              -- ^ Current function being analyzed
-    getStateCalls    :: [FunctionCall]                          -- ^ 'FunctionCall's gathered through the analysis
-    } deriving (Show)
-
-append :: TermAnalyzerState -> TermAnalyzerState -> TermAnalyzerState
-append (AS f1 cs1) (AS _ cs2) = AS f1 (cs1 `union` cs2)
-
--- | Pretty print single 'DSInfo'
-printDSI :: (String -> IO ()) -> DSInfo -> IO ()
-printDSI output dsi = do
-    output "The recommended structure for "
-    redColor
-    output $ show (getDSINames dsi) ++ "\n"
-    resetColor
-    output " is:"
-    cyanColor
-    recommendedDS >>= output.show
-    resetColor where
-        recommendedDS = do
-            let opns = map getDSUName $ getDSIDSU dsi
-            recommendDS opns
-
-printDSIAdvice :: (String -> IO ()) -> DSInfo -> IO ()
-printDSIAdvice output dsi = do
-    let opns = map getDSUName $ getDSIDSU dsi
-    printAdvice output opns
-
--- | Pretty printer for the analyzer effects
-printRecommendationFromAnalysis :: (String -> IO ()) -> [DSInfo] -> IO()
-printRecommendationFromAnalysis output = mapM_ (printDSI output)
-
-printAdviceFromAnalysis :: (String -> IO ()) -> [DSInfo] -> IO ()
-printAdviceFromAnalysis output = mapM_ (printDSIAdvice output)
-
--- | Stupid merging of dsis --TODO remove this function, rewrite analyzeFunctions correctly
-stupidMerge ::  [DSInfo] -> [DSInfo]
-stupidMerge (dsi:dsis) = let (same, different) = partition (\dsi' -> getDSINames dsi `intersect` getDSINames dsi' /= []) dsis in
-    mconcat (dsi:same) : stupidMerge different
-stupidMerge [] = []
 
 -- | Merges the simple 'DSInfo's based on function calls from the functions
 analyzeFunctions :: [DSFun] -> [DSInfo]
@@ -151,42 +79,9 @@ generateDSI :: FunctionName -> Output -> [DSInfo]
 generateDSI funName dsus = let varGroups = groupBy (on (==) fst) dsus in
     map (\g -> DSI [(funName, fst.head $ g)] (map snd g)) varGroups
 
--- | Start the state monad to create a 'DSFun' for function
---generateDSF :: [FunctionName] -> FunctionDeclaration -> DSFun
---generateDSF = undefined
---generateDSF fnns fn = let (dsus, st) = runState (sumTerms step [getFunBody fn]) (AS fn fnns [] []) in
---    DSF fn (getStateCalls st) (generateDSI fn dsus)
-
-{-
-step (While cond body) = stepBlock [cond,body,body]
-
-step (Funcall name args) = do
-    s <- get
-    let opname = case name of -- FIXME nicer with usage of dsinfFunctions from Common
-            F "insert"        -> Just InsertVal
-            F "find"          -> Just FindByVal
-            F "update"        -> Just UpdateByRef
-            F "max"           -> Just ExtremalVal
-            F "delete_max"    -> Just DeleteExtremalVal
-            _               -> Nothing
-                                            -- FIXME add reading the function calls
-    argDsus <- stepBlock args
-
-    funcallDsu <- case opname of
-        Nothing ->  do
-            putCall name args
-            return []
-        Just op ->  case head args of       -- FIXME dsinfFunctions ds argument recognition
-            Var varname -> if getVar varname s
-                then return [(varname, DSU op False False)]
-                else error $ show varname ++ " not initialized before use in function " ++ show name
-            _           -> error "Not implemented yet"
-
-    return $ argDsus ++ funcallDsu-}
-
 main = do
     ast <- parseMyFile "1.c"
-    let (eithers, s) = runState (analyzeCTranslUnit ast) (AS Nothing [])
+    let (eithers, s) = runState (analyzeCTranslUnit ast) (AS [])
     printRecommendationFromAnalysis putStrLn (stupidMerge $ analyzeFunctions $ rights eithers)
 
 parseMyFile :: FilePath -> IO CTranslUnit
@@ -227,10 +122,11 @@ analyzeCTranslUnit :: CTranslUnit -> TermAnalyzer [Either Output DSFun] --TODO a
 analyzeCTranslUnit (CTranslUnit extDecls _) = mapM analyzeCExtDecl extDecls
 
 analyzeCExtDecl :: CExtDecl -> TermAnalyzer (Either Output DSFun) --TODO add global variables here
-analyzeCExtDecl (CDeclExt decl)          = analyzeCDecl decl >>= return . Left
-analyzeCExtDecl (CFDefExt cFunDef)       = analyzeCFunDef cFunDef >>= return . Right
+analyzeCExtDecl (CDeclExt decl)          = Left `fmap` analyzeCDecl decl
+analyzeCExtDecl (CFDefExt cFunDef)       = Right `fmap` analyzeCFunDef cFunDef
 analyzeCExtDecl a@(CAsmExt strLit dunno) = return $ Left [] --HMMM do i want to play with asm
 
+analyzeCDecl :: CDecl -> TermAnalyzer Output
 analyzeCDecl (CDecl declSpecs tripleList _) = fmcs [analyzeCDeclSpecs declSpecs, analyzeCTripleList tripleList]
 
 analyzeCInit :: CInit -> TermAnalyzer Output
@@ -242,24 +138,24 @@ analyzeCInitList initList = fmcs $ map (\(pds, init) -> fmcs $ analyzeCInit init
 
 analyzeCTripleList :: [(Maybe CDeclr, Maybe CInit, Maybe CExpr)] -> TermAnalyzer Output
 analyzeCTripleList tripleList = fmcs $
-    map manalyzeCDeclr       (map (\(f,_,_) -> f) tripleList) ++
-    map manalyzeCInit        (map (\(_,s,_) -> s) tripleList) ++
-    map manalyzeCExpr        (map (\(_,_,t) -> t) tripleList)
+    map (manalyzeCDeclr . (\(f,_,_) -> f)) tripleList ++
+    map (manalyzeCInit  . (\(_,s,_) -> s)) tripleList ++
+    map (manalyzeCExpr  . (\(_,_,t) -> t)) tripleList
 
+analyzeCDeclSpecs :: [CDeclSpec]-> TermAnalyzer Output
 analyzeCDeclSpecs declSpecs = let (_,attribs,_,_,_) = partitionDeclSpecs declSpecs in
     fmcs $ map analyzeCAttr attribs
 
 analyzeCFunDef :: CFunDef -> TermAnalyzer DSFun
 analyzeCFunDef (CFunDef declSpecs declr declarations statement _) = do
     let funDec = FunDecl (F $ getName declr) (getType declSpecs) (getArgsWithTypes declr)
-    modify $ \s -> s {getStateFunction = Just $ funDec, getStateCalls = []}
+    modify $ \s -> s {getStateCalls = []}
     body <- fmcs $
         [ analyzeCDeclSpecs declSpecs
         , analyzeCDeclr declr
         , analyzeCStat statement] ++ map analyzeCDecl declarations
     s <- get
-    modify $ \s -> s {getStateFunction = Nothing}
-    return $ DSF {getDSFFun = funDec, getDSFCalls = getStateCalls s, getDSFDSI = generateDSI (getFunName funDec) (traceShow body body)}
+    return DSF {getDSFFun = funDec, getDSFCalls = getStateCalls s, getDSFDSI = generateDSI (getFunName funDec) body}
 
 analyzeCDerivedDeclarator :: CDerivedDeclr -> TermAnalyzer Output
 analyzeCDerivedDeclarator (CPtrDeclr qualifs _) = fmcs $ map analyzeCTypeQualifier qualifs
@@ -319,7 +215,7 @@ analyzeCExpr (CAlignofType decln _)                   = analyzeCDecl decln
 analyzeCExpr (CAssign assignop expr1 expr2 _)         = fmcs $ map analyzeCExpr [expr1, expr2]
 analyzeCExpr (CBinary binop expr1 expr2 _)            = fmcs $ map analyzeCExpr [expr1, expr2]  
 analyzeCExpr (CBuiltinExpr builtin)                   = analyzeCBuiltin builtin
-analyzeCExpr (CCall (CVar (Ident funName _ _) _) ((CVar (Ident varName _ _) _):exprs) _) = do
+analyzeCExpr (CCall (CVar (Ident funName _ _) _) (CVar (Ident varName _ _) _:exprs) _) = do
     when (isDsinfFunction (F funName)) (putCall (F funName) exprs) --TODO use nicer name matching and checking
     analysis <- fmcs $ map analyzeCExpr exprs
     let mdsu = case funName of
@@ -332,11 +228,11 @@ analyzeCExpr (CCall (CVar (Ident funName _ _) _) ((CVar (Ident varName _ _) _):e
             _               -> Nothing
     maybe (return analysis) (\dsu -> return $ (V varName,DSU dsu False False) : analysis) mdsu --TODO get varname of the ds
 analyzeCExpr (CCall expr exprs _)                     = fmcs $ map analyzeCExpr (expr : exprs) --TODO calling a pointer
-analyzeCExpr (CCast decln expr _)                     = fmcs $ [analyzeCDecl decln, analyzeCExpr expr]
+analyzeCExpr (CCast decln expr _)                     = fmcs [analyzeCDecl decln, analyzeCExpr expr]
 analyzeCExpr (CComma exprs _)                         = fmcs $ map analyzeCExpr exprs
 analyzeCExpr (CComplexImag expr _)                    = analyzeCExpr expr
 analyzeCExpr (CComplexReal expr _)                    = analyzeCExpr expr
-analyzeCExpr (CCompoundLit decln initList _)          = fmcs $ [analyzeCDecl decln, analyzeCInitList initList]
+analyzeCExpr (CCompoundLit decln initList _)          = fmcs [analyzeCDecl decln, analyzeCInitList initList]
 analyzeCExpr (CCond expr1 mexpr expr2 _)              = fmcs $ manalyzeCExpr mexpr : map analyzeCExpr [expr1, expr2]
 analyzeCExpr (CConst const)                           = return []
 analyzeCExpr (CIndex expr1 expr2 _)                   = fmcs $ map analyzeCExpr [expr1, expr2]
@@ -363,7 +259,7 @@ fmcs :: (Functor m, Monad m) => [m [a]] -> m [a]
 fmcs = fmap concat . sequence
 
 -- | Wrapper for analyzing 'Maybe' values
-ma :: (a -> TermAnalyzer Output) -> (Maybe a -> TermAnalyzer Output)
+ma :: (a -> TermAnalyzer Output) -> Maybe a -> TermAnalyzer Output
 ma = maybe (return [])
 
 manalyzeCDeclr :: Maybe CDeclr -> TermAnalyzer Output
