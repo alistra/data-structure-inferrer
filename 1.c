@@ -5,7 +5,7 @@ extern void insert(struct ds*, int);
 int main(int argc, const char *argv[])
 {
 	struct ds d1;
-	insert(&d1, 4);
+	insert(d1, 4);
 	return 0;
 }
 /*

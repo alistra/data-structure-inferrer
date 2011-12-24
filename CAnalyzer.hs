@@ -22,6 +22,9 @@ import Control.Monad.State
 import Control.Arrow
 import Safe
 
+import Debug.Trace
+
+
 -- | Data structure for analysis info for one data-structure (possibly in many forms of different variables in functions)
 data DSInfo = DSI {
     getDSINames  :: [(FunctionName, VariableName)],             -- ^ Variables, used in functions, holding the analyzed data structure
@@ -51,9 +54,9 @@ data DSUse = DSU {
 
 -- | Type for function definitions
 data FunctionDeclaration = FunDecl {
-    getFunName :: FunctionName,             -- ^ Name of the function
-    getFunType :: CTypeSpec,                -- ^ Return type of the function
-    getFunArgs :: [(VariableName, CTypeSpec)]    -- ^ Names and types of the function arguments
+    getFunName :: FunctionName,                                 -- ^ Name of the function
+    getFunType :: CTypeSpec,                                    -- ^ Return type of the function
+    getFunArgs :: [(VariableName, CTypeSpec)]                   -- ^ Names and types of the function arguments
     } deriving (Show)
 
 -- | State monad with 'TermAnalyzerState'
@@ -65,13 +68,11 @@ type Output = [(VariableName, DSUse)]
 -- | State of the analyzer
 data TermAnalyzerState = AS {
     getStateFunction :: Maybe FunctionDeclaration,              -- ^ Current function being analyzed
-    getStateFunNames :: [FunctionName],                         -- ^ All the function names
-    getStateVarNames :: [VariableName],                         -- ^ All the variable names --TODO are they only relevant ones? is it needed?
     getStateCalls    :: [FunctionCall]                          -- ^ 'FunctionCall's gathered through the analysis
     } deriving (Show)
 
 append :: TermAnalyzerState -> TermAnalyzerState -> TermAnalyzerState
-append (AS f1 fns1 vns1 cs1) (AS _ _ vns2 cs2) = AS f1 fns1 (vns1 `union` vns2) (cs1 `union` cs2)
+append (AS f1 cs1) (AS _ cs2) = AS f1 (cs1 `union` cs2)
 
 -- | Pretty print single 'DSInfo'
 printDSI :: (String -> IO ()) -> DSInfo -> IO ()
@@ -146,9 +147,9 @@ bindFuncall functions functionName vns = let
         bindZipper Nothing _ = Nothing
 
 -- | Generates simple 'DSInfo's without the info from function calls
-generateDSI :: FunctionDeclaration -> [(VariableName, DSUse)] -> [DSInfo]
-generateDSI fn dsus = let varGroups = groupBy (on (==) fst) dsus in
-    map (\g -> DSI [(getFunName fn, fst.head $ g)] (map snd g)) varGroups
+generateDSI :: FunctionName -> Output -> [DSInfo]
+generateDSI funName dsus = let varGroups = groupBy (on (==) fst) dsus in
+    map (\g -> DSI [(funName, fst.head $ g)] (map snd g)) varGroups
 
 -- | Start the state monad to create a 'DSFun' for function
 --generateDSF :: [FunctionName] -> FunctionDeclaration -> DSFun
@@ -156,32 +157,7 @@ generateDSI fn dsus = let varGroups = groupBy (on (==) fst) dsus in
 --generateDSF fnns fn = let (dsus, st) = runState (sumTerms step [getFunBody fn]) (AS fn fnns [] []) in
 --    DSF fn (getStateCalls st) (generateDSI fn dsus)
 
--- | Function putting a variable definition in the context
-putVar :: VariableName -> TermAnalyzer ()
-putVar name = modify $ \s -> s {getStateVarNames = name:getStateVarNames s}
-
--- | Function returning 'True' if the variable is already defined
-getVar :: VariableName -> TermAnalyzerState -> Bool
-getVar name s = name `elem` getStateVarNames s
-
-
--- | Generate 'DSUse's for a single 'Term'
---step :: Term -> TermAnalyzer Output
---step = undefined
 {-
-step (VarInit name Ds) = do
-    s <- get                        --TODO maybe gets?
-    if getVar name s
-        then error $ show name ++ " already initialized"
-        else putVar name >> return []
-                                     --TODO pointer copying
-
-step (InitAssign name _ Ds) = do
-    s <- get
-    if getVar name s
-        then error $ show name ++ " already initialized"
-        else putVar name >> return []
-
 step (While cond body) = stepBlock [cond,body,body]
 
 step (Funcall name args) = do
@@ -210,7 +186,7 @@ step (Funcall name args) = do
 
 main = do
     ast <- parseMyFile "1.c"
-    let (eithers, s) = runState (analyzeCTranslUnit ast) (AS Nothing [] [] [])
+    let (eithers, s) = runState (analyzeCTranslUnit ast) (AS Nothing [])
     printRecommendationFromAnalysis putStrLn (stupidMerge $ analyzeFunctions $ rights eithers)
 
 parseMyFile :: FilePath -> IO CTranslUnit
@@ -219,113 +195,6 @@ parseMyFile input_file =
      case parse_result of
        Left parse_err -> error (show parse_err)
        Right ast      -> return ast
-
-analyzeCTranslUnit :: CTranslUnit -> TermAnalyzer [Either Output DSFun] --TODO add global variables here
-analyzeCTranslUnit (CTranslUnit extDecls _) = mapM analyzeCExtDecl extDecls
-
-analyzeCExtDecl :: CExtDecl -> TermAnalyzer (Either Output DSFun) --TODO add global variables here
-analyzeCExtDecl (CDeclExt decl)          = analyzeCDecl decl >>= return . Left
-analyzeCExtDecl (CFDefExt cFunDef)       = analyzeCFunDef cFunDef >>= return . Right
-analyzeCExtDecl a@(CAsmExt strLit dunno) = undefined  --HMMM do i want to play with asm
-
-analyzeCDecl (CDecl specifiers tripleList _) = fmcs [analyzeCDeclSpecifiers specifiers, analyzeCTripleList tripleList]
-
-manalyzeCInit :: Maybe CInit -> TermAnalyzer Output
-manalyzeCInit = maybe (return []) analyzeCInit
-
-analyzeCInit :: CInit -> TermAnalyzer Output
-analyzeCInit (CInitExpr expr _) = analyzeCExpr expr
-analyzeCInit (CInitList initList _) = analyzeCInitList initList
-
-analyzeCInitList :: CInitList -> TermAnalyzer Output
-analyzeCInitList initList = fmcs $ map (\(pds, init) -> fmcs $ analyzeCInit init : map analyzeCDesignator pds) initList
-
-analyzeCTripleList :: [(Maybe CDeclr, Maybe CInit, Maybe CExpr)] -> TermAnalyzer Output
-analyzeCTripleList tripleList = fmcs $
-    map manalyzeCDeclr       (map (\(f,_,_) -> f) tripleList) ++
-    map manalyzeCInit        (map (\(_,s,_) -> s) tripleList) ++
-    map manalyzeCExpr  (map (\(_,_,t) -> t) tripleList)
-
-analyzeCDeclSpecifiers specifiers = return [] --TODO read doc on specifiers
-
-analyzeCFunDef :: CFunDef -> TermAnalyzer DSFun
-analyzeCFunDef (CFunDef specifiers declarator declarations statement _) = do
-    body <- fmcs $
-        [ analyzeCDeclSpecifiers specifiers
-        , analyzeCDeclr declarator
-        , analyzeCStatement statement] ++ map analyzeCDecl declarations
-    funDec <- undefined
-    modify $ \s -> undefined
-    s <- get
-    return $ DSF {getDSFFun = funDec, getDSFCalls = getStateCalls s, getDSFDSI = undefined }
-
-analyzeCDerivedDeclarator :: CDerivedDeclr -> TermAnalyzer Output
-analyzeCDerivedDeclarator (CPtrDeclr qualifs _) = fmcs $ map analyzeCTypeQualifier qualifs
-analyzeCDerivedDeclarator (CArrDeclr qualifs arrsize _) = fmcs $ analyzeCArraySize arrsize : map analyzeCTypeQualifier qualifs
-analyzeCDerivedDeclarator (CFunDeclr eidentpair attribs _) = undefined --FIXME implement this shit
-
-analyzeCAttribute :: CAttr -> TermAnalyzer Output
-analyzeCAttribute (CAttr ident exprs _) = fmcs $ map analyzeCExpr exprs
-
-analyzeCTypeQualifier :: CTypeQual -> TermAnalyzer Output
-analyzeCTypeQualifier (CConstQual _) = return []
-analyzeCTypeQualifier (CVolatQual _) = return []
-analyzeCTypeQualifier (CRestrQual _) = return []
-analyzeCTypeQualifier (CInlineQual _) = return []
-analyzeCTypeQualifier (CAttrQual attrib) = analyzeCAttribute attrib
-
-analyzeCArraySize :: CArrSize -> TermAnalyzer Output
-analyzeCArraySize (CNoArrSize _) = return []
-analyzeCArraySize (CArrSize _ expr) = analyzeCExpr expr
-
-
-manalyzeCDeclr :: Maybe CDeclr -> TermAnalyzer Output
-manalyzeCDeclr = maybe (return []) analyzeCDeclr
-
-analyzeCDeclr :: CDeclr -> TermAnalyzer Output
-analyzeCDeclr (CDeclr mident derives mliteral attribs _) = fmcs $
-    map analyzeCDerivedDeclarator derives ++ map analyzeCAttribute attribs
-
-manalyzeCStatement :: Maybe CStat -> TermAnalyzer Output
-manalyzeCStatement = maybe (return []) analyzeCStatement
-
-analyzeCStatement :: CStat -> TermAnalyzer Output
-analyzeCStatement (CLabel ident statement attribs _)        = fmcs $ analyzeCStatement statement : map analyzeCAttribute attribs
-analyzeCStatement (CCase expr statement _)                  = fmcs [analyzeCExpr expr, analyzeCStatement statement]
-analyzeCStatement (CCases expr1 expr2 statement _)          = fmcs $ analyzeCStatement statement : map analyzeCExpr [expr1, expr2]
-analyzeCStatement (CDefault statement _)                    = analyzeCStatement statement
-analyzeCStatement (CExpr mexpr _)                           = manalyzeCExpr mexpr
-analyzeCStatement (CCompound idents compoundBlockItems _)   = fmcs $ map analyzeCCompoundBlockItem compoundBlockItems
-analyzeCStatement (CIf expr statement mstatement _)         = fmcs
-    [analyzeCExpr expr
-    , analyzeCStatement statement
-    , manalyzeCStatement mstatement] --TODO fix to substitute environments for cases
-analyzeCStatement (CSwitch expr statement _)                = fmcs [analyzeCExpr expr, analyzeCStatement statement]
-analyzeCStatement (CWhile expr statement isdowhile _)       = fmcs [analyzeCExpr expr, analyzeCStatement statement]
-analyzeCStatement (CFor emexprdecl mexpr1 mexpr2 statement _)= fmcs $
-    either manalyzeCExpr analyzeCDecl emexprdecl :
-    analyzeCStatement statement :
-    map manalyzeCExpr [mexpr1, mexpr2]
-analyzeCStatement (CGoto ident _)                           = return [] --TODO implement goto
-analyzeCStatement (CGotoPtr expr _)                         = analyzeCExpr expr --TODO implement goto
-analyzeCStatement (CCont _)                                 = return []
-analyzeCStatement (CBreak _)                                = return []
-analyzeCStatement (CReturn mexpr _)                         = manalyzeCExpr mexpr
-analyzeCStatement (CAsm asm _)                              = return [] --HMMM do i really want to care about somebody's asm?
-
-analyzeCCompoundBlockItem :: CBlockItem -> TermAnalyzer Output
-analyzeCCompoundBlockItem (CBlockStmt statement)            = analyzeCStatement statement
-analyzeCCompoundBlockItem (CBlockDecl declaration)          = analyzeCDecl declaration
-analyzeCCompoundBlockItem (CNestedFunDef funDef)            = return [] --TODO implement nested functions
-
-analyzeCConst :: CConst -> TermAnalyzer Output
-analyzeCConst (CIntConst int _)                             = return []
-analyzeCConst (CCharConst char _)                           = return []
-analyzeCConst (CFloatConst float _)                          = return []
-analyzeCConst (CStrConst str _)                            = return []
-
-manalyzeCExpr :: Maybe CExpr -> TermAnalyzer Output
-manalyzeCExpr = maybe (return []) analyzeCExpr
 
 isDsinfFunction :: FunctionName -> Bool --STUB
 isDsinfFunction (F "insert") = True
@@ -341,15 +210,127 @@ putCall name exprs = do
         justifyArgs (CVar (Ident v _ _) _) = Just (V v)
         justifyArgs _ = Nothing                      -- TODO function calls returning struct ds or a pointer, not only vars
 
+getName :: CDeclr -> String
+getName (CDeclr (Just (Ident str _ _)) _ _ _ _) = str
+getName (CDeclr Nothing _ _ _ _) = error "function without a name? that's just ridiculous"
+
+getType :: [CDeclSpec] -> CTypeSpec
+getType declSpecs = let (_,_,_,specs,_) = partitionDeclSpecs declSpecs in
+    if length specs > 1
+        then error $ show specs -- >:D
+        else head specs
+
+getArgsWithTypes :: CDeclr -> [(VariableName, CTypeSpec)]
+getArgsWithTypes declr = [] --STUB
+
+analyzeCTranslUnit :: CTranslUnit -> TermAnalyzer [Either Output DSFun] --TODO add global variables here
+analyzeCTranslUnit (CTranslUnit extDecls _) = mapM analyzeCExtDecl extDecls
+
+analyzeCExtDecl :: CExtDecl -> TermAnalyzer (Either Output DSFun) --TODO add global variables here
+analyzeCExtDecl (CDeclExt decl)          = analyzeCDecl decl >>= return . Left
+analyzeCExtDecl (CFDefExt cFunDef)       = analyzeCFunDef cFunDef >>= return . Right
+analyzeCExtDecl a@(CAsmExt strLit dunno) = return $ Left [] --HMMM do i want to play with asm
+
+analyzeCDecl (CDecl declSpecs tripleList _) = fmcs [analyzeCDeclSpecs declSpecs, analyzeCTripleList tripleList]
+
+analyzeCInit :: CInit -> TermAnalyzer Output
+analyzeCInit (CInitExpr expr _) = analyzeCExpr expr
+analyzeCInit (CInitList initList _) = analyzeCInitList initList
+
+analyzeCInitList :: CInitList -> TermAnalyzer Output
+analyzeCInitList initList = fmcs $ map (\(pds, init) -> fmcs $ analyzeCInit init : map analyzeCDesignator pds) initList
+
+analyzeCTripleList :: [(Maybe CDeclr, Maybe CInit, Maybe CExpr)] -> TermAnalyzer Output
+analyzeCTripleList tripleList = fmcs $
+    map manalyzeCDeclr       (map (\(f,_,_) -> f) tripleList) ++
+    map manalyzeCInit        (map (\(_,s,_) -> s) tripleList) ++
+    map manalyzeCExpr        (map (\(_,_,t) -> t) tripleList)
+
+analyzeCDeclSpecs declSpecs = let (_,attribs,_,_,_) = partitionDeclSpecs declSpecs in
+    fmcs $ map analyzeCAttr attribs
+
+analyzeCFunDef :: CFunDef -> TermAnalyzer DSFun
+analyzeCFunDef (CFunDef declSpecs declr declarations statement _) = do
+    let funDec = FunDecl (F $ getName declr) (getType declSpecs) (getArgsWithTypes declr)
+    modify $ \s -> s {getStateFunction = Just $ funDec, getStateCalls = []}
+    body <- fmcs $
+        [ analyzeCDeclSpecs declSpecs
+        , analyzeCDeclr declr
+        , analyzeCStat statement] ++ map analyzeCDecl declarations
+    s <- get
+    modify $ \s -> s {getStateFunction = Nothing}
+    return $ DSF {getDSFFun = funDec, getDSFCalls = getStateCalls s, getDSFDSI = generateDSI (getFunName funDec) (traceShow body body)}
+
+analyzeCDerivedDeclarator :: CDerivedDeclr -> TermAnalyzer Output
+analyzeCDerivedDeclarator (CPtrDeclr qualifs _) = fmcs $ map analyzeCTypeQualifier qualifs
+analyzeCDerivedDeclarator (CArrDeclr qualifs arrsize _) = fmcs $ analyzeCArraySize arrsize : map analyzeCTypeQualifier qualifs
+analyzeCDerivedDeclarator (CFunDeclr eidentpair attribs _) = return [] --undefined --FIXME implement this shit
+
+analyzeCAttr :: CAttr -> TermAnalyzer Output
+analyzeCAttr (CAttr ident exprs _) = fmcs $ map analyzeCExpr exprs
+
+analyzeCTypeQualifier :: CTypeQual -> TermAnalyzer Output
+analyzeCTypeQualifier (CConstQual _) = return []
+analyzeCTypeQualifier (CVolatQual _) = return []
+analyzeCTypeQualifier (CRestrQual _) = return []
+analyzeCTypeQualifier (CInlineQual _) = return []
+analyzeCTypeQualifier (CAttrQual attrib) = analyzeCAttr attrib
+
+analyzeCArraySize :: CArrSize -> TermAnalyzer Output
+analyzeCArraySize (CNoArrSize _) = return []
+analyzeCArraySize (CArrSize _ expr) = analyzeCExpr expr
+
+analyzeCDeclr :: CDeclr -> TermAnalyzer Output
+analyzeCDeclr (CDeclr mident derives mliteral attribs _) = fmcs $
+    map analyzeCDerivedDeclarator derives ++ map analyzeCAttr attribs
+
+analyzeCStat :: CStat -> TermAnalyzer Output
+analyzeCStat (CLabel ident statement attribs _)        = fmcs $ analyzeCStat statement : map analyzeCAttr attribs
+analyzeCStat (CCase expr statement _)                  = fmcs [analyzeCExpr expr, analyzeCStat statement]
+analyzeCStat (CCases expr1 expr2 statement _)          = fmcs $ analyzeCStat statement : map analyzeCExpr [expr1, expr2]
+analyzeCStat (CDefault statement _)                    = analyzeCStat statement
+analyzeCStat (CExpr mexpr _)                           = manalyzeCExpr mexpr
+analyzeCStat (CCompound idents compoundBlockItems _)   = fmcs $ map analyzeCCompoundBlockItem compoundBlockItems
+analyzeCStat (CIf expr statement mstatement _)         = fmcs
+    [analyzeCExpr expr
+    , analyzeCStat statement
+    , manalyzeCStat mstatement] --TODO fix to substitute environments for cases
+analyzeCStat (CSwitch expr statement _)                = fmcs [analyzeCExpr expr, analyzeCStat statement]
+analyzeCStat (CWhile expr statement isdowhile _)       = fmcs [analyzeCExpr expr, analyzeCStat statement]
+analyzeCStat (CFor emexprdecl mexpr1 mexpr2 statement _)= fmcs $
+    either manalyzeCExpr analyzeCDecl emexprdecl :
+    analyzeCStat statement :
+    map manalyzeCExpr [mexpr1, mexpr2]
+analyzeCStat (CGoto ident _)                           = return [] --TODO implement goto
+analyzeCStat (CGotoPtr expr _)                         = analyzeCExpr expr --TODO implement goto
+analyzeCStat (CCont _)                                 = return []
+analyzeCStat (CBreak _)                                = return []
+analyzeCStat (CReturn mexpr _)                         = manalyzeCExpr mexpr
+analyzeCStat (CAsm asm _)                              = return [] --HMMM do i really want to care about somebody's asm?
+
+analyzeCCompoundBlockItem :: CBlockItem -> TermAnalyzer Output
+analyzeCCompoundBlockItem (CBlockStmt statement)            = analyzeCStat statement
+analyzeCCompoundBlockItem (CBlockDecl declaration)          = analyzeCDecl declaration
+analyzeCCompoundBlockItem (CNestedFunDef funDef)            = return [] --TODO implement nested functions
+
 analyzeCExpr :: CExpr -> TermAnalyzer Output
 analyzeCExpr (CAlignofExpr expr _)                    = analyzeCExpr expr
 analyzeCExpr (CAlignofType decln _)                   = analyzeCDecl decln
 analyzeCExpr (CAssign assignop expr1 expr2 _)         = fmcs $ map analyzeCExpr [expr1, expr2]
 analyzeCExpr (CBinary binop expr1 expr2 _)            = fmcs $ map analyzeCExpr [expr1, expr2]  
 analyzeCExpr (CBuiltinExpr builtin)                   = analyzeCBuiltin builtin
-analyzeCExpr (CCall (CVar (Ident funname _ _) _) exprs _) = do
-    when (isDsinfFunction (F funname)) (putCall (F funname) exprs)
-    fmcs $ map analyzeCExpr exprs
+analyzeCExpr (CCall (CVar (Ident funName _ _) _) ((CVar (Ident varName _ _) _):exprs) _) = do
+    when (isDsinfFunction (F funName)) (putCall (F funName) exprs) --TODO use nicer name matching and checking
+    analysis <- fmcs $ map analyzeCExpr exprs
+    let mdsu = case funName of
+            "insert"        -> Just InsertVal
+            "find"          -> Just FindByVal
+            "update"        -> Just UpdateByRef
+            "delete"        -> Just DeleteByRef
+            "max"           -> Just ExtremalVal
+            "delete_max"    -> Just DeleteExtremalVal
+            _               -> Nothing
+    maybe (return analysis) (\dsu -> return $ (V varName,DSU dsu False False) : analysis) mdsu --TODO get varname of the ds
 analyzeCExpr (CCall expr exprs _)                     = fmcs $ map analyzeCExpr (expr : exprs) --TODO calling a pointer
 analyzeCExpr (CCast decln expr _)                     = fmcs $ [analyzeCDecl decln, analyzeCExpr expr]
 analyzeCExpr (CComma exprs _)                         = fmcs $ map analyzeCExpr exprs
@@ -357,20 +338,20 @@ analyzeCExpr (CComplexImag expr _)                    = analyzeCExpr expr
 analyzeCExpr (CComplexReal expr _)                    = analyzeCExpr expr
 analyzeCExpr (CCompoundLit decln initList _)          = fmcs $ [analyzeCDecl decln, analyzeCInitList initList]
 analyzeCExpr (CCond expr1 mexpr expr2 _)              = fmcs $ manalyzeCExpr mexpr : map analyzeCExpr [expr1, expr2]
-analyzeCExpr (CConst const)                           = analyzeCConst const
+analyzeCExpr (CConst const)                           = return []
 analyzeCExpr (CIndex expr1 expr2 _)                   = fmcs $ map analyzeCExpr [expr1, expr2]
 analyzeCExpr (CLabAddrExpr ident _)                   = return []
 analyzeCExpr (CMember expr ident dereferred _)        = analyzeCExpr expr
 analyzeCExpr (CSizeofExpr expr _)                     = analyzeCExpr expr
 analyzeCExpr (CSizeofType decln _)                    = analyzeCDecl decln
-analyzeCExpr (CStatExpr statement _)                  = analyzeCStatement statement
+analyzeCExpr (CStatExpr statement _)                  = analyzeCStat statement
 analyzeCExpr (CUnary unop expr _)                     = analyzeCExpr expr
 analyzeCExpr (CVar ident _)                           = return []
 
 analyzeCBuiltin :: CBuiltin -> TermAnalyzer Output
-analyzeCBuiltin (CBuiltinVaArg expr decln _)                = fmcs [analyzeCExpr expr, analyzeCDecl decln]
-analyzeCBuiltin (CBuiltinOffsetOf decl cPartDesns _)       = fmcs $ analyzeCDecl decl : map analyzeCDesignator cPartDesns
-analyzeCBuiltin (CBuiltinTypesCompatible decln1 decln2 _)   = fmcs $ map analyzeCDecl [decln1, decln2]
+analyzeCBuiltin (CBuiltinVaArg expr decl _)             = fmcs [analyzeCExpr expr, analyzeCDecl decl]
+analyzeCBuiltin (CBuiltinOffsetOf decl cPartDesns _)    = fmcs $ analyzeCDecl decl : map analyzeCDesignator cPartDesns
+analyzeCBuiltin (CBuiltinTypesCompatible decl1 decl2 _) = fmcs $ map analyzeCDecl [decl1, decl2]
 
 analyzeCDesignator :: CDesignator -> TermAnalyzer Output
 analyzeCDesignator (CArrDesig expr _)                   = analyzeCExpr expr
@@ -381,13 +362,19 @@ analyzeCDesignator (CRangeDesig expr1 expr2 _)          = fmcs $ map analyzeCExp
 fmcs :: (Functor m, Monad m) => [m [a]] -> m [a]
 fmcs = fmap concat . sequence
 
-{-
-Right (CTranslUnit
-[ CDeclExt (CDecl [CTypeSpec (CSUType (CStruct CStructTag (Just "ds") (Just []) [] ) )] [] )
-, CDeclExt (CDecl [CStorageSpec (CExtern ),CTypeSpec (CVoidType )] [(Just (CDeclr (Just "insert") [CFunDeclr (Right ([CDecl [CTypeSpec (CSUType (CStruct CStructTag (Just "ds") Nothing [] ) )] [(Just (CDeclr Nothing [CPtrDeclr [] ] Nothing [] (OnlyPos <no file> (<no file>,-1))),Nothing,Nothing)] ,CDecl [CTypeSpec (CIntType )] [] ],False)) [] ] Nothing [] ),Nothing,Nothing)] )
-, CFDefExt (CFunDef [CTypeSpec (CIntType )] (CDeclr (Just "main") [CFunDeclr (Right ([CDecl [CTypeSpec (CIntType )] [(Just (CDeclr (Just "argc") [] Nothing [] ),Nothing,Nothing)] ,CDecl [CTypeQual (CConstQual ),CTypeSpec (CCharType )] [(Just (CDeclr (Just "argv") [CArrDeclr [] (CNoArrSize False) ,CPtrDeclr [] ] Nothing [] ),Nothing,Nothing)] ],False)) [] ] Nothing [] ) [] (CCompound []
-	[CBlockDecl (CDecl [CTypeSpec (CSUType (CStruct CStructTag (Just "ds") Nothing [] ) )] [(Just (CDeclr (Just "d1") [] Nothing [] ),Nothing,Nothing)] )
-	,CBlockStmt (CExpr (Just (CCall (CVar "insert" ) [CUnary CAdrOp (CVar "d1" ) ,CConst (CIntConst 4 )] )) )
-	,CBlockStmt (CReturn (Just (CConst (CIntConst 0))))]))
-])
--}
+-- | Wrapper for analyzing 'Maybe' values
+ma :: (a -> TermAnalyzer Output) -> (Maybe a -> TermAnalyzer Output)
+ma = maybe (return [])
+
+manalyzeCDeclr :: Maybe CDeclr -> TermAnalyzer Output
+manalyzeCDeclr = ma analyzeCDeclr
+
+manalyzeCStat :: Maybe CStat -> TermAnalyzer Output
+manalyzeCStat = ma analyzeCStat
+
+manalyzeCExpr :: Maybe CExpr -> TermAnalyzer Output
+manalyzeCExpr = ma analyzeCExpr
+
+manalyzeCInit :: Maybe CInit -> TermAnalyzer Output
+manalyzeCInit = ma analyzeCInit
+

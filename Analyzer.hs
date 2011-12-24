@@ -55,13 +55,11 @@ type TermAnalyzerOutput = [(VariableName, DSUse)]
 -- | State of the analyzer
 data TermAnalyzerState = AS {
     getStateFunction :: Function,                               -- ^ Current function being analyzed
-    getStateFunNames :: [FunctionName],                         -- ^ All the other function names
-    getStateVarNames :: [VariableName],                         -- ^ All the variable names
     getStateCalls    :: [(FunctionName, [Maybe VariableName])]  -- ^ Function calls gathered through the analysis
     } deriving (Show, Eq)
 
 append :: TermAnalyzerState -> TermAnalyzerState -> TermAnalyzerState
-append (AS f1 fns1 vns1 cs1) (AS _ _ vns2 cs2) = AS f1 fns1 (vns1 `union` vns2) (cs1 `union` cs2)
+append (AS f1 cs1) (AS _ cs2) = AS f1 (cs1 `union` cs2)
 
 -- | Pretty print single 'DSInfo'
 printDSI :: (String -> IO ()) -> DSInfo -> IO ()
@@ -98,8 +96,7 @@ stupidMerge [] = []
 
 -- | Runs everything that is needed to analyze a program
 analyze :: [Function] -> [DSInfo]
-analyze functions = let functionNames = map getFunName functions in
-    let dsfs = map (generateDSF functionNames) functions in
+analyze functions = let dsfs = map generateDSF functions in
     stupidMerge $ analyzeFunctions dsfs
 
 -- | Merges the simple 'DSInfo's based on function calls from the functions
@@ -147,8 +144,8 @@ generateDSI fn dsus = let varGroups = groupBy (on (==) fst) dsus in
     map (\g -> DSI [(getFunName fn, fst.head $ g)] (map snd g)) varGroups
 
 -- | Start the state monad to create a 'DSFun' for function
-generateDSF :: [FunctionName] -> Function -> DSFun
-generateDSF fnns fn = let (dsus, st) = runState (sumTerms step [getFunBody fn]) (AS fn fnns [] []) in
+generateDSF :: Function -> DSFun
+generateDSF fn = let (dsus, st) = runState (sumTerms step [getFunBody fn]) (AS fn []) in
     DSF fn (getStateCalls st) (generateDSI fn dsus)
 
 -- | Analyze a block of terms using the state monad
@@ -159,23 +156,12 @@ stepBlock = sumTerms step
 sumTerms :: (Term -> TermAnalyzer TermAnalyzerOutput) -> [Term] -> TermAnalyzer TermAnalyzerOutput
 sumTerms f ts = fmap concat (mapM f ts)
 
--- | Function putting a variable definition in the context
-putVar :: VariableName -> TermAnalyzer ()
-putVar name = do
-    s <- get
-    put $ AS (getStateFunction s) (getStateFunNames s) (name:getStateVarNames s) (getStateCalls s)
-
--- | Function returning 'True' if the variable is already defined
-getVar :: VariableName -> TermAnalyzerState -> Bool
-getVar name s = name `elem` getStateVarNames s
-
 -- | Function putting a function call in the state
 putCall :: FunctionName -> [Term] -> TermAnalyzer ()
 putCall name args = do
-    s <- get
     let cleanArgs = map justifyVars args
     let call = (name, cleanArgs)
-    put $ AS (getStateFunction s) (getStateFunNames s) (getStateVarNames s) (call:getStateCalls s) where
+    modify  $ \s -> s {getStateCalls = call:getStateCalls s} where
         justifyVars :: Term -> Maybe VariableName
         justifyVars (Var v) = Just v -- FIXME should work on function calls returning dses, not only vars
         justifyVars _ = Nothing
@@ -186,23 +172,12 @@ step :: Term -> TermAnalyzer TermAnalyzerOutput
 
 step (Block body) = stepBlock body
 
-step (VarInit name Ds) = do
-    s <- get                        --TODO maybe gets?
-    if getVar name s
-        then error $ show name ++ " already initialized"
-        else putVar name >> return []
-
-
-step (InitAssign name _ Ds) = do
-    s <- get
-    if getVar name s
-        then error $ show name ++ " already initialized"
-        else putVar name >> return []
+step (VarInit _ Ds) = return []
+step (InitAssign _ _ Ds) = return []
 
 step (While cond body) = stepBlock [cond,body]
 
 step (Funcall name args) = do
-    s <- get
     let opname = case name of -- FIXME nicer with usage of dsinfFunctions from Common
             F "insert"        -> Just InsertVal
             F "find"          -> Just FindByVal
@@ -218,9 +193,7 @@ step (Funcall name args) = do
             putCall name args
             return []
         Just op ->  case head args of       -- FIXME dsinfFunctions ds argument recognition
-            Var varname -> if getVar varname s
-                then return [(varname, DSU op False False)]
-                else error $ show varname ++ " not initialized before use in function " ++ show name
+            Var varname -> return [(varname, DSU op False False)]
             _           -> error "Not implemented yet"
 
     return $ argDsus ++ funcallDsu
@@ -246,6 +219,7 @@ step t = case t of
     VarInit _ _ -> return []
     Inc _ -> return []
     Dec _ -> return []
+    Int _ -> return []
 
     Assign _ t -> step t
     Lt t1 t2 -> stepBlock [t1, t2]
