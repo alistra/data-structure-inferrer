@@ -62,6 +62,7 @@ Executable dsinf
                        , safe                     >= 0.3.1
                        , utility-ht
                        , deepseq
+                       , derive
 
   -- Modules not exported by this package.
   -- Other-modules

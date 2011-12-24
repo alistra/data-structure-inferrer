@@ -3,7 +3,7 @@
 module Il.Parser where
 
 import Il.Lexer
-import Defs.AST
+import Il.AST
 import Defs.Common
 
 import Prelude hiding (True, False)
