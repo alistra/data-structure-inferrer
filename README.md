@@ -14,6 +14,34 @@ This project is meant to be a compiler feature/wrapper that analyzes your code a
 	  -v         --verbose        Enable verbose messages
 	  -h         --help           Show help
 
+
+# Example (not yet working)
+
+For the following C file:
+
+	//example.c
+	#include <ds.h>
+	int main()
+	{
+		ds d1;
+		dselem e;
+
+		for(int i = 0; i < 20; i++)
+		{
+			insert(d1, i);
+			e = search(d1, i);
+			update(e, 2*i);
+		}
+
+		printf("%d\n", max(d1));
+	}
+
+you'll invoke:
+
+	dsinf -c example.c
+
+and it will automatically compile the file and link the matching library with data structure implementation (here red-black trees with max element cache).
+
 # For now
 
 For now it works as a standalone code analyzer for a toy language that prints the most appropriate structure.
@@ -54,5 +82,3 @@ There's an advice mode which is formatted more nicely:
 	Currently, the recommended data structure is: Red-Black Trees
 	You could use Hashtable, if you removed the following operations:
 	* DeleteExtremalVal
-
-
