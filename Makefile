@@ -1,17 +1,21 @@
-SRC=Advice.hs AllStructures.hs Il/Analyzer.hs C/Analyzer.hs Recommend.hs Il/Typechecker.hs Il/AST.hs Defs/*.hs
+IL=Il/Analyzer.hs Il/Typechecker.hs Il/AST.hs
+C=C/Analyzer.hs
+SRC=Advice.hs AllStructures.hs Recommend.hs Defs/*.hs ${C} ${IL}
 LEXPAR=Il/Lexer.hs Il/Parser.hs
+CDOPTS=-package-conf cabal-dev/packages-7.2.2.conf
+
 
 dsinf: ${LEXPAR} ${SRC} Main.hs
-	ghc --make -o dsinf -O Main.hs
+	ghc --make ${CDOPTS} -o dsinf -O Main.hs
 
 tests: ${LEXPAR} ${SRC} Tests.hs
-	ghci -O Tests.hs
+	ghci ${CDOPTS} -O Tests.hs
 
 Il/Lexer.hs: Il/Lexer.x
-	alex Il/Lexer.x
+	alex -g Il/Lexer.x
 
 Il/Parser.hs: Il/Parser.y
-	happy -iIl/grammar.log Il/Parser.y
+	happy -g Il/Parser.y
 
 clean:
 	rm -f Il/Lexer.hs Il/Parser.hs Il/grammar.log

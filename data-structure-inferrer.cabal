@@ -65,7 +65,7 @@ Executable dsinf
                        , derive
 
   -- Modules not exported by this package.
-  -- Other-modules
+  Other-modules:       Il.Parser, Il.Lexer
 
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   Build-tools:         alex, happy

@@ -6,7 +6,7 @@ import Il.Lexer
 import Il.AST
 import Defs.Common
 
-import Prelude hiding (True, False)
+import Prelude
 }
 
 %name parse funlist
@@ -24,7 +24,7 @@ import Prelude hiding (True, False)
 	DsElem		{ (_,TkDsElem)	}
 	Else		{ (_,TkElse)   	}
 	Equals          { (_,TkEquals) 	}
-	False		{ (_,TkFalse)	}
+	TFalse		{ (_,TkFalse)	}
 	For		{ (_,TkFor)	}
 	GEqual		{ (_,TkGEqual)	}
 	Greater		{ (_,TkGreater)	}
@@ -50,7 +50,7 @@ import Prelude hiding (True, False)
 	RParen          { (_,TkRParen) 	}
 	Semicolon       { (_,TkSemicolon)}
 	Then		{ (_,TkThen) 	}
-	True		{ (_,TkTrue)	}
+	TTrue		{ (_,TkTrue)	}
 	TInt		{ (_,TkTInt)	}
 	TBool		{ (_,TkTBool)	}
 	TVoid		{ (_,TkTVoid)	}
@@ -124,8 +124,8 @@ valexpr :: { Term }
 valexpr:	Name					{ Var (V $1) }
     		| Null					{ Int 0 }
     		| Int					{ Int $1 }
-		| False					{ Int 0 }
-		| True					{ Int 1 }
+		| TFalse				{ Int 0 }
+		| TTrue					{ Int 1 }
 		| Not valexpr				{ Not $2 }
 		| valexpr And valexpr			{ And $1 $3 }
 		| valexpr Or valexpr			{ Or $1 $3 }
