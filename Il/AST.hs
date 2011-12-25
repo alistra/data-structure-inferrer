@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -pgmF derive #-}
+{-# OPTIONS_GHC -pgmF derive-ghc -F #-}
 -- | Module with Abstract Syntax Tree syntax
 module Il.AST where
 
@@ -43,12 +43,28 @@ data Term = And Term Term                           -- ^ Logical and
             deriving (Show, Eq)
 
 -- | Type for the language values
--- for Type derive : NFData
 data Type = TInt                    -- ^ Integer
             | TVoid                 -- ^ Void
             | TBool                 -- ^ Boolean
             | Ds                    -- ^ Data structure reference
             | DsElem                -- ^ Data structure element reference
             | TRec [(String, Type)]   -- ^ Record
-            deriving (Show, Eq {-! NFData !-})
+            deriving (Show, Eq {-!, NFData !-})
 
+-- | Basic functions for data-structure access
+dsinfFunctions :: [Function]
+dsinfFunctions = [
+    Function (F "update")     TVoid        [(V "ds", Ds), (V "oldval", TInt), (V "newval", TInt)]       (Block []),
+    Function (F "insert")     DsElem       [(V "ds", Ds), (V "elem", TInt)]                             (Block []),
+    Function (F "delete")     TVoid        [(V "ds", Ds), (V "elem", TInt)]                             (Block []),
+    Function (F "max")        DsElem       [(V "ds", Ds)]                                               (Block []),
+    Function (F "min")        DsElem       [(V "ds", Ds)]                                               (Block []),
+    Function (F "delete_max") TVoid        [(V "ds", Ds)]                                               (Block []),
+    Function (F "search")     DsElem       [(V "ds", Ds), (V "elem", TInt)]                             (Block []),
+    Function (F "update")     TVoid        [(V "elem", DsElem), (V "newval", TInt)]                      (Block []),
+    Function (F "delete")     TVoid        [(V "elem", DsElem)]                                          (Block [])
+    ]
+
+-- | Functions that are easilly decomposed into 'dsinfFunctions' functions
+dsinfAliasFunctions :: [Function]
+dsinfAliasFunctions = []
