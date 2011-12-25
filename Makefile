@@ -4,7 +4,6 @@ SRC=Advice.hs AllStructures.hs Recommend.hs Defs/*.hs ${C} ${IL}
 LEXPAR=Il/Lexer.hs Il/Parser.hs
 CDOPTS=-package-conf cabal-dev/packages-7.2.2.conf
 
-
 dsinf: ${LEXPAR} ${SRC} Main.hs
 	ghc --make ${CDOPTS} -o dsinf -O Main.hs
 
