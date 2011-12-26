@@ -1,10 +1,6 @@
 {-# OPTIONS_GHC -fno-warn-unused-binds #-} --TODO
 
-module Il.Analyzer (
-    printRecommendationFromAnalysis,
-    printAdviceFromAnalysis,
-    analyze,
-    ) where
+module Il.Analyzer (analyzeIl) where
 
 import Defs.Structures
 import Defs.Common
@@ -16,8 +12,8 @@ import Data.Monoid
 import Control.Monad.State
 
 -- | Runs everything that is needed to analyze a program
-analyze :: [Function] -> [DSInfo]
-analyze functions = let dsfs = map generateDSF functions in
+analyzeIl :: [Function] -> [DSInfo]
+analyzeIl functions = let dsfs = map generateDSF functions in
     stupidMerge $ analyzeFunctions dsfs
 
 -- | Start the state monad to create a 'DSFun' for function

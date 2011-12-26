@@ -1,4 +1,4 @@
-module C.Analyzer where
+module C.Analyzer (analyzeC) where
 
 import Control.Monad.State
 import Data.Either
@@ -16,10 +16,12 @@ import C.Functions
 startingFunction :: FunctionName
 startingFunction = F "main"
 
-main = do
-    ast <- parseMyFile "1.c"
+
+analyzeC :: FilePath -> IO [DSInfo]
+analyzeC file = do
+    ast <- parseMyFile file
     let (eithers, s) = runState (analyzeCTranslUnit ast) (AS [])
-    printRecommendationFromAnalysis putStrLn (stupidMerge $ analyzeFunctions $ rights eithers)
+    return $ stupidMerge $ analyzeFunctions $ rights eithers
 
 parseMyFile :: FilePath -> IO CTranslUnit
 parseMyFile input_file =

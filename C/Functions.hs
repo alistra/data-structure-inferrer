@@ -1,4 +1,4 @@
-module C.Functions where
+module C.Functions (dsinfFunctions) where
 
 import Defs.Structures
 import Analyzer

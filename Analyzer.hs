@@ -1,4 +1,5 @@
 module Analyzer where
+--TODO export list
 
 import Data.Monoid
 import Data.Maybe
@@ -72,17 +73,19 @@ startingFunction = F "main"
 -- | Pretty print single 'DSInfo'
 printDSI :: (String -> IO ()) -> DSInfo -> IO ()
 printDSI output dsi = do
-    output "The recommended structure for "
-    redColor
-    output $ show (getDSINames dsi) ++ "\n"
-    resetColor
-    output " is:"
+    output "The recommended structure for:\n"
+    printDSINames $ getDSINames dsi
+    output "is:\n"
     cyanColor
-    recommendedDS >>= output.show
+    recommendedDS >>= output . show
+    output "\n"
     resetColor where
         recommendedDS = do
             let opns = map getDSUName $ getDSIDSU dsi
             recommendDS opns
+
+        printDSINames [] = return ()
+        printDSINames ((F fn,V vn):ns) = greenColor >> output vn >> resetColor >> output " in " >> greenColor >> output fn >> resetColor >> output "\n"
 
 -- | Pretty print advice for a single 'DSInfo'
 printDSIAdvice :: (String -> IO ()) -> DSInfo -> IO ()

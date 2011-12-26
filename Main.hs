@@ -5,12 +5,14 @@ import System.Environment
 import System.IO
 import System.Exit
 import Control.Monad
+import Safe
 
-import Il.Lexer
-import Il.Parser
-import Il.Analyzer
-import Il.Typechecker
-import qualified C.Analyzer as CA
+--import Il.Lexer
+--import Il.Parser
+--import Il.Analyzer
+--import Il.Typechecker
+import C.Analyzer
+import Analyzer
 
 import Prelude hiding (lex)
 
@@ -27,25 +29,11 @@ instance Show Action where
     show ACompile = "compile (-c)"
     show AInline = "inline (-i)"
 
-data Input = IStdin
-    | IFile [FilePath]
-    | IString String deriving (Eq)
-
-instance Show Input where
-    show (IFile _) = "file arguments"
-    show (IString _) = "string argument (-s)"
-    show (IStdin) = "standard input argument (default)"
-
 data Options = Options  { optVerbose    :: Bool
-                        , optInput      :: Input
                         , optOutput     :: String -> IO ()
                         , optAction     :: Action
                         }
 
-
-checkInput :: Options -> Input -> IO ()
-checkInput (Options { optInput = files@(IFile _)}) input = error $ show input ++ " incompatible with " ++ show files
-checkInput _ _ = return ()
 
 checkArgs :: Options -> Action -> IO ()
 checkArgs (Options { optAction = ADefaultRecommend }) _ = return ()
@@ -57,10 +45,6 @@ options =
     [ Option "o" ["output"]
         (ReqArg (\arg opt -> writeFile arg "" >> return opt { optOutput = appendFile arg }) "file")
         "Output file"
-
-    , Option "s" ["string"]
-        (ReqArg (\arg opt -> checkInput opt (IString arg) >> return opt { optInput = IString arg}) "string")
-        "Input string"
 
     , Option "r" ["recommend"]
         (NoArg  (\opt -> checkArgs opt ARecommend >> return opt { optAction = ARecommend }))
@@ -96,25 +80,20 @@ main = do
     case getOpt RequireOrder options args of
         (actions, files, []) -> do
             let startOptions = Options { optVerbose    = False
-                                       , optInput      = if null files then IStdin else IFile files
                                        , optOutput     = putStr
                                        , optAction     = ARecommend
                                        }
             opts <- foldl (>>=) (return startOptions) actions
             let Options { optVerbose = verbose
-                        , optInput = oinput
                         , optOutput = output
                         , optAction = action } = opts
-            let input = case oinput of
-                    IStdin -> getContents
-                    IFile f -> readFile (head f) --FIXME generalize with all files
-                    IString s -> return s
-            s <- input
-            let ast = analyze.parse.lex $ s
+--            contents <- readFile (head files) --FIXME generalize with all files
+--            let ast = analyzeIl.parse.lex $ contents
+            dsis <- analyzeC $ headNote "no input files" files
             case action of
-                AAdvice -> printAdviceFromAnalysis output ast
-                ADefaultRecommend -> printRecommendationFromAnalysis output ast
-                ARecommend -> printRecommendationFromAnalysis output ast
+                AAdvice -> printAdviceFromAnalysis output dsis
+                ADefaultRecommend -> printRecommendationFromAnalysis output dsis
+                ARecommend -> printRecommendationFromAnalysis output dsis
                 ACompile -> putStrLn "Not implemented yet"
                 AInline -> putStrLn "Not implemented yet"
             exitSuccess
