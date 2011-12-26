@@ -65,6 +65,10 @@ instance Monoid TermAnalyzerState where
     mempty = AS []
     mappend (AS cs1) (AS cs2) = AS (cs1 `union` cs2)
 
+-- | Name of the starting function
+startingFunction :: FunctionName
+startingFunction = F "main"
+
 -- | Pretty print single 'DSInfo'
 printDSI :: (String -> IO ()) -> DSInfo -> IO ()
 printDSI output dsi = do

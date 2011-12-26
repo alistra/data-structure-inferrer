@@ -7,6 +7,3 @@ newtype VariableName = V { unV :: String } deriving (Show, Eq)
 -- | Type for storing the function names defined in a program
 newtype FunctionName = F { unF :: String } deriving (Show, Eq)
 
--- | Name of the starting function
-startingFunction :: FunctionName
-startingFunction = F "main"

@@ -30,10 +30,10 @@ data OperationName =  InsertVal         -- ^ Insert an element
                     deriving (Show, Eq)
 
 -- | Additional complexity qualifiers
-data ComplexityCharacteristics = AE -- ^ Amortized expected time
-                                | E -- ^ Expected time
+data ComplexityCharacteristics =  N -- ^ Normal time
                                 | A -- ^ Amortized time
-                                | N -- ^ Normal time
+                                | E -- ^ Expected time
+                                | AE -- ^ Amortized expected time
                                 deriving (Ord, Eq, Show)
 
 -- | Full complexity type
@@ -44,6 +44,7 @@ data AsymptoticalComplexity = LinLog {  getLin :: Integer, -- ^ exponent of @n@
                                         getLog :: Integer  -- ^ number of the stacked logarithms
                                         } deriving (Eq)
 
+-- | Greater structure is slower
 instance Ord AsymptoticalComplexity where
     compare (LinLog l1 l2) (LinLog r1 r2) = case compare l1 r1 of
         EQ -> compare l2 r2

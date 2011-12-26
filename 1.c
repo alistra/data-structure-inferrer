@@ -1,11 +1,12 @@
-extern struct ds;
+typedef int dstype;
 
-extern void insert(struct ds*, int);
+#include "dsimp/ds.h"
 
 int main(int argc, const char *argv[])
 {
-	struct ds d1;
-	insert(d1, 4);
+	ds d1;
+	dselem de1;
+	insert_d(d1, 4);
 	return 0;
 }
 /*

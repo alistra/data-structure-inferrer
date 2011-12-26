@@ -5,10 +5,16 @@ import Data.Either
 import Language.C
 import Language.C.Data.Ident
 import Language.C.System.GCC
+import Data.List
 
 import Analyzer
 import Defs.Common
 import Defs.Structures
+import C.Functions
+
+-- | Name of the starting function
+startingFunction :: FunctionName
+startingFunction = F "main"
 
 main = do
     ast <- parseMyFile "1.c"
@@ -21,11 +27,6 @@ parseMyFile input_file =
      case parse_result of
        Left parse_err -> error (show parse_err)
        Right ast      -> return ast
-
-isDsinfFunction :: FunctionName -> Bool --STUB
-isDsinfFunction (F "insert") = True
-isDsinfFunction (F "delete") = True
-isDsinfFunction _ = False
 
 -- | Puts a function call into the state
 putCall :: FunctionName -> [CExpr] -> TermAnalyzer ()
@@ -147,17 +148,10 @@ analyzeCExpr (CAssign assignop expr1 expr2 _)         = fmcs $ map analyzeCExpr 
 analyzeCExpr (CBinary binop expr1 expr2 _)            = fmcs $ map analyzeCExpr [expr1, expr2]  
 analyzeCExpr (CBuiltinExpr builtin)                   = analyzeCBuiltin builtin
 analyzeCExpr (CCall (CVar (Ident funName _ _) _) (CVar (Ident varName _ _) _:exprs) _) = do
-    when (isDsinfFunction (F funName)) (putCall (F funName) exprs) --TODO use nicer name matching and checking
     analysis <- fmcs $ map analyzeCExpr exprs
-    let mdsu = case funName of
-            "insert"        -> Just InsertVal
-            "find"          -> Just FindByVal
-            "update"        -> Just UpdateByRef
-            "delete"        -> Just DeleteByRef
-            "max"           -> Just ExtremalVal
-            "delete_max"    -> Just DeleteExtremalVal
-            _               -> Nothing
-    maybe (return analysis) (\dsu -> return $ (V varName,DSU dsu False False) : analysis) mdsu --TODO get varname of the ds
+    case find (\(fd,_) -> getFunName fd == (F funName)) dsinfFunctions of
+        Just (_,ops) -> putCall (F funName) exprs >> (return $ analysis ++ map (\op -> (V varName, DSU op False False)) ops)
+        Nothing -> return analysis
 analyzeCExpr (CCall expr exprs _)                     = fmcs $ map analyzeCExpr (expr : exprs) --TODO calling a pointer
 analyzeCExpr (CCast decln expr _)                     = fmcs [analyzeCDecl decln, analyzeCExpr expr]
 analyzeCExpr (CComma exprs _)                         = fmcs $ map analyzeCExpr exprs
