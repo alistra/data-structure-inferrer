@@ -13,6 +13,8 @@ import Safe
 --import Il.Typechecker
 import C.Analyzer
 import Analyzer
+import Advice
+import Recommend
 
 import Prelude hiding (lex)
 

@@ -1,5 +1,14 @@
-module Analyzer where
---TODO export list
+module Analyzer (
+    DSUse(..),
+    DSInfo(..),
+    DSFun(..),
+    FunctionDeclaration(..),
+    TermAnalyzer,
+    TermAnalyzerState(..),
+    Output,
+    generateDSI,
+    analyzeDSF,
+    ) where
 
 import Data.Monoid
 import Data.Maybe
@@ -13,9 +22,6 @@ import Safe
 import Defs.Util
 import Defs.Common
 import Defs.Structures
-
-import Advice
-import Recommend
 
 -- | Data structure use case
 data DSUse = DSU {
@@ -70,36 +76,6 @@ instance Monoid TermAnalyzerState where
 startingFunction :: FunctionName
 startingFunction = F "main"
 
--- | Pretty print single 'DSInfo'
-printDSI :: (String -> IO ()) -> DSInfo -> IO ()
-printDSI output dsi = do
-    output "The recommended structure for:\n"
-    printDSINames $ getDSINames dsi
-    output "is:\n"
-    cyanColor
-    recommendedDS >>= output . show
-    output "\n"
-    resetColor where
-        recommendedDS = do
-            let opns = map getDSUName $ getDSIDSU dsi
-            recommendDS opns
-
-        printDSINames [] = return ()
-        printDSINames ((F fn,V vn):ns) = greenColor >> output vn >> resetColor >> output " in " >> greenColor >> output fn >> resetColor >> output "\n"
-
--- | Pretty print advice for a single 'DSInfo'
-printDSIAdvice :: (String -> IO ()) -> DSInfo -> IO ()
-printDSIAdvice output dsi = do
-    let opns = map getDSUName $ getDSIDSU dsi
-    printAdvice output opns
-
--- | Pretty printer for the analyzer effects
-printRecommendationFromAnalysis :: (String -> IO ()) -> [DSInfo] -> IO()
-printRecommendationFromAnalysis output = mapM_ (printDSI output)
-
--- | Pretty printer for the advisor effects
-printAdviceFromAnalysis :: (String -> IO ()) -> [DSInfo] -> IO ()
-printAdviceFromAnalysis output = mapM_ (printDSIAdvice output)
 
 -- | Stupid merging of dsis --TODO remove this function, rewrite analyzeFunctions correctly
 stupidMerge ::  [DSInfo] -> [DSInfo]
@@ -127,6 +103,10 @@ analyzeFunctions dsfs = let startingDSF = lookupDSF dsfs startingFunction in
                     let relevantRecursiveDSI = mconcat $ map fst recursiveCalls in
                     let irrelevantRecursiveDSI = concatMap snd recursiveCalls in
                     (thisVariableDSI `mappend` relevantRecursiveDSI, otherVariablesDSIs `union` irrelevantRecursiveDSI))
+
+-- | Analyze wrapper with 'stupidMerge'
+analyzeDSF :: [DSFun t] -> [DSInfo]
+analyzeDSF = stupidMerge . analyzeFunctions
 
 -- | Lookup 'DSFun' by 'FunctionName'
 lookupDSF :: [DSFun t] -> FunctionName -> DSFun t

@@ -14,7 +14,7 @@ import Control.Monad.State
 -- | Runs everything that is needed to analyze a program
 analyzeIl :: [Function] -> [DSInfo]
 analyzeIl functions = let dsfs = map generateDSF functions in
-    stupidMerge $ analyzeFunctions dsfs
+    analyzeDSF dsfs
 
 -- | Start the state monad to create a 'DSFun' for function
 generateDSF :: Function -> DSFun Type

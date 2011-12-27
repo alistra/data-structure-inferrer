@@ -1,13 +1,10 @@
 -- | Module providing helpful tips about minimizing the complexity of the chosen data structure
-module Advice
-      ( adviceDS,
-        printAdvice,
-        adviceDS',
-        printAdvice' ) where
+module Advice (printAdviceFromAnalysis) where
 
 import Defs.Util
 import Defs.Structures
 
+import Analyzer
 import Recommend
 
 import Data.List
@@ -82,3 +79,13 @@ printAdviceStructure output (Advice s betterOpns opns) = do
 -- | Pretty prints effects of 'adviceDS'
 printAdvice :: (String -> IO ()) -> [OperationName] -> IO ()
 printAdvice output = printAdvice' output 1
+
+-- | Pretty print advice for a single 'DSInfo'
+printDSIAdvice :: (String -> IO ()) -> DSInfo -> IO ()
+printDSIAdvice output dsi = do
+    let opns = map getDSUName $ getDSIDSU dsi
+    printAdvice output opns
+
+-- | Pretty printer for the advisor effects
+printAdviceFromAnalysis :: (String -> IO ()) -> [DSInfo] -> IO ()
+printAdviceFromAnalysis output = mapM_ (printDSIAdvice output)

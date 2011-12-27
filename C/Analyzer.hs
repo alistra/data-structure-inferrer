@@ -14,14 +14,13 @@ import C.Functions
 
 -- | Name of the starting function
 startingFunction :: FunctionName
-startingFunction = F "main"
-
+startingFunction = F "main" --TODO extract this to a language dependent part
 
 analyzeC :: FilePath -> IO [DSInfo]
 analyzeC file = do
     ast <- parseMyFile file
     let (eithers, s) = runState (analyzeCTranslUnit ast) (AS [])
-    return $ stupidMerge $ analyzeFunctions $ rights eithers
+    return $ analyzeDSF $ rights eithers
 
 parseMyFile :: FilePath -> IO CTranslUnit
 parseMyFile input_file =
@@ -125,7 +124,7 @@ analyzeCStat (CCompound idents compoundBlockItems _)   = fmcs $ map analyzeCComp
 analyzeCStat (CIf expr statement mstatement _)         = fmcs
     [analyzeCExpr expr
     , analyzeCStat statement
-    , manalyzeCStat mstatement] --TODO fix to substitute environments for cases
+    , manalyzeCStat mstatement]
 analyzeCStat (CSwitch expr statement _)                = fmcs [analyzeCExpr expr, analyzeCStat statement]
 analyzeCStat (CWhile expr statement isdowhile _)       = fmcs [analyzeCExpr expr, analyzeCStat statement]
 analyzeCStat (CFor emexprdecl mexpr1 mexpr2 statement _)= fmcs $

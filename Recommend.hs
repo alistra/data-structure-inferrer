@@ -1,11 +1,12 @@
 -- | Module for recommending a data structure based on operations used
-module Recommend
-  ( recommendDS,
-    recommendAllDs ) where
+module Recommend (printRecommendationFromAnalysis, recommendAllDs, recommendDS) where
 
 import Defs.Structures
 
 import AllStructures
+import Analyzer
+import Defs.Util
+import Defs.Common
 
 import Data.List
 import System.Random
@@ -27,3 +28,25 @@ recommendAllDsFromList :: [OperationName] -> [Structure] -> [Structure]
 recommendAllDsFromList opns structs = let
      sorted = reverse $ sortBy (\x y-> compareDS x y opns) structs
      in head $ groupBy (\x y -> compareDS x y opns == EQ) sorted
+
+-- | Pretty print single 'DSInfo'
+printDSI :: (String -> IO ()) -> DSInfo -> IO ()
+printDSI output dsi = do
+    output "The recommended structure for:\n"
+    printDSINames $ getDSINames dsi
+    output "is:\n"
+    cyanColor
+    recommendedDS >>= output . show
+    output "\n"
+    resetColor where
+        recommendedDS = do
+            let opns = map getDSUName $ getDSIDSU dsi
+            recommendDS opns
+
+        printDSINames [] = return ()
+        printDSINames ((F fn,V vn):ns) = greenColor >> output vn >> resetColor >> output " in " >> greenColor >> output fn >> resetColor >> output "\n"
+
+
+-- | Pretty printer for the analyzer effects
+printRecommendationFromAnalysis :: (String -> IO ()) -> [DSInfo] -> IO()
+printRecommendationFromAnalysis output = mapM_ (printDSI output)
