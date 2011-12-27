@@ -17,9 +17,9 @@ Il/Parser.hs: Il/Parser.y
 	happy -g Il/Parser.y
 
 clean:
-	rm -f Il/Lexer.hs Il/Parser.hs Il/grammar.log
+	cabal-dev clean
+	rm -f Il/Lexer.hs Il/Parser.hs
 	rm -f thesis.log thesis.aux thesis.toc
-	rm -f *.hi *.o Il/*.hi Il/*.o Defs/*.hi Defs/*.o
 
 cleanbin: clean
 	rm -f dsinf
