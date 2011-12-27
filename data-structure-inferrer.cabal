@@ -7,13 +7,13 @@ Name:                data-structure-inferrer
 -- The package version. See the Haskell package versioning policy
 -- (http://www.haskell.org/haskellwiki/Package_versioning_policy) for
 -- standards guiding when and how versions should be incremented.
-Version:             0.1
+Version:             1.0
 
 -- A short (one-line) description of the package.
 Synopsis:            Program that infers the fastest data structure available for your program
 
 -- A longer description of the package.
--- Description:
+Description:        This project is meant to be a compiler feature/wrapper that analyzes your code and chooses the best data structure depending on your source code. It analyzes the functions used on a wildcard data structure and chooses the type of structure that minimizes the time complexity. It will support C language and hopefully some other languages too.
 
 -- URL for the project homepage or repository.
 Homepage:            http://github.com/alistra/data-structure-inferrer
@@ -42,8 +42,13 @@ Build-type:          Simple
 -- a README.
 -- Extra-source-files:
 
+
 -- Constraint on the version of Cabal needed to build this package.
-Cabal-version:       >=1.2
+Cabal-version:       >=1.6
+
+Source-repository   head
+    type:           git
+    location:       http://github.com/alistra/data-structure-inferrer
 
 
 Executable dsinf
@@ -52,7 +57,7 @@ Executable dsinf
 
   -- Packages needed in order to build this package.
   Build-depends:         ansi-terminal            >= 0.5.0
-                       , base                     >= 4.3.0
+                       , base                     >= 4.3.0 && < 5
                        , random
                        , directory
                        , language-c
@@ -65,7 +70,7 @@ Executable dsinf
                        , derive
 
   -- Modules not exported by this package.
-  Other-modules:       Il.Parser, Il.Lexer
+  --Other-modules:       Il.Parser, Il.Lexer
 
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   Build-tools:         alex, happy
