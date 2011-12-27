@@ -70,7 +70,22 @@ Executable dsinf
                        , derive                   >= 2.5.4   && < 3
 
   -- Modules not exported by this package.
-  --Other-modules:       Il.Parser, Il.Lexer
+  Other-modules:         Analyzer
+                       , Advice
+                       , AllStructures
+                       , Recommend
+                       , C.Analyzer
+                       , C.Functions
+                       , Defs.Structures
+                       , Defs.Util
+                       , Defs.Common
+                       , Il.AST
+                       , Il.Lexer
+                       , Il.Parser
+                       , Il.Analyzer
+                       , Il.Typechecker
+                       , Tests
+                       , Main
 
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   Build-tools:         alex, happy
