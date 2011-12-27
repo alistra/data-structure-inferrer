@@ -99,7 +99,7 @@ main = do
                             ARecommend -> printRecommendationFromAnalysis output dsis
                             ACompile -> putStrLn "Not implemented yet"
                             AInline -> putStrLn "Not implemented yet" in
-                        mapM_ (\f -> putStrLn (f ++ ":") >> analyzeC f >>= act) files >> exitSuccess where
+                        mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= act) files >> exitSuccess where
         (_, nonOptions, errors) -> do
             unless (errors == []) (putStrLn "Command line errors:")
             mapM_ (\s -> putStrLn ('\t' : s)) errors
