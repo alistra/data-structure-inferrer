@@ -29,7 +29,7 @@ cleanbin: clean
 	rm -f thesis.pdf
 
 doc:	${LEXPAR} ${SRC} Main.hs
-	haddock --ignore-all-exports -t "Data Structure Inferrer" -o doc -h Main.hs
+	haddock --ignore-all-exports -t"Data Structure Inferrer" -o doc -h Main.hs --optghc="-package-conf cabal-dev/packages-7.2.2.conf"
 	git checkout gh-pages
 	cp -r doc/* .
 	git add .
