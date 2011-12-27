@@ -94,7 +94,8 @@ analyzeCFunDef (CFunDef declSpecs declr declarations statement _) = do
 analyzeCDerivedDeclarator :: CDerivedDeclr -> TermAnalyzer Output
 analyzeCDerivedDeclarator (CPtrDeclr qualifs _) = fmcs $ map analyzeCTypeQualifier qualifs
 analyzeCDerivedDeclarator (CArrDeclr qualifs arrsize _) = fmcs $ analyzeCArraySize arrsize : map analyzeCTypeQualifier qualifs
-analyzeCDerivedDeclarator (CFunDeclr eidentpair attribs _) = return [] --undefined --FIXME implement this shit
+analyzeCDerivedDeclarator (CFunDeclr (Left ident) attribs _) = fmcs $ map analyzeCAttr attribs
+analyzeCDerivedDeclarator (CFunDeclr (Right (decls, bool)) attribs _) = fmcs $ map analyzeCAttr attribs ++ map analyzeCDecl decls
 
 analyzeCAttr :: CAttr -> TermAnalyzer Output
 analyzeCAttr (CAttr ident exprs _) = fmcs $ map analyzeCExpr exprs
