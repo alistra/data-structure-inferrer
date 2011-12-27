@@ -1,13 +1,14 @@
-IL=Il/Analyzer.hs Il/Typechecker.hs Il/AST.hs
+IL=Il/Analyzer.hs Il/Typechecker.hs Il/AST.hs ${LEXPAR}
 C=C/Analyzer.hs C/Functions.hs
-SRC=Advice.hs AllStructures.hs Recommend.hs Analyzer.hs Defs/*.hs ${C}
+SRC=Main.hs Advice.hs AllStructures.hs Recommend.hs Analyzer.hs Defs/*.hs ${C}
 LEXPAR=Il/Lexer.hs Il/Parser.hs
+
 CDOPTS=-package-conf cabal-dev/packages-7.2.2.conf
 
-dsinf: ${LEXPAR} ${SRC} Main.hs
+dsinf:  ${SRC}
 	ghc --make ${CDOPTS} -o dsinf -O Main.hs
 
-tests: ${LEXPAR} ${SRC} Tests.hs
+tests:  ${SRC} Tests.hs
 	ghci ${CDOPTS} -O Tests.hs
 
 Il/Lexer.hs: Il/Lexer.x
@@ -20,15 +21,15 @@ todo:
 	-egrep "(TODO|HMMM|FIXME|BUG|HACK|STUB|undefined)" ${SRC}
 
 clean:
-	cabal-dev clean
 	rm -f Il/Lexer.hs Il/Parser.hs
 	rm -f thesis.log thesis.aux thesis.toc
+	rm -f *.o *.hi C/*.o C/*.hi
 
 cleanbin: clean
 	rm -f dsinf
 	rm -f thesis.pdf
 
-doc:	${LEXPAR} ${SRC} Main.hs
+doc:	${SRC}
 	haddock --ignore-all-exports -t"Data Structure Inferrer" -o doc -h Main.hs --optghc="-package-conf cabal-dev/packages-7.2.2.conf"
 	git checkout gh-pages
 	cp -r doc/* .

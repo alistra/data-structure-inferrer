@@ -54,12 +54,12 @@ printAdvice' output n opns =   do
         then do
             output "Currently, the recommended data structure is: "
             cyanColor
-            output $ (getDSName $ head rec) ++ "\n"
+            output $ getDSName (head rec) ++ "\n"
             yellowColor
         else do
             output "Currently, the recommended data structures are: "
             cyanColor
-            output $ (foldl (\str ds -> (str ++ ", " ++ getDSName ds)) "" rec) ++ "\n"
+            output $ foldl (\str ds -> (str ++ ", " ++ getDSName ds)) "" rec ++ "\n"
             yellowColor
     mapM_ (printAdviceStructure output) adv
     resetColor

@@ -89,17 +89,17 @@ main = do
             let Options { optVerbose = verbose
                         , optOutput = output
                         , optAction = action } = opts
---            contents <- readFile (head files) --FIXME generalize with all files
+--            contents <- readFile (head files)
 --            let ast = analyzeIl.parse.lex $ contents
-            dsis <- analyzeC $ headNote "no input files" files
-            case action of
-                AAdvice -> printAdviceFromAnalysis output dsis
-                ADefaultRecommend -> printRecommendationFromAnalysis output dsis
-                ARecommend -> printRecommendationFromAnalysis output dsis
-                ACompile -> putStrLn "Not implemented yet"
-                AInline -> putStrLn "Not implemented yet"
-            exitSuccess
-
+            if null files
+                then putStrLn "no input files" >> exitFailure
+                else let act dsis = case action of
+                            AAdvice -> printAdviceFromAnalysis output dsis
+                            ADefaultRecommend -> printRecommendationFromAnalysis output dsis
+                            ARecommend -> printRecommendationFromAnalysis output dsis
+                            ACompile -> putStrLn "Not implemented yet"
+                            AInline -> putStrLn "Not implemented yet" in
+                        mapM_ (\f -> putStrLn (f ++ ":") >> analyzeC f >>= act) files >> exitSuccess where
         (_, nonOptions, errors) -> do
             unless (errors == []) (putStrLn "Command line errors:")
             mapM_ (\s -> putStrLn ('\t' : s)) errors
