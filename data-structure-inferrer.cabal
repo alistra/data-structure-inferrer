@@ -56,18 +56,18 @@ Executable dsinf
   Main-is:             Main.hs
 
   -- Packages needed in order to build this package.
-  Build-depends:         ansi-terminal            >= 0.5.0   && < 2
-                       , base                     >= 4.3.0   && < 5
-                       , random                   >= 1.0.1.1 && < 2
-                       , directory                >= 1.1.0.1 && < 2
-                       , language-c               >= 0.4.2   && < 1
-                       , filepath                 >= 1.2.0.1 && < 2
-                       , mtl                      >= 2.0.1.0 && < 3
-                       , array                    >= 0.3.0.3 && < 1
-                       , safe                     >= 0.3.3   && < 1
-                       , utility-ht               >= 0.0.7.1 && < 1
-                       , deepseq                  >= 1.2.0.1 && < 2
-                       , derive                   >= 2.5.4   && < 3
+  Build-depends:         ansi-terminal            == 0.5.*
+                       , base                     == 4.4.*
+                       , random                   == 1.0.*
+                       , directory                == 1.1.*
+                       , language-c               == 0.4.*
+                       , filepath                 == 1.2.*
+                       , mtl                      == 2.0.*
+                       , array                    == 0.3.*
+                       , safe                     == 0.3.*
+                       , utility-ht               == 0.0.*
+                       , deepseq                  == 1.2.*
+                       , derive                   == 2.5.*
 
   -- Modules not exported by this package.
   Other-modules:         Analyzer
