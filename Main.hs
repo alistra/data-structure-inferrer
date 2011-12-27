@@ -26,7 +26,7 @@ data Action = AAdvice
 
 instance Show Action where
     show AAdvice = "advice (-a)"
-    show ADefaultRecommend = show ARecommend
+    show ADefaultRecommend = show ARecommend ++ " (default)"
     show ARecommend = "recommend (-r)"
     show ACompile = "compile (-c)"
     show AInline = "inline (-i)"
@@ -83,7 +83,7 @@ main = do
         (actions, files, []) -> do
             let startOptions = Options { optVerbose    = False
                                        , optOutput     = putStr
-                                       , optAction     = ARecommend
+                                       , optAction     = ADefaultRecommend
                                        }
             opts <- foldl (>>=) (return startOptions) actions
             let Options { optVerbose = verbose

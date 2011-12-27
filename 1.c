@@ -5,7 +5,6 @@ typedef int dstype;
 int main(int argc, const char *argv[])
 {
 	ds d1;
-	dselem de1;
 	insert_d(d1, 4);
 	return 0;
 }

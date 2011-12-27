@@ -17,11 +17,7 @@ Il/Parser.hs: Il/Parser.y
 	happy -g Il/Parser.y
 
 todo:
-	-grep FIXME ${SRC}
-	-grep TODO ${SRC}
-	-grep undefined ${SRC}
-	-grep STUB ${SRC}
-	-grep BUG ${SRC}
+	-egrep "(TODO|HMMM|FIXME|BUG|HACK|STUB|undefined)" ${SRC}
 
 clean:
 	cabal-dev clean
