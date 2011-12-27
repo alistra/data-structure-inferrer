@@ -6,7 +6,6 @@ This project is meant to be a compiler feature/wrapper that analyzes your code a
 	alistra@bialobrewy data-structure-inferrer % ./dsinf -h
 	dsinf
 	  -o file    --output=file    Output file
-	  -s string  --string=string  Input string
 	  -r         --recommend      Give recommendations about the data structure in the supplied code (default)
 	  -a         --advice         Give advice about the data structure in the supplied code
 	  -c         --compile        Compile the code with recommended structure linked
@@ -20,6 +19,7 @@ This project is meant to be a compiler feature/wrapper that analyzes your code a
 For the following C file:
 
 	//example.c
+	typedef int dstype;
 	#include <ds.h>
 	int main()
 	{
@@ -28,12 +28,12 @@ For the following C file:
 
 		for(int i = 0; i < 20; i++)
 		{
-			insert(d1, i);
-			e = search(d1, i);
-			update(e, 2*i);
+			insert_d(d1, i);
+			printf("%d\n", search_d(d1, i));
+			update_d(d1, i, 2*i);
 		}
 
-		printf("%d\n", max(d1));
+		printf("%d\n", max_d(d1));
 	}
 
 you'll invoke:
