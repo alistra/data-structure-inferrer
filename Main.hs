@@ -81,11 +81,12 @@ main :: IO ()
 main = do
     args <- getArgs
     case getOpt RequireOrder options args of
-        (actions, files, []) -> do
+        (actions, rest, []) -> do
             let startOptions = Options { optVerbose    = False
                                        , optOutput     = putStr
                                        , optAction     = ADefaultRecommend
                                        }
+            let (files, ccopts) = break (== "--") rest
             opts <- foldl (>>=) (return startOptions) actions
             let Options { optVerbose = verbose
                         , optOutput = output
@@ -98,7 +99,7 @@ main = do
                     AAdvice ->           mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printAdviceFromAnalysis output) files
                     ADefaultRecommend -> mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printRecommendationFromAnalysis output) files
                     ARecommend ->        mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printRecommendationFromAnalysis output) files
-                    ACompile -> compile files >> return ()
+                    ACompile -> compile files ccopts >> return ()
                     AInline -> putStrLn "Not implemented yet"
             exitSuccess
 
