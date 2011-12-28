@@ -57,9 +57,10 @@ Executable dsinf
 
   -- Packages needed in order to build this package.
   Build-depends:         ansi-terminal            == 0.5.*
-                       , base                     >= 4.4 && < 4.6
+                       , base                     >= 4.3.1.0 && < 4.6
                        , random                   == 1.0.*
                        , directory                == 1.1.*
+                       , process                  == 1.0.*
                        , language-c               == 0.4.*
                        , filepath                 >= 1.2 && < 1.4
                        , mtl                      == 2.0.*
