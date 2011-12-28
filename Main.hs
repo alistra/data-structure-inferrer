@@ -72,7 +72,8 @@ options =
     , Option "h" ["help"]
         (NoArg  (\_ -> do
                     prg <- getProgName
-                    hPutStrLn stderr (usageInfo prg options)
+                    hPutStrLn stderr (usageInfo (prg ++ " [-OPT1 [VAL1] [-OPT2 [VAL2] [...]] [-- [CCOPTS]]") options)
+                    hPutStrLn stderr "CCOPTS are passed directly to the compiler"
                     exitSuccess))
         "Show help"
     ]
@@ -93,20 +94,20 @@ main = do
                         , optAction = action } = opts
 --            contents <- readFile (head files)
 --            let ast = analyzeIl.parse.lex $ contents
-            if null files --TODO use stat or whatever to then have gcc args
-                then putStrLn "no input files" >> exitFailure
+            if null files
+                then hPutStrLn stderr "no input files" >> exitFailure
                 else case action of
                     AAdvice ->           mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printAdviceFromAnalysis output) files
                     ADefaultRecommend -> mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printRecommendationFromAnalysis output) files
                     ARecommend ->        mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printRecommendationFromAnalysis output) files
                     ACompile -> compile files ccopts >> return ()
-                    AInline -> putStrLn "Not implemented yet"
+                    AInline -> hPutStrLn stderr "Not implemented yet"
             exitSuccess
 
         (_, nonOptions, errors) -> do
-            unless (errors == []) (putStrLn "Command line errors:")
+            unless (errors == []) (hPutStrLn stderr "Command line errors:")
             mapM_ (\s -> putStrLn ('\t' : s)) errors
-            unless (nonOptions == []) (putStrLn "Command line non-options present:")
+            unless (nonOptions == []) (hPutStrLn stderr "Command line non-options present:")
             mapM_ (\s -> putStrLn ('\t' : s)) nonOptions
             exitFailure
 
