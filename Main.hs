@@ -15,6 +15,7 @@ import C.Analyzer
 import Analyzer
 import Advice
 import Recommend
+import CompileDriver
 
 import Prelude hiding (lex)
 
@@ -91,15 +92,16 @@ main = do
                         , optAction = action } = opts
 --            contents <- readFile (head files)
 --            let ast = analyzeIl.parse.lex $ contents
-            if null files
+            if null files --TODO use stat or whatever to then have gcc args
                 then putStrLn "no input files" >> exitFailure
-                else let act dsis = case action of
-                            AAdvice -> printAdviceFromAnalysis output dsis
-                            ADefaultRecommend -> printRecommendationFromAnalysis output dsis
-                            ARecommend -> printRecommendationFromAnalysis output dsis
-                            ACompile -> putStrLn "Not implemented yet"
-                            AInline -> putStrLn "Not implemented yet" in
-                        mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= act) files >> exitSuccess where
+                else case action of
+                    AAdvice ->           mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printAdviceFromAnalysis output) files
+                    ADefaultRecommend -> mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printRecommendationFromAnalysis output) files
+                    ARecommend ->        mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printRecommendationFromAnalysis output) files
+                    ACompile -> compile files >> return ()
+                    AInline -> putStrLn "Not implemented yet"
+            exitSuccess
+
         (_, nonOptions, errors) -> do
             unless (errors == []) (putStrLn "Command line errors:")
             mapM_ (\s -> putStrLn ('\t' : s)) errors

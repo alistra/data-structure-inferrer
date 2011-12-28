@@ -1,6 +1,7 @@
 struct ds;
 typedef struct ds *ds;
 
+ds init_d();
 void insert_d(ds, dstype);
 void update_d(ds, dstype, dstype);
 void delete_d(ds, dstype);

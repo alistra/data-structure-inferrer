@@ -4,7 +4,7 @@ typedef int dstype;
 
 int main(int argc, const char *argv[])
 {
-	ds d1;
+	ds d1 = init_d();
 	insert_d(d1, 4);
 	return 0;
 }

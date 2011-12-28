@@ -1,6 +1,6 @@
 IL=Il/Analyzer.hs Il/Typechecker.hs Il/AST.hs ${LEXPAR}
 C=C/Analyzer.hs C/Functions.hs
-SRC=Main.hs Advice.hs AllStructures.hs Recommend.hs Analyzer.hs Defs/*.hs ${C}
+SRC=Main.hs Advice.hs AllStructures.hs Recommend.hs Analyzer.hs CompileDriver.hs Defs/*.hs ${C}
 LEXPAR=Il/Lexer.hs Il/Parser.hs
 
 CDOPTS=-package-conf cabal-dev/packages-7.2.2.conf
