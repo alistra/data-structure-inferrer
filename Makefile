@@ -23,7 +23,7 @@ todo:
 clean:
 	rm -f Il/Lexer.hs Il/Parser.hs
 	rm -f thesis.log thesis.aux thesis.toc
-	rm -f *.o *.hi C/*.o C/*.hi
+	rm -f *.o *.hi C/*.o C/*.hi Defs/*.o Defs/*.hi
 
 cleanbin: clean
 	rm -f dsinf

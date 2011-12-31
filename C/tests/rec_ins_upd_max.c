@@ -1,7 +1,8 @@
-struct keyval {
+typedef struct keyval {
 	int key;
 	int val;
-};
+} dstype;
+#include "../../dsimp/ds.h"
 
 int main()
 {
@@ -16,9 +17,9 @@ int main()
 
 	for(int i = 0; i < 20; i++)
 	{
-		insert(d1, rec);
-		update(d1, rec, rec2);
+		insert_d(d1, rec);
+		update_d(d1, rec, rec2);
 	}
 
-	printf("%d\n", max(d1));
+	printf("%d\n", max_d(d1));
 }
