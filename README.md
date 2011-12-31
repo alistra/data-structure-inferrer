@@ -1,20 +1,26 @@
 # About the project
-This project is meant to be a compiler feature/wrapper that analyzes your code and chooses the best data structure depending on your source code. It analyzes the functions used on a wildcard data structure and chooses the type of structure that minimizes the time complexity. It will support C language and hopefully some other languages too.
+This project is meant to be a compiler feature/wrapper that analyzes your code and chooses the best data structure depending on your source code. It analyzes the functions used on a wildcard data structure and chooses the type of structure that minimizes the time complexity on compile time.
+
+It can also work as a standalone source code analyzer. It recommends you the best data structure and advises which operation to cut out, to get a better performance.
+
+This project is meant to act as a standard library of data structures, but the programmer doesn't have to know which structures are available and which ones match to the current task. The program simply does that for the programmer.
+
+It supports C language and will hopefully support some other languages too.
 
 # Usage
 
-	alistra@bialobrewy data-structure-inferrer % ./dsinf -h
-	dsinf
-	  -o file    --output=file    Output file
-	  -r         --recommend      Give recommendations about the data structure in the supplied code (default)
-	  -a         --advice         Give advice about the data structure in the supplied code
-	  -c         --compile        Compile the code with recommended structure linked
-	  -i         --inline         Inline the code implementing the recommended structure in the supplied code
-	  -v         --verbose        Enable verbose messages
-	  -h         --help           Show help
+	dsinf [-OPT1 [VAL1] [-OPT2 [VAL2] [...]] [-- [CCOPTS]]
+	  -o file  --output=file  Output file
+	  -r       --recommend    Give recommendations about the data structure in the supplied code (default)
+	  -a       --advice       Give advice about the data structure in the supplied code
+	  -c       --compile      Compile the code with recommended structure linked
+	  -i       --inline       Inline the code implementing the recommended structure in the supplied code
+	  -v       --verbose      Enable verbose messages
+	  -h       --help         Show help
 
+	CCOPTS are passed directly to the compiler
 
-# Example (not yet working)
+# Example
 
 For the following C file:
 
@@ -24,12 +30,12 @@ For the following C file:
 	int main()
 	{
 		ds d1;
-		dselem e;
 
 		for(int i = 0; i < 20; i++)
 		{
 			insert_d(d1, i);
 			printf("%d\n", search_d(d1, i));
+			printf("%d\n", search_d(d1, 20 + i));
 			update_d(d1, i, 2*i);
 		}
 
@@ -40,45 +46,4 @@ you'll invoke:
 
 	dsinf -c example.c
 
-and it will automatically compile the file and link the matching library with data structure implementation (here red-black trees with max element cache).
-
-# For now
-
-For now it works as a standalone code analyzer for a toy language that prints the most appropriate structure.
-
-## Examples
-
-You can run tests by running runIlTests from the Tests.hs file. These tests (Il/tests subdirectory) are source code in a simple imperative language. The analyzer infers the best data structure for operations used in the test program.
-
-	*Tests> runIlTests
-	Test File Il/tests/1.il
-	The recommended structure for ds is:
-	Hashtable
-	Test File Il/tests/2.il
-	The recommended structure for ds is:
-	Red-Black Trees with extreme element caching
-	The recommended structure for ds2 is:
-	Red-Black Trees with extreme element caching
-	Test File Il/tests/3.il
-	The recommended structure for ds is:
-	Red-Black Trees with extreme element caching
-	The recommended structure for ds2 is:
-	Linked List with extreme element caching
-
-## Low Level
-
-For now you can get the best structures depending on operations used in your program (if you manually put it in the invocation):
-
-	*AllStructures> recommendAllDs [InsertVal, ExtremalVal]
-	[Fibonacci Heap,Binomial Heap]
-	*AllStructures> recommendAllDs [InsertVal, FindByVal ]
-	[Hashtable]
-	*AllStructures> recommendAllDs [InsertVal, FindByVal, ExtremalVal]
-	[Red-Black Trees]
-
-There's an advice mode which is formatted more nicely:
-
-	*Advice> printAdvice [InsertVal, UpdateByVal, DeleteExtremalVal ]
-	Currently, the recommended data structure is: Red-Black Trees
-	You could use Hashtable, if you removed the following operations:
-	* DeleteExtremalVal
+and it will automatically compile the program using the matching library with the data structure implementation (here - red-black trees with maximal element cache).
