@@ -72,11 +72,6 @@ instance Monoid TermAnalyzerState where
     mempty = AS []
     mappend (AS cs1) (AS cs2) = AS (cs1 `union` cs2)
 
--- | Name of the starting function
-startingFunction :: FunctionName
-startingFunction = F "main"
-
-
 -- | Stupid merging of dsis --TODO remove this function, rewrite analyzeFunctions correctly
 stupidMerge ::  [DSInfo] -> [DSInfo]
 stupidMerge (dsi:dsis) = let (same, different) = partition (\dsi' -> getDSINames dsi `intersect` getDSINames dsi' /= []) dsis in
@@ -84,8 +79,8 @@ stupidMerge (dsi:dsis) = let (same, different) = partition (\dsi' -> getDSINames
 stupidMerge [] = []
 
 -- | Merges the simple 'DSInfo's based on function calls from the functions
-analyzeFunctions :: [DSFun t] -> [DSInfo]
-analyzeFunctions dsfs = let startingDSF = lookupDSF dsfs startingFunction in
+analyzeFunctions :: FunctionName -> [DSFun t] -> [DSInfo]
+analyzeFunctions startingFunction dsfs = let startingDSF = lookupDSF dsfs startingFunction in
     let functions = map getDSFFun dsfs in
     let startingVars = map snd $ concatMap getDSINames $ getDSFDSI startingDSF in
     let runMain = mapMaybe (\var -> analyzeFunction functions startingDSF var []) startingVars in --update the accumulator
@@ -105,8 +100,8 @@ analyzeFunctions dsfs = let startingDSF = lookupDSF dsfs startingFunction in
                     (thisVariableDSI `mappend` relevantRecursiveDSI, otherVariablesDSIs `union` irrelevantRecursiveDSI))
 
 -- | Analyze wrapper with 'stupidMerge'
-analyzeDSF :: [DSFun t] -> [DSInfo]
-analyzeDSF = stupidMerge . analyzeFunctions
+analyzeDSF :: FunctionName -> [DSFun t] -> [DSInfo]
+analyzeDSF startingFunction = stupidMerge . analyzeFunctions startingFunction
 
 -- | Lookup 'DSFun' by 'FunctionName'
 lookupDSF :: [DSFun t] -> FunctionName -> DSFun t

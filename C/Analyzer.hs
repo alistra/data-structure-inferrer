@@ -14,16 +14,18 @@ import C.Functions
 
 -- | Name of the starting function
 startingFunction :: FunctionName
-startingFunction = F "main" --TODO extract this to a language dependent part
+startingFunction = F "main" 
 
+-- | Analyze a C file
 analyzeC :: FilePath -> IO [DSInfo]
 analyzeC file = do
-    ast <- parseMyFile file
+    ast <- parseFile file
     let (eithers, s) = runState (analyzeCTranslUnit ast) (AS [])
-    return $ analyzeDSF $ rights eithers
+    return . analyzeDSF startingFunction $ rights eithers
 
-parseMyFile :: FilePath -> IO CTranslUnit
-parseMyFile input_file =
+-- | Parse a C file
+parseFile :: FilePath -> IO CTranslUnit
+parseFile input_file =
   do parse_result <- parseCFile (newGCC "gcc") Nothing [] input_file
      case parse_result of
        Left parse_err -> error (show parse_err)
@@ -38,16 +40,19 @@ putCall name exprs = do
         justifyArgs (CVar (Ident v _ _) _) = Just (V v)
         justifyArgs _ = Nothing                      -- TODO function calls returning struct ds or a pointer, not only vars
 
+-- | Get a function/variable name from a 'CDeclr'
 getName :: CDeclr -> String
 getName (CDeclr (Just (Ident str _ _)) _ _ _ _) = str
 getName (CDeclr Nothing _ _ _ _) = error "function without a name? that's just ridiculous"
 
+-- | Get a type from a '[CDeclSpec]'
 getType :: [CDeclSpec] -> CTypeSpec
 getType declSpecs = let (_,_,_,specs,_) = partitionDeclSpecs declSpecs in
     if length specs > 1
         then error $ show specs -- >:D
         else head specs
 
+-- | Get a list of pairs: argument, type, of a function
 getArgsWithTypes :: CDeclr -> [(VariableName, CTypeSpec)]
 getArgsWithTypes declr = [] --STUB
 
