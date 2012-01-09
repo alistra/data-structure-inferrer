@@ -68,7 +68,7 @@ Executable dsinf
                        , safe                     == 0.3.*
                        , utility-ht               == 0.0.*
                        , deepseq                  >= 1.2 && < 1.4
-                       , derive                   == 2.5.*
+                       , derive                   >= 2.5.5 && < 2.6
 
   -- Modules not exported by this package.
   Other-modules:         Analyzer
