@@ -20,15 +20,6 @@ Il/Parser.hs: Il/Parser.y
 todo:
 	-egrep "(TODO|HMMM|FIXME|BUG|HACK|STUB|undefined)" ${SRC}
 
-clean:
-	rm -f Il/Lexer.hs Il/Parser.hs
-	rm -f thesis.log thesis.aux thesis.toc
-	rm -f *.o *.hi C/*.o C/*.hi Defs/*.o Defs/*.hi
-
-cleanbin: clean
-	rm -f dsinf
-	rm -f thesis.pdf
-
 doc:	${SRC}
 	haddock --ignore-all-exports -t"Data Structure Inferrer" -o doc -h Main.hs --optghc="-package-conf cabal-dev/packages-7.2.2.conf"
 	git checkout gh-pages
@@ -37,3 +28,21 @@ doc:	${SRC}
 	git commit -a -m "Automated doc push"
 	git push origin gh-pages
 	git checkout master
+
+clean:
+	rm -f Il/Lexer.hs Il/Parser.hs
+	rm -f *.o *.hi C/*.o C/*.hi Defs/*.o Defs/*.hi
+
+cleanbin: clean texclean thesisclean
+	rm -f dsinf
+	rm -f thesis.pdf
+
+thesis:
+	rubber -d thesis.tex
+	make texclean
+
+texclean:
+	rm -f thesis.aux thesis.log thesis.toc
+
+pdfclean: thesisclean
+	rm -f thesis.pdf

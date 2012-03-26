@@ -1,12 +1,18 @@
 cabal-dev/
+Defs/
 dist/
 doc/
-*.hi
-*.o
-Parser.hs
-Lexer.hs
-grammar.log
-thesis.log
-dsinf
-thesis.pdf
 
+Il/
+
+*.o
+*.hi
+dsinf
+
+Lexer.hs
+Parser.hs
+grammar.log
+
+thesis.aux
+thesis.log
+thesis.pdf

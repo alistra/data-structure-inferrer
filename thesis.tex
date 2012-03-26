@@ -1,0 +1,142 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+%\usepackage[]{polski}
+
+\newcommand{\lecture}[4]{\handout{#1}{#2}{#3}{#4}{#1}}
+\newcommand{\high}{\mathrm{high}}
+\newcommand{\low}{\mathrm{low}}
+
+\newtheorem{theorem}{Twierdzenie}
+\newtheorem{corollary}[theorem]{Wniosek}
+\newtheorem{lemma}[theorem]{Lemat}
+\newtheorem{observation}[theorem]{Obserwacja}
+\newtheorem{definition}[theorem]{Definicja}
+\newtheorem{fact}[theorem]{Fakt}
+\newtheorem{assumption}[theorem]{Założenie}
+
+% 1-inch margins, from fullpage.sty by H.Partl, Version 2, Dec. 15, 1988.
+\topmargin 0pt
+\advance \topmargin by -\headheight
+\advance \topmargin by -\headsep
+\textheight 8.9in
+\oddsidemargin 0pt
+\evensidemargin \oddsidemargin
+\marginparwidth 0.5in
+\textwidth 6.5in
+
+\parindent 0in
+\parskip 1.5ex
+%\renewcommand{\baselinestretch}{1.25}
+
+\title{Data structure inference based on source code}
+\author{Aleksander Balicki}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+
+\section{Data structure inference}
+	\subsection{Comparison of the complexities}
+		Asymptotical complexity of an operation we store as a pair of type:
+		\begin{eqnarray}
+			AsymptoticalComplexity = Int \times Int,
+		\end{eqnarray}
+		where
+		\begin{eqnarray}
+			(k, \; l) \; means \; O(n^k \log^l{ n}).
+		\end{eqnarray}
+		The reason to choose such a type is that it's easier to compare than the general case (we can do a lexicographical comparison of the two numbers) and it distincts most of the data structure operation complexities.
+
+		Sometimes we have to use some qualified complexities:
+		\begin{eqnarray}
+			ComplexityType = \{ Normal, \; Amortized, \; Amortized \;Expected, \; Expected \}
+		\end{eqnarray}
+
+		The overall complexity can be seen as a type:
+		\begin{eqnarray}
+			Complexity = AsymptoticalComplexity \times ComplexityType
+		\end{eqnarray}
+		Here we can also use a lexicographical comparison, but we have to say that
+		\begin{eqnarray}
+			Normal > Amortized,\\
+			Amortized > Expected,\\
+			Expected > Amortized \; Expected,\\
+		\end{eqnarray}
+		and that $>$ is transitive.
+
+		We also always choose the smallest asymptotic-complexity-wise complexity. For example, we have a search operation on a splay tree. It's $O(n)$, but $O(\log n)$ amortized, so it's represented as $((0,1),Amortized)$.
+	\subsection{Choosing the best data structure}
+		We define a set $DataStructureOperations$. We can further extend this set, but for now assume that
+		\begin{eqnarray}
+		  	DataStructureOperations = \{Insert, \; Update, \; Delete, \; FindMax,\; DeleteMax, \; \dots\}.
+		\end{eqnarray}
+		Each of the $DataStructureOperations$ elements symbolizes an operation you can accomplish on a data structure.
+
+		The type
+		\begin{eqnarray}
+			DataStructure \subset DataStructureOperations \times Complexity
+		\end{eqnarray}
+		represents a data structure and all of the implemented operations for it, with their complexities.
+
+		When trying to find the best suited data structure for a given program $P$, we look for data structure uses in $P$. Let $DSU(P)$ be the set of $DataStructureOperations$ elements, that are used somewhere in the source code of $P$.
+
+		We define a parametrized comparison operator for data structures $<_{DSU(P)}$ defined as:
+		\begin{eqnarray}
+			d_1 <_{DSU(P)} d_2 \Leftrightarrow o \in DSU(P) \wedge \\
+			|\{(o, c_1) \in d_1 | (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < \{(o, c_2) \in d_2 | (o,c_1) \in d_1 \wedge c_2 < c_1 \}
+		\end{eqnarray}
+		If we fix P, we have a preorder on data structures induced by $<_{DSU(P)}$ and we can sort those data structures using this order. The maximum element is the best data structure for the task.
+
+
+
+\section{Extensions of the idea}
+	\subsection{Second extremal element}
+		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are for.
+		If we want to find the minimal element we can use a min-heap. What happens if we want to find the max and the min element in the duration of one program?
+		How to modify our framework to handle this kind of situations?
+		\begin{equation}
+		  	DataStructureOperations = \{\dots \; FindFirstExtremalElement,\; DeleteFirstExtremalElement, \; \\
+			FindSecondExtremalElement,\; DeleteSecondExtremalElement, \; \dots\}.
+		\end{equation}
+		Now we can add two complexity costs to the data structure definition, the cheaper one can be used primarily, and the second one can be used in above situations.
+	\subsection{Detecting importance of an operation}
+		change in the algorithm
+		\subsubsection{Profile-guided optimization}
+			Profile-guided optimization is an optimization method in compilers. -definition-. Here we can check how many times an operation is executed on our test-data and then choose the recommended structure accordingly.
+		\subsubsection{Transforming datastructures on-line}
+	\subsection{Generic data structure modifications}
+
+		max elem cache
+	\subsection{Different element types}
+		Currently the framework works only for integer elements. We can extend it to each type that has a compare function,
+		because there's no difference if the types are numerical or not.
+		If we analyzed haskell, we would use types that are in the Ord class,
+		if we analyzed C, we would ask the programmer to write an acompanying cmp function to the type and pass the pointer to the function that creates the data structure.
+	\subsection{Linked data structures}
+		If we wanted to keep records (structs) in our data structure and find an element by one field and some other time by some other field, we would have to do this:
+	\subsection{Upper bound on the element count}
+		so we can choose between malloc and static allocation
+	\subsection{Outer-world input}
+		detecting scanf and sockets and so on
+	\subsection{Minimal element count treshold}
+		It's worth noticing that we compare only the asymptotical complexity of data structures. Some awfully complicated structures can have good asymptotical results, but the constant is quite high. We can avoid this problem by setting a treshold for each structure, what is the smallest number of elements to use this data structure.
+
+		Another problem arises, how to know at compile time, how many elements a data structure will have at runtime. We can ask the user to explicitely specify the number during compilation or we can try to detect how big the declared data is.
+\section{Program}
+	\subsection{Recommendation mode}
+		prints recommendations
+	\subsection{Advice mode}
+		prints advice
+	\subsection{Compile mode}
+		linkes appropriate lib
+
+\end{document}
