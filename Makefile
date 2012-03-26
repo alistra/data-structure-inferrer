@@ -1,5 +1,6 @@
 thesis:
 	rubber -d thesis.tex
+	make clean
 
 clean:
 	rm -f thesis.aux thesis.log thesis.toc
