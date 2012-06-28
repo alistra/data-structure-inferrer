@@ -29,20 +29,19 @@ doc:	${SRC}
 	git push origin gh-pages
 	git checkout master
 
-clean:
-	rm -f Il/Lexer.hs Il/Parser.hs
-	rm -f *.o *.hi C/*.o C/*.hi Defs/*.o Defs/*.hi
-
-cleanbin: clean texclean thesisclean
-	rm -f dsinf
-	rm -f thesis.pdf
-
 thesis:
 	rubber -d thesis.tex
 	make texclean
 
+clean:	texclean
+	rm -f Il/Lexer.hs Il/Parser.hs
+	rm -f *.o *.hi C/*.o C/*.hi Defs/*.o Defs/*.hi
+
 texclean:
 	rm -f thesis.aux thesis.log thesis.toc
 
-pdfclean: thesisclean
+binclean: clean
+	rm -f dsinf
+
+pdfclean: clean
 	rm -f thesis.pdf

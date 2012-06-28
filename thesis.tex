@@ -1,5 +1,10 @@
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[colorinlistoftodos, textwidth=4cm, shadow]{todonotes}
+\usepackage{listings}
+\lstset{language=C}
+
+
 %\usepackage[]{polski}
 
 \newcommand{\lecture}[4]{\handout{#1}{#2}{#3}{#4}{#1}}
@@ -28,7 +33,7 @@
 \parskip 1.5ex
 %\renewcommand{\baselinestretch}{1.25}
 
-\title{Data structure inference based on source code}
+\title{\emph{dsinf}: Source Based Data Structure Inference}
 \author{Aleksander Balicki}
 \date{\today}
 
@@ -37,15 +42,34 @@
 \maketitle
 
 \begin{abstract}
+	When you need to store data, most of popular languages today already have
+	libraries with all the important data structures implemented.
+	Programmers just have to be taught when to use them.
+	Some of the cases of choosing the right data structure look sufficiently easy,
+	so a computer could do it automatically. This work describes the \emph{dsinf} project,
+	a framework for inferring the best data structure matching your task,
+	based on the program's source code in C language.\missingfigure{
+	result, conclusion, http://www.ece.cmu.edu/~koopman/essays/abstract.html}
 \end{abstract}
+
+\pagebreak
 
 \tableofcontents
 
-\section{Introduction}
+\vfill
 
+\section{Introduction}
+	\missingfigure{Introduction here}
 
 \section{Data structure inference}
+
 	\subsection{Comparison of the complexities}
+		When trying to define some kind of ordering on data structures
+		- so we can decide which is best at the moment - we encounter a problem.
+		We want to compare the asymptotical complexities of operations on data structures.
+		We can't do it for the general case, because it's too complicated,
+		because an arbitrary function can describe the complexity of an operation.
+
 		Asymptotical complexity of an operation we store as a pair of type:
 		\begin{eqnarray}
 			AsymptoticalComplexity = Int \times Int,
@@ -54,7 +78,9 @@
 		\begin{eqnarray}
 			(k, \; l) \; means \; O(n^k \log^l{ n}).
 		\end{eqnarray}
-		The reason to choose such a type is that it's easier to compare than the general case (we can do a lexicographical comparison of the two numbers) and it distincts most of the data structure operation complexities.
+		The reason to choose such a type is that it's easier to compare than the
+		general case (we can do a lexicographical comparison of the two numbers)
+		and it distincts most of the data structure operation complexities.
 
 		Sometimes we have to use some qualified complexities:
 		\begin{eqnarray}
@@ -67,13 +93,15 @@
 		\end{eqnarray}
 		Here we can also use a lexicographical comparison, but we have to say that
 		\begin{eqnarray}
-			Normal > Amortized,\\
-			Amortized > Expected,\\
-			Expected > Amortized \; Expected,\\
+			Amortized < Normal,\\
+			Expected < Amortized,\\
+			Amortized \; Expected < Expected
 		\end{eqnarray}
-		and that $>$ is transitive.
+		and that $<$ is transitive.
 
-		We also always choose the smallest asymptotic-complexity-wise complexity. For example, we have a search operation on a splay tree. It's $O(n)$, but $O(\log n)$ amortized, so it's represented as $((0,1),Amortized)$.
+		We also always choose the smallest asymptotic-complexity-wise complexity.
+		For example, we have a search operation on a splay tree. It's $O(n)$, but $O(\log n)$ amortized,
+		so it's represented as $((0,1),Amortized)$.
 	\subsection{Choosing the best data structure}
 		We define a set $DataStructureOperations$. We can further extend this set, but for now assume that
 		\begin{eqnarray}
@@ -83,39 +111,87 @@
 
 		The type
 		\begin{eqnarray}
-			DataStructure \subset DataStructureOperations \times Complexity
+			DataStructure = DataStructureOperations \rightarrow Complexity
 		\end{eqnarray}
-		represents a data structure and all of the implemented operations for it, with their complexities.
+		represents a data structure and all of the operations implemented for it,
+		with their complexities, as a partial function from DataStructureOperations to Complexities.
 
-		When trying to find the best suited data structure for a given program $P$, we look for data structure uses in $P$. Let $DSU(P)$ be the set of $DataStructureOperations$ elements, that are used somewhere in the source code of $P$.
+		When trying to find the best suited data structure for a given program $P$,
+		we look for data structure uses in $P$. Let $DSU(P) :: P(DataStructureOperations)$ be the set
+		of data structure operations, that are used somewhere in the source code of $P$.
 
 		We define a parametrized comparison operator for data structures $<_{DSU(P)}$ defined as:
-		\begin{eqnarray}
-			d_1 <_{DSU(P)} d_2 \Leftrightarrow o \in DSU(P) \wedge \\
-			|\{(o, c_1) \in d_1 | (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < \{(o, c_2) \in d_2 | (o,c_1) \in d_1 \wedge c_2 < c_1 \}
-		\end{eqnarray}
-		If we fix P, we have a preorder on data structures induced by $<_{DSU(P)}$ and we can sort those data structures using this order. The maximum element is the best data structure for the task.
+		\begin{center}
+			\begin{equation}
+				d_1 <_{DSU(P)} d_2
+			\end{equation}
+				$\Updownarrow$
+			\begin{equation}
+				|\{(o, c_1) \in d_1 | o \in DSU(P) \wedge (o,c_2) \in d_2 \wedge c_1 < c_2 \}| <
+				0.5 * \lfloor |DSU(P)| \rfloor
+			\end{equation}
+		\end{center}
+		If a data structure implements more operations 'faster' than we choose that structure over the other one.
 
 
+		If we fix P, we have a preorder on data structures induced by $<_{DSU(P)}$
+		and we can sort those data structures using this order. The maximum element is the best data structure for the task.
+	\subsection{Collecting the program data}
+
+\pagebreak
 
 \section{Extensions of the idea}
 	\subsection{Second extremal element}
 		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are for.
-		If we want to find the minimal element we can use a min-heap. What happens if we want to find the max and the min element in the duration of one program?
+		If we want to find the minimal element we can modify the heap, for it to use an order,
+		which would allow us to lookup the minimal element in $O(1)$.
+		What happens if we want to find the max and the min element in the duration of one program?
 		How to modify our framework to handle this kind of situations?
-		\begin{equation}
-		  	DataStructureOperations = \{\dots \; FindFirstExtremalElement,\; DeleteFirstExtremalElement, \; \\
-			FindSecondExtremalElement,\; DeleteSecondExtremalElement, \; \dots\}.
-		\end{equation}
-		Now we can add two complexity costs to the data structure definition, the cheaper one can be used primarily, and the second one can be used in above situations.
+		  	$$DataStructureOperations = \{\dots, \; FindFirstExtremalElement,\\$$
+			$$	DeleteFirstExtremalElement,\\$$
+			$$	FindSecondExtremalElement,\\$$
+			$$	DeleteSecondExtremalElement, \; \dots\}.$$
+		Now we can add two complexity costs to the data structure definition. We can always reverse the order,
+		so the cheaper one can be used primarily, and the more expensive one in situations when we need
+		both types of extremal elements.
 	\subsection{Detecting importance of an operation}
-		change in the algorithm
+		Detecting the importance of a single data structure operation is an important problem, mainly because it's undecidable.
+		This program shows that the problem of compile-time deciding on the best data structure is impossible to solve.
+		\lstinputlisting{thesis-pics/undecidable.c}
+		In the above example, the best data structure is depending on the user input, which is not known at compile time.
+
+		Also code that is not totally dependent on user input can cause problems to analyze.
+		\lstinputlisting{thesis-pics/weighted-instructions.c}
+		Here we see a very costly instruction used only once, and a few instructions run in a loop for a few million times.
+		To anyone that knows program complexities it's obvious that this one heavy instruction
+		doesn't affect the execution time of the whole program, yet the framework at the current state
+		treats those instructions equally.
+
+		\subsubsection{Code pragmas}
+			A possible soultion to this problem is to let the programmer add code pragmas to his source code,
+			so he decides how important an instruction is in relation to other instructions and then the framework
+			makes use of those values in choosing the data structure.
+			\lstinputlisting{thesis-pics/code-pragmas.c}
+			In the above example programmer can add a weights to the operations,
+			assigning very low values for statements that are used rarely or for debug purposes,
+			and very high values for crucial parts of the program.
+
+			There would be an API change needed.
+			\lstinputlisting{thesis-pics/code-pragmas-api-change.c}
+			This isn't the perfect solution, because we still need the programmer to judge
+			which operations should have high weights, but it's nice when a programmer
+			wants to use it for debug purposes or otherwise tinker with it.
+
+		\subsubsection{Choosing the best data structure with weigths}
+
 		\subsubsection{Profile-guided optimization}
-			Profile-guided optimization is an optimization method in compilers. -definition-. Here we can check how many times an operation is executed on our test-data and then choose the recommended structure accordingly.
+			Profile-guided optimization is an optimization method in compilers. -definition-.
+			Here we can check how many times an operation is executed on our test-data
+			and then choose the recommended structure accordingly.
 		\subsubsection{Transforming datastructures on-line}
 	\subsection{Generic data structure modifications}
 
-		max elem cache
+		max elem cache/linked leaves
 	\subsection{Different element types}
 		Currently the framework works only for integer elements. We can extend it to each type that has a compare function,
 		because there's no difference if the types are numerical or not.
