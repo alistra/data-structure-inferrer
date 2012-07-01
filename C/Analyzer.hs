@@ -14,7 +14,7 @@ import C.Functions
 
 -- | Name of the starting function
 startingFunction :: FunctionName
-startingFunction = F "main" 
+startingFunction = F "main"
 
 -- | Analyze a C file
 analyzeC :: FilePath -> IO [DSInfo]

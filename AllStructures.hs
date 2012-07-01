@@ -126,11 +126,11 @@ heap = DS "Heap"            [
 {-
 binom = DS "Binomial Heap"  [
                             Op BoundByRef
-                            Op DeleteByRef          
+                            Op DeleteByRef
                             Op Difference
                             Op FindByVal            (LinLog 1 0, N),
                             Op Intersection
-                            Op SymDifference        
+                            Op SymDifference
                             Op UpdateByRef
                             Op InsertVal            (LinLog 0 0, A),
                             Op DeleteExtremalVal    (LinLog 0 1, N),
