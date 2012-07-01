@@ -1,7 +1,8 @@
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
-\usepackage[colorinlistoftodos, textwidth=4cm, shadow]{todonotes}
+\usepackage[colorinlistoftodos, textwidth=2cm, shadow]{todonotes}
 \usepackage{listings}
+\usepackage[colorlinks=true,linkcolor=blue]{hyperref}
 \lstset{language=C}
 
 
@@ -42,13 +43,13 @@
 \maketitle
 
 \begin{abstract}
-	When you need to store data, most of popular languages today already have
+	When you need to store data, \todo{Connect the parts of the sentence} most of popular languages today already have
 	libraries with all the important data structures implemented.
 	Programmers just have to be taught when to use them.
 	Some of the cases of choosing the right data structure look sufficiently easy,
 	so a computer could do it automatically. This work describes the \emph{dsinf} project,
 	a framework for inferring the best data structure matching your task,
-	based on the program's source code in C language.\missingfigure{
+	based on the program's source code in C language. \missingfigure{
 	result, conclusion, http://www.ece.cmu.edu/~koopman/essays/abstract.html}
 \end{abstract}
 
@@ -110,15 +111,18 @@
 		Each of the $DataStructureOperations$ elements symbolizes an operation you can accomplish on a data structure.
 
 		The type
-		\begin{eqnarray}
+		\begin{equation}\label{data-structure-type}
 			DataStructure = DataStructureOperations \rightarrow Complexity
-		\end{eqnarray}
+		\end{equation}
 		represents a data structure and all of the operations implemented for it,
 		with their complexities, as a partial function from DataStructureOperations to Complexities.
 
 		When trying to find the best suited data structure for a given program $P$,
-		we look for data structure uses in $P$. Let $DSU(P) :: P(DataStructureOperations)$ be the set
-		of data structure operations, that are used somewhere in the source code of $P$.
+		we look for data structure uses in $P$. Let
+		\begin{equation}\label{dsu-type}
+			DSU(P) :: P(DataStructureOperations)
+		\end{equation} be the set of data structure operations,
+		that are used somewhere in the source code of $P$.
 
 		We define a parametrized comparison operator for data structures $<_{DSU(P)}$ defined as:
 		\begin{center}
@@ -126,7 +130,7 @@
 				d_1 <_{DSU(P)} d_2
 			\end{equation}
 				$\Updownarrow$
-			\begin{equation}
+			\begin{equation} \label{data-structure-order}
 				|\{(o, c_1) \in d_1 | o \in DSU(P) \wedge (o,c_2) \in d_2 \wedge c_1 < c_2 \}| <
 				0.5 * \lfloor |DSU(P)| \rfloor
 			\end{equation}
@@ -137,6 +141,9 @@
 		If we fix P, we have a preorder on data structures induced by $<_{DSU(P)}$
 		and we can sort those data structures using this order. The maximum element is the best data structure for the task.
 	\subsection{Collecting the program data}
+		\label{dsu-definition}
+		\subsubsection{C API}
+		\subsubsection{Analysis}
 
 \pagebreak
 
@@ -183,6 +190,23 @@
 			wants to use it for debug purposes or otherwise tinker with it.
 
 		\subsubsection{Choosing the best data structure with weigths}
+			We need to change the algorithm for choosing the best data structure, for it to handle
+			weights to the operations in the source code. We change the type of the $DSU()$ operation from
+			\ref{dsu-type} to:
+			\begin{equation}
+				DSU(P) :: DataStructureOperations -> Int
+			\end{equation}
+			This change introduces weights for operations in program $P$. We can use a partial function,
+			or just use $0$ as a value for operations that do not occur in the program. We always want to
+			get the highest weight from all the weighted operation instances in the program, so the $DSU()$
+			definition also needs a change from \ref{dsu-definition}:
+			\begin{equation}
+				DSU(P) = 
+			\end{equation}
+
+			We change the definition of \autoref{data-structure-order} to:
+			\begin{equation}
+			\end{equation}
 
 		\subsubsection{Profile-guided optimization}
 			Profile-guided optimization is an optimization method in compilers. -definition-.

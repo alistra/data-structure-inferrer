@@ -38,7 +38,7 @@ clean:	texclean
 	rm -f *.o *.hi C/*.o C/*.hi Defs/*.o Defs/*.hi
 
 texclean:
-	rm -f thesis.aux thesis.log thesis.toc
+	rm -f thesis.aux thesis.log thesis.toc thesis.out
 
 binclean: clean
 	rm -f dsinf
