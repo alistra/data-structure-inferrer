@@ -139,57 +139,49 @@
 
 \section{Extensions of the idea}
 	\subsection{Second extremal element}
-		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are for.
-		If we want to find the minimal element we can modify the heap, for it to use an order,
-		which would allow us to lookup the minimal element in $O(1)$.
-		What happens if we want to find the max and the min element in the duration of one program?
-		How to modify our framework to handle this kind of situations?
+		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are for.  If we want to find the minimal
+		element we can modify the heap, for it to use an order, which would allow us to lookup the minimal element in $O(1)$.  What happens if we want
+		to find the max and the min element in the duration of one program?  How to modify our framework to handle this kind of situations?
 		  	$$DataStructureOperations = \{\dots, \; FindFirstExtremalElement,\\$$
 			$$	DeleteFirstExtremalElement,\\$$
 			$$	FindSecondExtremalElement,\\$$
 			$$	DeleteSecondExtremalElement, \; \dots\}.$$
-		Now we can add two complexity costs to the data structure definition. We can always reverse the order,
-		so the cheaper one can be used primarily, and the more expensive one in situations when we need
-		both types of extremal elements.
+		Now we can add two complexity costs to the data structure definition. We can always reverse the order, so the cheaper one can be used primarily,
+		and the more expensive one in situations when we need both types of extremal elements.
 	\subsection{Detecting importance of an operation}
-		Detecting the importance of a single data structure operation is an important problem, mainly because it's undecidable.
-		This program shows that the problem of compile-time deciding on the best data structure is impossible to solve.
+		Detecting the importance of a single data structure operation is an important problem, mainly because it's undecidable.  This program shows that
+		the problem of compile-time deciding on the best data structure is impossible to solve.
 		\lstinputlisting{thesis-pics/undecidable.c}
 		In the above example, the best data structure is depending on the user input, which is not known at compile time.
 
 		Also code that is not totally dependent on user input can cause problems to analyze.
 		\lstinputlisting{thesis-pics/weighted-instructions.c}
-		Here we see a very costly instruction used only once, and a few instructions run in a loop for a few million times.
-		To anyone that knows program complexities it's obvious that this one heavy instruction
-		doesn't affect the execution time of the whole program, yet the framework at the current state
-		treats those instructions equally.
+		Here we see a very costly instruction used only once, and a few instructions run in a loop for a few million times.  To anyone that knows
+		program complexities it's obvious that this one heavy instruction doesn't affect the execution time of the whole program, yet the framework at
+		the current state treats those instructions equally.
 
 		\subsubsection{Code pragmas}
-			A possible soultion to this problem is to let the programmer add code pragmas to his source code,
-			so he decides how important an instruction is in relation to other instructions and then the framework
-			makes use of those values in choosing the data structure.
+			A possible soultion to this problem is to let the programmer add code pragmas to his source code, so he decides how important an
+			instruction is in relation to other instructions and then the framework makes use of those values in choosing the data structure.
 			\lstinputlisting{thesis-pics/code-pragmas.c}
-			In the above example programmer can add a weights to the operations,
-			assigning very low values for statements that are used rarely or for debug purposes,
-			and very high values for crucial parts of the program.
+			In the above example programmer can add a weights to the operations, assigning very low values for statements that are used rarely or
+			for debug purposes, and very high values for crucial parts of the program.
 
 			There would be an API change needed.
 			\lstinputlisting{thesis-pics/code-pragmas-api-change.c}
-			This isn't the perfect solution, because we still need the programmer to judge
-			which operations should have high weights, but it's nice when a programmer
-			wants to use it for debug purposes or otherwise tinker with it.
+			This isn't the perfect solution, because we still need the programmer to judge which operations should have high weights, but it's nice
+			when a programmer wants to use it for debug purposes or otherwise tinker with it.
 
 		\subsubsection{Choosing the best data structure with weigths}
-			We need to change the algorithm for choosing the best data structure, for it to handle
-			weights to the operations in the source code. We change the type of the $DSU()$ operation from
+			We need to change the algorithm for choosing the best data structure, for it to handle weights to the operations in the source code. We
+			change the type of the $DSU()$ operation from
 			\ref{dsu-type} to:
 			\begin{equation}
 				DSU_w(P) :: DataStructureOperations -> Int
 			\end{equation}
-			This change introduces weights for operations in program $P$. We can use a partial function,
-			or just use $0$ as a value for operations that do not occur in the program. We always want to
-			get the highest weight from all the weighted operation instances in the program, so the $DSU()$
-			definition also needs a change from \ref{dsu-definition}:
+			This change introduces weights for operations in program $P$. We can use a partial function, or just use $0$ as a value for operations
+			that do not occur in the program. We always want to get the highest weight from all the weighted operation instances in the program, so
+			the $DSU()$ definition also needs a change from \ref{dsu-definition}:
 			\begin{equation}
 				DSU_w(P) =
 			\end{equation}
