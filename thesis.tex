@@ -212,16 +212,25 @@
 
 		max elem cache/linked leaves/functor in ocaml
 	\subsection{Different element types}
-		Currently the framework works only for integer elements. We can extend it to each type that has a compare function, because there's no
-		difference if the types are numerical or not.  If we analyzed haskell, we would use types that are in the Ord class, if we analyzed C, we would
-		ask the programmer to write an acompanying cmp function to the type and pass the pointer to the function that creates the data structure.
-	\subsection{Linked data structures}
-		If we wanted to keep records (structs) in our data structure and find an element by one field and some other time by some other field, we would
-		have to do this:
+		Currently the framework works only for integer elements. We could extend it to every primitive type in C, but it would require some changes.
+		Some data structures require the type to be comparable, which wouldn't be a big problem, because there is a comparison semantics defined on those
+		types. There's also a hash function needed, because some data structures, like a hashtable, need to compute hash values to work. We can just use
+		the binary representation of other types, and use it as an integer for the hash function. This whole modification doesn't need any user
+		interaction.
+
+		There's a bigger problem with composite types. Comparing pointers isn't obvious. You may want to compare addresses or the contents under that
+		address, depending if you want object or structural equality. The same problem is with hash function arguments. There's also a problem with
+		possible memory leaks. You can pass a pointer to a string to the data structure and lose the pointer in the program, then when the structure
+		deletes the pointer and the string stays in the memory to the program's end. Adding this to the framework would require passing the comparison
+		function, hash function and some kind of destructor function to the data structure, or possibly use some reference counting system. It would be
+		very technical and would be beyond the scope of this thesis. With an array or a big struct passed to the framework, there's a problem if we want
+		to share the datastructure and just copy the pointer, copying the whole thing may be a bad idea, because it can have quite a lot of data inside.
+
+		\subsubsection{Linked data structures}
+			If we wanted to keep records (structs) in our data structure and find an element by one field and some other time by some other field, we would
+			have to do this:
 	\subsection{Upper bound on the element count}
 		so we can choose between malloc and static allocation
-	\subsection{Outer-world input}
-		detecting scanf and sockets and so on
 	\subsection{Minimal element count treshold}
 		It's worth noticing that we compare only the asymptotical complexity of data structures. Some awfully complicated structures can have good
 		asymptotical results, but the constant is quite high. We can avoid this problem by setting a treshold for each structure, what is the smallest
@@ -229,6 +238,8 @@
 
 		Another problem arises, how to know at compile time, how many elements a data structure will have at runtime. We can ask the user to explicitely
 		specify the number during compilation or we can try to detect how big the declared data is.
+	\subsection{Comparing a database}
+		\label{sub:database}
 \section{Program}
 	\subsection{Recommendation mode}
 		prints recommendations
