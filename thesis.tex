@@ -227,8 +227,12 @@
 		to share the datastructure and just copy the pointer, copying the whole thing may be a bad idea, because it can have quite a lot of data inside.
 
 		\subsubsection{Linked data structures}
-			If we wanted to keep records (structs) in our data structure and find an element by one field and some other time by some other field, we would
-			have to do this:
+			When we want to store structs like this:
+			\lstinputlisting{thesis-pics/linked-struct.c}
+			Our framework, at the moment, could generate some data structure for the structs.
+			\lstinputlisting{thesis-pics/struct-old.c}
+			It would be nice if our program enabled things like:
+			\lstinputlisting{thesis-pics/struct-new.c}
 	\subsection{Upper bound on the element count}
 		so we can choose between malloc and static allocation
 	\subsection{Minimal element count treshold}
