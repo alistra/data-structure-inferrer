@@ -12,6 +12,8 @@ import Defs.Common
 import Defs.Structures
 import C.Functions
 
+import Debug.Trace
+
 -- | Name of the starting function
 startingFunction :: FunctionName
 startingFunction = F "main"
@@ -43,7 +45,7 @@ putCall name exprs = do
 -- | Get a function/variable name from a 'CDeclr'
 getName :: CDeclr -> String
 getName (CDeclr (Just (Ident str _ _)) _ _ _ _) = str
-getName (CDeclr Nothing _ _ _ _) = error "function without a name? that's just ridiculous"
+getName (CDeclr Nothing _ _ _ _) = error "function without a name"
 
 -- | Get a type from a '[CDeclSpec]'
 getType :: [CDeclSpec] -> CTypeSpec
@@ -54,7 +56,8 @@ getType declSpecs = let (_,_,_,specs,_) = partitionDeclSpecs declSpecs in
 
 -- | Get a list of pairs: argument, type, of a function
 getArgsWithTypes :: CDeclr -> [(VariableName, CTypeSpec)]
-getArgsWithTypes declr = [] --STUB
+getArgsWithTypes (CDeclr _ [CFunDeclr eidsdecls _ _] _ _ _) = either (error "report the source code example") () eidsdecls
+getArgsWithTypes _ = error "not CFunDeclr"
 
 analyzeCTranslUnit :: CTranslUnit -> TermAnalyzer [Either Output (DSFun CTypeSpec)] --TODO add global variables here
 analyzeCTranslUnit (CTranslUnit extDecls _) = mapM analyzeCExtDecl extDecls
@@ -93,7 +96,7 @@ analyzeCFunDef (CFunDef declSpecs declr declarations statement _) = do
         , analyzeCDeclr declr
         , analyzeCStat statement] ++ map analyzeCDecl declarations
     s <- get
-    return DSF {getDSFFun = funDec, getDSFCalls = getStateCalls s, getDSFDSI = generateDSI (getFunName funDec) body}
+    traceShow declr $ return DSF {getDSFFun = funDec, getDSFCalls = getStateCalls s, getDSFDSI = generateDSI (getFunName funDec) body}
 
 analyzeCDerivedDeclarator :: CDerivedDeclr -> TermAnalyzer Output
 analyzeCDerivedDeclarator (CPtrDeclr qualifs _) = fmcs $ map analyzeCTypeQualifier qualifs

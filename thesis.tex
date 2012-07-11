@@ -5,7 +5,6 @@
 \usepackage[colorlinks=true,linkcolor=blue]{hyperref}
 \lstset{language=C}
 
-
 %\usepackage[]{polski}
 
 \newcommand{\lecture}[4]{\handout{#1}{#2}{#3}{#4}{#1}}
@@ -43,10 +42,14 @@
 \maketitle
 
 \begin{abstract}
-	When you need to store data, \todo{Connect the parts of the sentence} most of popular languages today already have libraries with all the important data
-	structures implemented.  Programmers just have to be taught when to use them.  Some of the cases of choosing the right data structure look sufficiently
-	easy, so a computer could do it automatically. This work describes the \emph{dsinf} project, a framework for inferring the best data structure matching
-	your task, based on the program's source code in C language. \missingfigure{ result, conclusion, http://www.ece.cmu.edu/~koopman/essays/abstract.html}
+
+	When you need to store data, \todo{Connect the parts of the sentence} most of popular languages today already
+	have libraries with all the important data structures implemented.  Programmers just have to be taught when to
+	use them.  Some of the cases of choosing the right data structure look sufficiently easy, so a computer could do
+	it automatically. This work describes the \emph{dsinf} project, a framework for inferring the best data
+	structure matching your task, based on the program's source code in C language. \missingfigure{ result,
+	conclusion, http://www.ece.cmu.edu/~koopman/essays/abstract.html}
+
 \end{abstract}
 
 \pagebreak
@@ -56,201 +59,345 @@
 \vfill
 
 \section{Introduction}
+
 	\missingfigure{Introduction here}
+	\subsection{Comparing a database} \label{sub:database}
 
 \section{Data structure inference}
 
 	\subsection{Comparison of the complexities}
-		When trying to define some kind of ordering on data structures - so we can decide which is best at the moment - we encounter a problem.  We want
-		to compare the asymptotical complexities of operations on data structures.  We can't do it for the general case, because it's too complicated,
-		because an arbitrary function can describe the complexity of an operation.
+
+		When trying to define some kind of ordering on data structures - so we can decide which is best at the
+		moment - we encounter a problem.  We want to compare the asymptotical complexities of operations on data
+		structures.  We can't do it for the general case, because it's too complicated, because an arbitrary
+		function can describe the complexity of an operation.
 
 		Asymptotical complexity of an operation we store as a pair of type:
+
 		\begin{eqnarray}
 			AsymptoticalComplexity = Int \times Int,
 		\end{eqnarray}
+
 		where
+
 		\begin{eqnarray}
 			(k, \; l) \; means \; O(n^k \log^l{ n}).
 		\end{eqnarray}
-		The reason to choose such a type is that it's easier to compare than the general case (we can do a lexicographical comparison of the two
-		numbers) and it distincts most of the data structure operation complexities.
+
+		The reason to choose such a type is that it's easier to compare than the general case (we can do a
+		lexicographical comparison of the two numbers) and it distinguishes most of the data structure operation
+		complexities.
 
 		Sometimes we have to use some qualified complexities:
+
 		\begin{eqnarray}
 			ComplexityType = \{ Normal, \; Amortized, \; Amortized \;Expected, \; Expected \}
 		\end{eqnarray}
 
 		The overall complexity can be seen as a type:
+
 		\begin{eqnarray}
 			Complexity = AsymptoticalComplexity \times ComplexityType
 		\end{eqnarray}
+
 		Here we can also use a lexicographical comparison, but we have to say that
+
 		\begin{eqnarray}
 			Amortized < Normal,\\
 			Expected < Amortized,\\
 			Amortized \; Expected < Expected
 		\end{eqnarray}
+
 		and that $<$ is transitive.
 
-		We also always choose the smallest asymptotic-complexity-wise complexity.  For example, we have a search operation on a splay tree. It's $O(n)$,
-		but $O(\log n)$ amortized, so it's represented as $((0,1),Amortized)$.
+		We also always choose the smallest asymptotic-complexity-wise complexity.  For example, we have a search
+		operation on a splay tree. It's $O(n)$, but $O(\log n)$ amortized, so it's represented as
+		$((0,1),Amortized)$.
+
 	\subsection{Choosing the best data structure}
+
 		We define a set $DataStructureOperations$. We can further extend this set, but for now assume that
+
 		\begin{eqnarray}
-		  	DataStructureOperations = \{Insert, \; Update, \; Delete, \; FindMax,\; DeleteMax, \; \dots\}.
+			DataStructureOperations = \{Insert, \; Update, \; Delete, \; FindMax,\; DeleteMax, \; \dots\}.
 		\end{eqnarray}
-		Each of the $DataStructureOperations$ elements symbolizes an operation you can accomplish on a data structure.
+
+		Each of the $DataStructureOperations$ elements symbolizes an operation you can accomplish on a data
+		structure.
 
 		The type
+
 		\begin{equation}\label{data-structure-type}
 			DataStructure = DataStructureOperations \rightarrow Complexity
 		\end{equation}
-		represents a data structure and all of the operations implemented for it, with their complexities, as a partial function from
-		DataStructureOperations to Complexities.
 
-		When trying to find the best suited data structure for a given program $P$, we look for data structure uses in $P$. Let
+		represents a data structure and all of the operations implemented for it, with their complexities, as a
+		partial function from DataStructureOperations to Complexities.
+
+		When trying to find the best suited data structure for a given program $P$, we look for data structure
+		uses in $P$. Let
+
 		\begin{equation}\label{dsu-type}
 			DSU(P) :: P(DataStructureOperations)
-		\end{equation} be the set of data structure operations, that are used somewhere in the source code of $P$.
+		\end{equation}
+
+		be the set of data structure operations, that are used somewhere in the source code of $P$.
 
 		We define a parametrized comparison operator for data structures $<_{DSU(P)}$ defined as:
+
 		\begin{center}
+
 			\begin{equation}
 				d_1 <_{DSU(P)} d_2
 			\end{equation}
-				$\Updownarrow$
+
+			$\Updownarrow$
+
 			\begin{equation} \label{data-structure-order}
-				|\{(o, c_1) \in d_1 | o \in DSU(P) \wedge (o,c_2) \in d_2 \wedge c_1 < c_2 \}| <
-				0.5 * \lfloor |DSU(P)| \rfloor
+				|\{(o, c_1) \in d_1 | o \in DSU(P) \wedge (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < 0.5 *
+				\lfloor |DSU(P)| \rfloor
 			\end{equation}
-		\end{center}
-		If a data structure implements more operations 'faster' than we choose that structure over the other one.
 
+		\end{center} If a data structure implements more operations 'faster' than we choose that structure over
+		the other one.
 
-		If we fix P, we have a preorder on data structures induced by $<_{DSU(P)}$ and we can sort those data structures using this order. The maximum
-		element is the best data structure for the task.
-	\subsection{Collecting the program data}
-		\label{dsu-definition}
+		If we fix P, we have a preorder on data structures induced by $<_{DSU(P)}$ and we can sort those data
+		structures using this order. The maximum element is the best data structure for the task.
+
+	\subsection{Collecting the program data} \label{dsu-definition}
+
+		In \ref{dsu-type} the type of the $DSU()$ operation was mentioned, this section shows, how $DSU()$ is
+		defined.
+
+		$DSU(P)$ is a set sum of:
+
+		\begin{itemize}
+
+			\item $\{(g, o) | g \texttt{ is a global data structure variable in $P$ } \wedge \\ o \texttt{
+				is an operation that is performed on g, somewhere in P} \}$
+
+			\item
+
+		\end{itemize}
+
 		\subsubsection{C API}
+
 		\subsubsection{Analysis}
 
 \pagebreak
 
 \section{Extensions of the idea}
+
 	\subsection{Second extremal element}
-		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are for.  If we want to find the minimal
-		element we can modify the heap, for it to use an order, which would allow us to lookup the minimal element in $O(1)$.  What happens if we want
-		to find the max and the min element in the duration of one program?  How to modify our framework to handle this kind of situations?
-		  	$$DataStructureOperations = \{\dots, \; FindFirstExtremalElement,\\$$
-			$$	DeleteFirstExtremalElement,\\$$
-			$$	FindSecondExtremalElement,\\$$
-			$$	DeleteSecondExtremalElement, \; \dots\}.$$
-		Now we can add two complexity costs to the data structure definition. We can always reverse the order, so the cheaper one can be used primarily,
-		and the more expensive one in situations when we need both types of extremal elements.
-	\subsection{Detecting importance of an operation}
-		Detecting the importance of a single data structure operation is an important problem, mainly because it's undecidable.  This program shows that
-		the problem of compile-time deciding on the best data structure is impossible to solve.
+
+		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are
+		for.  If we want to find the minimal element we can modify the heap, for it to use an order, which would
+		allow us to lookup the minimal element in $O(1)$.  What happens if we want to find the max and the min
+		element in the duration of one program?  How to modify our framework to handle this kind of situations?
+
+		$$DataStructureOperations = \{\dots, \; FindFirstExtremalElement,\\$$
+		$$ DeleteFirstExtremalElement,\\$$
+		$$ FindSecondExtremalElement,\\$$
+		$$ DeleteSecondExtremalElement, \; \dots\}.$$
+
+		Now we can add two complexity costs to the data structure definition. We can always reverse the order,
+		so the cheaper one can be used primarily, and the more expensive one in situations when we need both
+		types of extremal elements.
+
+	\subsection{Importance of operations}
+
+		Detecting the importance of a single data structure operation is an important problem,\todo{nonsense}
+		mainly because it's undecidable. This program shows that the problem of compile-time deciding on the
+		best data structure is impossible to solve.
+
 		\lstinputlisting{thesis-pics/undecidable.c}
-		In the above example, the best data structure is depending on the user input, which is not known at compile time.
+
+		In the above example, the best data structure is depending on the user input, which is not known at
+		compile time.
 
 		Also code that is not totally dependent on user input can cause problems to analyze.
+
 		\lstinputlisting{thesis-pics/weighted-instructions.c}
-		Here we see a very costly instruction used only once, and a few instructions run in a loop for a few million times.  To anyone that knows
-		program complexities it's obvious that this one heavy instruction doesn't affect the execution time of the whole program, yet the framework at
-		the current state treats those instructions equally.
+
+		Here we see a very costly instruction used only once, and a few instructions run in a loop for a few
+		million times.  To anyone that knows program complexities it's obvious that this one heavy instruction
+		doesn't affect the execution time of the whole program, yet the framework at the current state treats
+		those instructions equally.
 
 		\subsubsection{Code pragmas}
-			A possible soultion to this problem is to let the programmer add code pragmas to his source code, so he decides how important an
-			instruction is in relation to other instructions and then the framework makes use of those values in choosing the data structure.
+
+			A possible solution to this problem is to let the programmer add code pragmas to his source
+			code, so he decides how important an instruction is in relation to other instructions and then
+			the framework makes use of those values in choosing the data structure.
+
 			\lstinputlisting{thesis-pics/code-pragmas.c}
-			In the above example programmer can add a weights to the operations, assigning very low values for statements that are used rarely or
-			for debug purposes, and very high values for crucial parts of the program.
+
+			In the above example programmer can add a weights to the operations, assigning very low values
+			for statements that are used rarely or for debug purposes, and very high values for crucial
+			parts of the program.
 
 			There would be an API change needed.
-			\lstinputlisting{thesis-pics/code-pragmas-api-change.c}
-			This isn't the perfect solution, because we still need the programmer to judge which operations should have high weights, but it's nice
-			when a programmer wants to use it for debug purposes or otherwise tinker with it.
 
-		\subsubsection{Choosing the best data structure with weigths}
-			We need to change the algorithm for choosing the best data structure, for it to handle weights to the operations in the source code. We
-			change the type of the $DSU()$ operation from
+			\lstinputlisting{thesis-pics/code-pragmas-api-change.c}
+
+			This isn't the perfect solution, because we still need the programmer to judge which operations
+			should have high weights, but it's nice when a programmer wants to use it for debug purposes or
+			otherwise tinker with it.
+
+		\subsubsection{Choosing the best data structure with weights}
+
+			We need to change the algorithm for choosing the best data structure, for it to handle weights
+			to the operations in the source code. We change the type of the $DSU()$ operation from
 			\ref{dsu-type} to:
+
 			\begin{equation}
 				DSU_w(P) :: DataStructureOperations -> Int
 			\end{equation}
-			This change introduces weights for operations in program $P$. We can use a partial function, or just use $0$ as a value for operations
-			that do not occur in the program. We always want to get the highest weight from all the weighted operation instances in the program, so
-			the $DSU()$ definition also needs a change from \ref{dsu-definition}:
+
+			This change introduces weights for operations in program $P$. We can use a partial function, or
+			just use $0$ as a value for operations that do not occur in the program. We always want to get
+			the highest weight from all the weighted operation instances in the program, so the $DSU()$
+			definition also needs a change from \ref{dsu-definition} \todo{do the equation, when you have
+			the first definition}:
+
 			\begin{equation}
 				DSU_w(P) =
 			\end{equation}
 
 			We change the definition of \autoref{data-structure-order} to:
+
 			\begin{equation}
 			\end{equation}
 
 		\subsubsection{Profile-guided optimization}
-			Profile-guided optimization (PGO) is a compiler optimization technique in computer programming to improve program runtime performance.
-			In contrast to traditional optimization techniques that solely use the source code, PGO uses the results of test runs of the
-			instrumented program to optimize the final generated code \todo{reference wikipedia}.
 
-			If the user has some test data, he can run against his program, we can take advantage of that. First we choose the best data structure
-			with an unmodified method and link some library to the executable. Of course this won't be the best data structure possible. Then user
-			can run the test suite with code coverage option, like \emph{gcov} in GCC, turned on in the compiler.
+			Profile-guided optimization (PGO) is a compiler optimization technique in computer programming
+			to improve program runtime performance.  In contrast to traditional optimization techniques that
+			solely use the source code, PGO uses the results of test runs of the instrumented program to
+			optimize the final generated code \todo{reference wikipedia}.
+
+			If the user has some test data, he can run against his program, we can take advantage of that.
+			First we choose the best data structure with an unmodified method and link some library to the
+			executable. Of course this won't be the best data structure possible. Then user can run the test
+			suite with code coverage option, like \emph{gcov} in GCC, turned on in the compiler.
+
 			\missingfigure{Example source code}
+
 			\missingfigure{Example gcov file}
-			Then the user can pass the \emph{gcov} generated files and the source code to the framework again. The framework can extract line hits
-			from the \emph{gcov} files on the data structure operations and set weights on the operations according to the extracted data and then
-			use the choosing algorithm for operations with weigths.
 
-			It's a better solution than letting the user set the weights himself, but still, the data the inference is based upon, comes from tests
-			and there's no guarantee the real world data will match the test data.
+			Then the user can pass the \emph{gcov} generated files and the source code to the framework
+			again. The framework can extract line hits from the \emph{gcov} files on the data structure
+			operations and set weights on the operations according to the extracted data and then use the
+			choosing algorithm for operations with weights.
 
-		\subsubsection{Transforming datastructures on-line}
+			It's a better solution than letting the user set the weights himself, but still, the data the
+			inference is based upon, comes from tests and there's no guarantee the real world data will
+			match the test data.
+
+		\subsubsection{Transforming data structures on-line} \label{sec:transforming-on-line}
+
 	\subsection{Generic data structure modifications}
 
 		max elem cache/linked leaves/functor in ocaml
-	\subsection{Different element types}
-		Currently the framework works only for integer elements. We could extend it to every primitive type in C, but it would require some changes.
-		Some data structures require the type to be comparable, which wouldn't be a big problem, because there is a comparison semantics defined on those
-		types. There's also a hash function needed, because some data structures, like a hashtable, need to compute hash values to work. We can just use
-		the binary representation of other types, and use it as an integer for the hash function. This whole modification doesn't need any user
-		interaction.
 
-		There's a bigger problem with composite types. Comparing pointers isn't obvious. You may want to compare addresses or the contents under that
-		address, depending if you want object or structural equality. The same problem is with hash function arguments. There's also a problem with
-		possible memory leaks. You can pass a pointer to a string to the data structure and lose the pointer in the program, then when the structure
-		deletes the pointer and the string stays in the memory to the program's end. Adding this to the framework would require passing the comparison
-		function, hash function and some kind of destructor function to the data structure, or possibly use some reference counting system. It would be
-		very technical and would be beyond the scope of this thesis. With an array or a big struct passed to the framework, there's a problem if we want
-		to share the datastructure and just copy the pointer, copying the whole thing may be a bad idea, because it can have quite a lot of data inside.
+	\subsection{Different element types}
+
+		Currently the framework works only for integer elements. We could extend it to every primitive type in
+		C, but it would require some changes.  Some data structures require the type to be comparable, which
+		wouldn't be a big problem, because there is a comparison semantics defined on those types. There's also
+		a hash function needed, because some data structures, like a hashtable, need to compute hash values to
+		work. We can just use the binary representation of other types, and use it as an integer for the hash
+		function. This whole modification doesn't need any user interaction.
+
+		There's a bigger problem with composite types. Comparing pointers isn't obvious. You may want to compare
+		addresses or the contents under that address, depending if you want object or structural equality. The
+		same problem is with hash function arguments. There's also a problem with possible memory leaks. You can
+		pass a pointer to a string to the data structure and lose the pointer in the program, then when the
+		structure deletes the pointer and the string stays in the memory to the program's end. Adding this to
+		the framework would require passing the comparison function, hash function and some kind of destructor
+		function to the data structure, or possibly use some reference counting system. It would be very
+		technical and would be beyond the scope of this thesis. With an array or a big struct passed to the
+		framework, there's a problem if we want to share the data structure and just copy the pointer, copying
+		the whole thing may be a bad idea, because it can have quite a lot of data inside.
 
 		\subsubsection{Linked data structures}
-			When we want to store structs like this:
-			\lstinputlisting{thesis-pics/linked-struct.c}
-			Our framework, at the moment, could generate some data structure for the structs.
-			\lstinputlisting{thesis-pics/struct-old.c}
-			It would be nice if our program enabled things like:
-			\lstinputlisting{thesis-pics/struct-new.c}
-	\subsection{Upper bound on the element count}
-		so we can choose between malloc and static allocation
-	\subsection{Minimal element count treshold}
-		It's worth noticing that we compare only the asymptotical complexity of data structures. Some awfully complicated structures can have good
-		asymptotical results, but the constant is quite high. We can avoid this problem by setting a treshold for each structure, what is the smallest
-		number of elements to use this data structure.
 
-		Another problem arises, how to know at compile time, how many elements a data structure will have at runtime. We can ask the user to explicitely
-		specify the number during compilation or we can try to detect how big the declared data is.
-	\subsection{Comparing a database}
-		\label{sub:database}
+			When we want to store structs like this in a data structure:
+
+			\lstinputlisting{thesis-pics/linked-struct.c}
+
+			Our framework, at the moment, could generate some data structure for this kind of structs. The
+			operation on the data structure would look like that:
+
+			\lstinputlisting{thesis-pics/struct-old.c}
+
+			But this can be achieved without using structs in our framework, we can do it like this:
+
+			\lstinputlisting{thesis-pics/struct-pointer-sizeof-reduction.c}
+
+			So it doesn't really give us any more expressiveness. It would be nice if our program enabled
+			things like comparing structs by more than one pair of coordinates in one program. We would want
+			to be able to use operations like this:
+
+			\lstinputlisting{thesis-pics/struct-new.c}
+
+			For us to achieve such thing, we need to change how we store our structures.
+
+	\subsection{Upper bound on the element count}
+
+		When analyzing the input program, we can try to get the information, if the maximum element count in the
+		data structure is bounded by some constant. If we can obtain such an information (for most programs it
+		probably will be undecidable), we can use it to enhance the data structure generated for the program.
+
+		When the element count in the data structure is potentially infinite, we have to create an
+		implementation of the structure, that allocates memory lazily, when it needs the space for new elements.
+		We can imagine that a structure can allocate one chunk on every insertion and free a chunk on every
+		deletion, or even allocate twice as big chunks and amortize the number of allocations to $O(lg n)$.
+
+		When we have the information about the element count, we can allocate the whole static buffer for the
+		data structure and this removes the whole cost of allocation during insertions and deletions.
+
+		Using the technique described in \autoref{sec:transforming-on-line} we can transform our dynamic
+		allocating data structure in a static one, if we are in a place in the program, from which we can't
+		insert any more elements. This is an example of such program:
+
+		\lstinputlisting{thesis-pics/upper-bound-transform.c}
+
+		Here after the first loop, there are no more insertions into the data structure, so we can mark this
+		spot and when we the control goes to that place, we transform the data structure into a static version
+		of it, allocating a big chunk of memory and deallocating all that was left. This way to the end of the
+		program we won't have to do any allocations.
+
+	\subsection{Minimal element count threshold}
+
+		It's worth noticing that we compare only the asymptotical complexity of data structures. Some awfully
+		complicated structures can have good asymptotical results, but the constant is quite high. We can avoid
+		this problem by setting a threshold for each structure, what is the smallest number of elements to use
+		this data structure.
+
+		Another problem arises, how to know at compile time, how many elements a data structure will have at
+		runtime. We can ask the user to explicitly specify the number during compilation or we can try to
+		detect how big the declared data is, with some kind of constant folding analysis, that checks if the
+		insertion to the data structure is in a loop that is run more times than the threshold. This is a fragile
+		solution, because not a lot of programs are easy to analyze this way.
+
+		Another solution is runtime tallying the size, and using the method of transforming data structures
+		on-line described in \autoref{sec:transforming-on-line}. When we hit a threshold for a data structure
+		with a bigger constant, but overall better fitting to our task, we transform the old one into this one.
+
 \section{Program}
+
 	\subsection{Recommendation mode}
+
 		prints recommendations
+
 	\subsection{Advice mode}
+
 		prints advice
+
 	\subsection{Compile mode}
+
 		linkes appropriate lib
 
 \end{document}
-% vim: set wrap tw=160:
+% vim: set wrap tw=120:
