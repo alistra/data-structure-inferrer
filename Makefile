@@ -31,7 +31,7 @@ doc:	${SRC}
 	git push origin gh-pages
 	git checkout master
 
-thesis:
+thesis: thesis.tex thesis-pics/*
 	rubber -d thesis.tex
 	make texclean
 

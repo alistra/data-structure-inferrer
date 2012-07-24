@@ -1,7 +1,11 @@
-#include <stdio.h>
-
-int main(int argc, char ** argv)
+int main(int argc, const char *argv[])
 {
-	printf("Hello world!\n");
-	return 0;
+	ds d;
+
+	....
+
+	search_d(d, 4, STRUCT_person_height);
+
+	max_d(d, STRUCT_person_weight;
 }
+

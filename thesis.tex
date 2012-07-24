@@ -7,18 +7,6 @@
 
 %\usepackage[]{polski}
 
-\newcommand{\lecture}[4]{\handout{#1}{#2}{#3}{#4}{#1}}
-\newcommand{\high}{\mathrm{high}}
-\newcommand{\low}{\mathrm{low}}
-
-\newtheorem{theorem}{Twierdzenie}
-\newtheorem{corollary}[theorem]{Wniosek}
-\newtheorem{lemma}[theorem]{Lemat}
-\newtheorem{observation}[theorem]{Obserwacja}
-\newtheorem{definition}[theorem]{Definicja}
-\newtheorem{fact}[theorem]{Fakt}
-\newtheorem{assumption}[theorem]{Założenie}
-
 % 1-inch margins, from fullpage.sty by H.Partl, Version 2, Dec. 15, 1988.
 \topmargin 0pt
 \advance \topmargin by -\headheight
@@ -59,6 +47,32 @@
 \vfill
 
 \section{Introduction}
+	In computer science, a data structure is a particular way of storing and organizing data in a computer so that
+	it can be used efficiently.\todo{wikipedia}
+
+	interface and implementation
+
+
+	We can distinguish a lot of different types of data stuctures:
+	\begin{itemize}
+		\item Map/Associative array/Dictionary is a data structure for storing $(key,\;value)$ pairs, it allows
+			insertion, deletion, modification and lookup
+		\item Multimap is the same as Map, but with the possibility of storing multiple values for a one key
+		\item List is a data structure for storing ordered sets of values
+		\item Set is a data structure for storing unordered sets of values
+		\item Multiset is the same as Set, but with the possibility of storing multiple objects that are equal
+			under some equivalence relation
+		\item Queue is a data structure implementing operations for enqueuing and dequeuing elements
+		\item Deque is a queue, where you can add and remove elements from both ends as opposing to one
+		\item Stack is a data structure implementing operations for putting something on the top of the stack or
+			removing the top element from it
+		\item Priority queue is like a regular queue, but each element has a priority associated with it, which
+			is used for ordered lookup of the elements
+		\item String
+		\item Tree is a data structure, to hold some tree-like hierarchical structure
+		\item Graph is a data structure, to store elements and a relation on those elements
+		\item Others, which usually are a mix of those previous ones
+	\end{itemize}
 
 	\missingfigure{Introduction here}
 	\subsection{Comparing a database} \label{sub:database}
@@ -181,8 +195,11 @@
 		\end{itemize}
 
 		\subsubsection{C API}
+			split in to dselem and ds
 
 		\subsubsection{Analysis}
+
+			graphs in graphviz
 
 \pagebreak
 
@@ -195,10 +212,12 @@
 		allow us to lookup the minimal element in $O(1)$.  What happens if we want to find the max and the min
 		element in the duration of one program?  How to modify our framework to handle this kind of situations?
 
-		$$DataStructureOperations = \{\dots, \; FindFirstExtremalElement,\\$$
-		$$ DeleteFirstExtremalElement,\\$$
-		$$ FindSecondExtremalElement,\\$$
-		$$ DeleteSecondExtremalElement, \; \dots\}.$$
+		\begin{eqnarray*}
+			DataStructureOperations = \{\dots, \; FindFirstExtremalElement,\\
+			DeleteFirstExtremalElement,\\
+			FindSecondExtremalElement,\\
+			DeleteSecondExtremalElement\}.
+		\end{eqnarray*}
 
 		Now we can add two complexity costs to the data structure definition. We can always reverse the order,
 		so the cheaper one can be used primarily, and the more expensive one in situations when we need both
@@ -213,16 +232,19 @@
 		\lstinputlisting{thesis-pics/undecidable.c}
 
 		In the above example, the best data structure is depending on the user input, which is not known at
-		compile time.
+		compile time. If we analyze it as is, it will decide basing on the information, that every operation is
+		used, so the final data structure won't be specific to the task, but just average at everything.
 
 		Also code that is not totally dependent on user input can cause problems to analyze.
 
 		\lstinputlisting{thesis-pics/weighted-instructions.c}
 
-		Here we see a very costly instruction used only once, and a few instructions run in a loop for a few
-		million times.  To anyone that knows program complexities it's obvious that this one heavy instruction
-		doesn't affect the execution time of the whole program, yet the framework at the current state treats
-		those instructions equally.
+		Here we see a very costly instruction used only once ($delete\_max\_d$), and a few instructions
+		($insert$, $search$) run in a loop for a few million times.  To anyone that knows program complexities
+		it's obvious that this one heavy instruction doesn't affect the execution time of the whole program, yet
+		the framework at the current state treats those instructions equally and will probably choose something
+		like Red-Black Trees, to minimize the time of the $delete\_max\_d$, instead of ignoring its cost and
+		using a very fast Hashtable.
 
 		\subsubsection{Code pragmas}
 
@@ -298,7 +320,37 @@
 
 	\subsection{Generic data structure modifications}
 
-		max elem cache/linked leaves/functor in ocaml
+		When searching for the most apt data structure, we need to have some kind of data structure database,
+		where we keep all the structures' metadata and implementations for the framework to use. Ideally there
+		would be a lot of different data structures there.
+
+		When implementing a data structure, one could easily modify the implementation to maybe match some rare
+		specific task, that is not needed in most cases. It would be wasteful to keep a copy of the data
+		structure for each small combination of those modifications, if we want to return a data structure
+		tailored perfectly to the task. Of course some of the modifications are very data structure specific, so
+		a generalization isn't possible, but for some cases, we can extract a piece of code, like a wrapper for
+		a data structure, that modifies its behavior in some specific way.\todo{reference okasaki}
+
+		\subsubsection{Extremal element cache}
+
+			When we want to be able to lookup extremal elements in the data structure. We don't really have
+			to know the implementation specifics of the data stucture, we only need to intercept the calls
+			which insert and delete elements. When we insert an element, we compare it to a cache variable,
+			which keeps the biggest element (if our extremal element is the maximal element) known to be in
+			the data structure. But this road also has some drawbacks, if we delete an element, and it
+			occurs that the deleted element is the current maximum, we have to find the new maximal
+			element from the rest of elements, which can be asymptoticaly more costly than the delete
+			itself.
+			\lstinputlisting{thesis-pics/elem-cache.c}
+			We notice that a lot of data strucutures already implement this pattern \todo{which ones, veb?}.
+
+		\subsubsection{Linked elements}
+
+			When we have a structure that keeps some data, to find a precedessor or a successor, it usually
+			takes $O(n)$ or $O(lg n)$ operations.  To help this we can create an overlay with a doubly
+			linked list on the elements, so our precedessor/successor lookups are $O(1)$. Drawback here is
+			that the cost of insert is increased by searching the successor to link it appropriately.
+			\lstinputlisting{thesis-pics/linked-elements.c}
 
 	\subsection{Different element types}
 
@@ -331,17 +383,23 @@
 
 			\lstinputlisting{thesis-pics/struct-old.c}
 
-			But this can be achieved without using structs in our framework, we can do it like this:
+			We use here a comparison function, that compares the heigth, we can use any function that
+			compares a coordinate or any combination of coordinates. This can be achieved without using
+			structs in our framework, we can do it like this:
 
 			\lstinputlisting{thesis-pics/struct-pointer-sizeof-reduction.c}
 
-			So it doesn't really give us any more expressiveness. It would be nice if our program enabled
-			things like comparing structs by more than one pair of coordinates in one program. We would want
-			to be able to use operations like this:
+			In the example above we dereference structs as arrays of chars, to get to any field, we just
+			take a pointer to a field in the array and cast it to the right type. So it doesn't really give
+			us any more expressiveness. It would be nice if our program enabled things like comparing
+			structs by more than one condition in one program. We would want to be able to use operations
+			like this:
 
 			\lstinputlisting{thesis-pics/struct-new.c}
 
-			For us to achieve such thing, we need to change how we store our structures.
+			For us to achieve such thing, we need to change how we choose structures for record types. First
+			we modify the $DSU()$ definition for record variables.
+			\todo{rest}
 
 	\subsection{Upper bound on the element count}
 

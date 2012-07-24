@@ -1,7 +1,6 @@
-#include <stdio.h>
-
-int main(int argc, char ** argv)
-{
-	printf("Hello world!\n");
-	return 0;
-}
+struct person {
+	int height;
+	int weight;
+	int age
+	char name[128];
+};
