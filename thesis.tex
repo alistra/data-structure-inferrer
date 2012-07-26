@@ -1,8 +1,9 @@
-\documentclass[11pt]{article}
+\documentclass[a4paper,11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[colorinlistoftodos, textwidth=2cm, shadow]{todonotes}
 \usepackage{listings}
 \usepackage[colorlinks=true,linkcolor=blue]{hyperref}
+\usepackage[section]{placeins}
 \lstset{language=C}
 
 %\usepackage[]{polski}
@@ -16,7 +17,6 @@
 \evensidemargin \oddsidemargin
 \marginparwidth 0.5in
 \textwidth 6.5in
-
 \parindent 0in
 \parskip 1.5ex
 %\renewcommand{\baselinestretch}{1.25}
@@ -26,6 +26,8 @@
 \date{\today}
 
 \begin{document}
+
+\vfill
 
 \maketitle
 
@@ -50,7 +52,11 @@
 	In computer science, a data structure is a particular way of storing and organizing data in a computer so that
 	it can be used efficiently.\todo{wikipedia}
 
-	interface and implementation
+	The interface of a data stucture is a set of operation that you can perform on a data structure and some
+	semantics of those functions.
+
+	The implementation of a data structure is a realization of some data structure interface in some programming
+	language, that is consistent with the semantics.
 
 
 	We can distinguish a lot of different types of data stuctures:
@@ -67,8 +73,8 @@
 		\item Stack is a data structure implementing operations for putting something on the top of the stack or
 			removing the top element from it
 		\item Priority queue is like a regular queue, but each element has a priority associated with it, which
-			is used for ordered lookup of the elements
-		\item String
+			is used for ordered dequeuing of the elements
+		\item String is a data structure for storing text
 		\item Tree is a data structure, to hold some tree-like hierarchical structure
 		\item Graph is a data structure, to store elements and a relation on those elements
 		\item Others, which usually are a mix of those previous ones
@@ -149,7 +155,7 @@
 		partial function from DataStructureOperations to Complexities.
 
 		When trying to find the best suited data structure for a given program $P$, we look for data structure
-		uses in $P$. Let
+		uses in $P$. Let \todo{DSU is a ds, should be [ds]}
 
 		\begin{equation}\label{dsu-type}
 			DSU(P) :: P(DataStructureOperations)
@@ -180,19 +186,23 @@
 
 	\subsection{Collecting the program data} \label{dsu-definition}
 
-		In \ref{dsu-type} the type of the $DSU()$ operation was mentioned, this section shows, how $DSU()$ is
+		In \autoref{dsu-type} the type of the $DSU()$ operation was mentioned, this section shows, how $DSU()$ is
 		defined.
 
-		$DSU(P)$ is a set sum of:
+		$DSOPS(P)$ is a set sum of:
 
-		\begin{itemize}
+		\begin{enumerate}
 
-			\item $\{(g, o) | g \texttt{ is a global data structure variable in $P$ } \wedge \\ o \texttt{
-				is an operation that is performed on g, somewhere in P} \}$
+			\item $\{(g, o)\; |\; g \texttt{ is a global data structure variable in $P$ } \wedge \\
+				o \texttt{ is an operation performed on $g$, somewhere in $P$} \}$
 
-			\item
+			\item $\{(d, o)\; |\; d \texttt{ is declared somewhere in a body of a function $f$ in $P$ } \wedge \\
+				o \texttt{ is an operation performed on $d$, somewhere in $f$ } \}$
 
-		\end{itemize}
+			\item $\{(p, o)\; |\; p \texttt{ is a formal parameter of a function $f$ in $P$ } \wedge \\
+				o \texttt{ is an operation performed on $p$, somewhere in $f$ } \}$
+
+		\end{enumerate}
 
 		\subsubsection{C API}
 			split in to dselem and ds
@@ -225,26 +235,41 @@
 
 	\subsection{Importance of operations}
 
-		Detecting the importance of a single data structure operation is an important problem,\todo{nonsense}
-		mainly because it's undecidable. This program shows that the problem of compile-time deciding on the
-		best data structure is impossible to solve.
+		Detecting the importance of a single data structure operation is an important problem, because a lot of
+		programs will fall into a class where compilation time data structure selection is undecidable. This
+		program shows that the problem of compile-time deciding on the best data structure is impossible to
+		solve.
 
-		\lstinputlisting{thesis-pics/undecidable.c}
+		\begin{figure}
+			\lstinputlisting{thesis-pics/undecidable.c}
 
-		In the above example, the best data structure is depending on the user input, which is not known at
+			\caption{An example of the problem of choosing the fastest data structure for a program being
+			undecidable, user interaction}
+
+			\label{fig:undecidable}
+		\end{figure}
+
+		In the \autoref{fig:undecidable}, the best data structure is depending on the user input, which is not known at
 		compile time. If we analyze it as is, it will decide basing on the information, that every operation is
 		used, so the final data structure won't be specific to the task, but just average at everything.
 
 		Also code that is not totally dependent on user input can cause problems to analyze.
 
-		\lstinputlisting{thesis-pics/weighted-instructions.c}
+		\begin{figure}
+			\lstinputlisting{thesis-pics/weighted-instructions.c}
 
-		Here we see a very costly instruction used only once ($delete\_max\_d$), and a few instructions
-		($insert$, $search$) run in a loop for a few million times.  To anyone that knows program complexities
-		it's obvious that this one heavy instruction doesn't affect the execution time of the whole program, yet
-		the framework at the current state treats those instructions equally and will probably choose something
-		like Red-Black Trees, to minimize the time of the $delete\_max\_d$, instead of ignoring its cost and
-		using a very fast Hashtable.
+			\caption{An example of the problem of choosing the fastest data structure for a program being
+			undecidable, no user interaction}
+
+			\label{fig:undecidable-no-user}
+		\end{figure}
+
+		In the \autoref{fig:undecidable-no-user} we see a very costly instruction used only once
+		($delete\_max\_d$), and a few instructions ($insert$, $search$) run in a loop for a few million times.
+		To anyone that knows program complexities it's obvious that this one heavy instruction doesn't affect
+		the execution time of the whole program, yet the framework at the current state treats those
+		instructions equally and will probably choose something like Red-Black Trees, to minimize the time of
+		the $delete\_max\_d$, instead of ignoring its cost and using a very fast Hashtable.
 
 		\subsubsection{Code pragmas}
 
@@ -252,7 +277,13 @@
 			code, so he decides how important an instruction is in relation to other instructions and then
 			the framework makes use of those values in choosing the data structure.
 
-			\lstinputlisting{thesis-pics/code-pragmas.c}
+			\begin{figure}
+				\lstinputlisting{thesis-pics/code-pragmas.c}
+
+				\caption{Source code with pragmas, that state the importance of the operation}
+
+				\label{fig:code-pragmas}
+			\end{figure}
 
 			In the above example programmer can add a weights to the operations, assigning very low values
 			for statements that are used rarely or for debug purposes, and very high values for crucial
@@ -260,7 +291,13 @@
 
 			There would be an API change needed.
 
-			\lstinputlisting{thesis-pics/code-pragmas-api-change.c}
+			\begin{figure}
+				\lstinputlisting{thesis-pics/code-pragmas-api-change.c}
+
+				\caption{dsinf API, using additional arguments for operation importance}
+
+				\label{fig:code-pragmas-api}
+			\end{figure}
 
 			This isn't the perfect solution, because we still need the programmer to judge which operations
 			should have high weights, but it's nice when a programmer wants to use it for debug purposes or
@@ -270,7 +307,7 @@
 
 			We need to change the algorithm for choosing the best data structure, for it to handle weights
 			to the operations in the source code. We change the type of the $DSU()$ operation from
-			\ref{dsu-type} to:
+			\autoref{dsu-type} to:
 
 			\begin{equation}
 				DSU_w(P) :: DataStructureOperations -> Int
@@ -279,7 +316,7 @@
 			This change introduces weights for operations in program $P$. We can use a partial function, or
 			just use $0$ as a value for operations that do not occur in the program. We always want to get
 			the highest weight from all the weighted operation instances in the program, so the $DSU()$
-			definition also needs a change from \ref{dsu-definition} \todo{do the equation, when you have
+			definition also needs a change from \autoref{dsu-definition} \todo{do the equation, when you have
 			the first definition}:
 
 			\begin{equation}
@@ -303,9 +340,19 @@
 			executable. Of course this won't be the best data structure possible. Then user can run the test
 			suite with code coverage option, like \emph{gcov} in GCC, turned on in the compiler.
 
-			\missingfigure{Example source code}
+			\begin{figure}
+				\lstinputlisting{thesis-pics/gcov.c}
 
-			\missingfigure{Example gcov file}
+				\centering \line(1,0){450}
+
+				\lstinputlisting{thesis-pics/gcov.c.gcov}
+
+				\caption{Example of a source code file and the .gcov file, generated by running the
+				compiled program}
+
+				\label{fig:gcov}
+			\end{figure}
+
 
 			Then the user can pass the \emph{gcov} generated files and the source code to the framework
 			again. The framework can extract line hits from the \emph{gcov} files on the data structure
@@ -337,11 +384,22 @@
 			to know the implementation specifics of the data stucture, we only need to intercept the calls
 			which insert and delete elements. When we insert an element, we compare it to a cache variable,
 			which keeps the biggest element (if our extremal element is the maximal element) known to be in
-			the data structure. But this road also has some drawbacks, if we delete an element, and it
-			occurs that the deleted element is the current maximum, we have to find the new maximal
-			element from the rest of elements, which can be asymptoticaly more costly than the delete
-			itself.
-			\lstinputlisting{thesis-pics/elem-cache.c}
+			the data structure.
+
+			But this road also has some drawbacks, if we delete an element, and it occurs that the deleted
+			element is the current maximum, we have to find the new maximal element from the rest of
+			elements, which can be asymptoticaly more costly than the delete itself.
+
+			\missingfigure{table of cost changes}
+
+			\begin{figure}
+				\lstinputlisting{thesis-pics/elem-cache.c}
+
+				\caption{An example implementation of the extremal element cache data structure wrapper}
+
+				\label{fig:elem-cache}
+			\end{figure}
+
 			We notice that a lot of data strucutures already implement this pattern \todo{which ones, veb?}.
 
 		\subsubsection{Linked elements}
@@ -350,7 +408,14 @@
 			takes $O(n)$ or $O(lg n)$ operations.  To help this we can create an overlay with a doubly
 			linked list on the elements, so our precedessor/successor lookups are $O(1)$. Drawback here is
 			that the cost of insert is increased by searching the successor to link it appropriately.
-			\lstinputlisting{thesis-pics/linked-elements.c}
+
+			\begin{figure}
+				\lstinputlisting{thesis-pics/linked-elements.c}
+
+				\caption{An example implementation of the linked elements data structure wrapper}
+
+				\label{fig:linked-cache}
+			\end{figure}
 
 	\subsection{Different element types}
 
@@ -374,28 +439,55 @@
 
 		\subsubsection{Linked data structures}
 
-			When we want to store structs like this in a data structure:
+			When we want to store structs like \autoref{fig:linked-struct} in a data structure, the
+			framework, at the moment, could generate some data structure for this kind of structs. The
+			operation on the data structure would look like on \autoref{fig:struct-old}.
 
-			\lstinputlisting{thesis-pics/linked-struct.c}
+			\begin{figure}
+				\lstinputlisting{thesis-pics/linked-struct.c}
 
-			Our framework, at the moment, could generate some data structure for this kind of structs. The
-			operation on the data structure would look like that:
+				\caption{An example record, that we want to store in a data structure}
 
-			\lstinputlisting{thesis-pics/struct-old.c}
+				\label{fig:linked-struct}
+			\end{figure}
 
-			We use here a comparison function, that compares the heigth, we can use any function that
-			compares a coordinate or any combination of coordinates. This can be achieved without using
-			structs in our framework, we can do it like this:
+			\begin{figure}
+				\lstinputlisting{thesis-pics/struct-old.c}
 
-			\lstinputlisting{thesis-pics/struct-pointer-sizeof-reduction.c}
+				\caption{Use of the dsinf calls, to perform some data structure operations with the
+				records; not very comfortable to use}
 
-			In the example above we dereference structs as arrays of chars, to get to any field, we just
-			take a pointer to a field in the array and cast it to the right type. So it doesn't really give
-			us any more expressiveness. It would be nice if our program enabled things like comparing
-			structs by more than one condition in one program. We would want to be able to use operations
-			like this:
+				\label{fig:struct-old}
+			\end{figure}
 
-			\lstinputlisting{thesis-pics/struct-new.c}
+			In \autoref{fig:struct-old} a comparison function is used, it compares the heigth. We can use
+			any function that compares a coordinate or a combination of coordinates, but only one order of
+			the elements is available per data structure. This can also be achieved without using structs at
+			all, like in \autoref{fig:struct-pointer-sizeof-reduction}.
+
+			\begin{figure}
+				\lstinputlisting{thesis-pics/struct-pointer-sizeof-reduction.c}
+
+				\caption{Encoding of the problem of having one order data structure on records in C,
+				into code using pointers}
+
+				\label{fig:struct-pointer-sizeof-reduction}
+			\end{figure}
+
+			In the \autoref{fig:struct-pointer-sizeof-reduction} above we dereference structs as arrays of
+			chars, to get to any field, we just take a pointer to a field in the array and cast it to the
+			right type. So it doesn't really give us any more expressiveness. It would be nice if our
+			program enabled things like comparing structs by more than one condition in one program. We
+			would want to be able to use operations like in \autoref{fig:struct-new}.
+
+			\begin{figure}
+				\lstinputlisting{thesis-pics/struct-new.c}
+
+				\caption{Examples of the new dsinf API, that takes different orders on structs into
+				account}
+
+				\label{fig:struct-new}
+			\end{figure}
 
 			For us to achieve such thing, we need to change how we choose structures for record types. First
 			we modify the $DSU()$ definition for record variables.
@@ -419,12 +511,19 @@
 		allocating data structure in a static one, if we are in a place in the program, from which we can't
 		insert any more elements. This is an example of such program:
 
-		\lstinputlisting{thesis-pics/upper-bound-transform.c}
+		\begin{figure}
+			\lstinputlisting{thesis-pics/upper-bound-transform.c}
 
-		Here after the first loop, there are no more insertions into the data structure, so we can mark this
-		spot and when we the control goes to that place, we transform the data structure into a static version
-		of it, allocating a big chunk of memory and deallocating all that was left. This way to the end of the
-		program we won't have to do any allocations.
+			\caption{An example showing a situation, where beneficial would be to transform a dynamic data
+			structure into a similiar structure, but with all memory statically allocated already}
+
+			\label{fig:upper-bound-transform}
+		\end{figure}
+
+		In \autoref{fig:upper-bound-transform} after the first loop, there are no more insertions into the data
+		structure, so we can mark this spot and when we the control goes to that place, we transform the data
+		structure into a static version of it, allocating a big chunk of memory and deallocating all that was
+		left. This way to the end of the program we won't have to do any allocations.
 
 	\subsection{Minimal element count threshold}
 
@@ -443,19 +542,28 @@
 		on-line described in \autoref{sec:transforming-on-line}. When we hit a threshold for a data structure
 		with a bigger constant, but overall better fitting to our task, we transform the old one into this one.
 
+		\begin{figure}
+			\lstinputlisting{thesis-pics/minimal-elem-count.c}
+
+			\caption{An example showing a situation, where beneficial would be to transform a data structure
+				into a more complex one, because the number of elements is sufficiently big, so the
+				whole transformation is profitable}
+
+			\label{fig:minimal-elem-count}
+		\end{figure}
+
+		In \autoref{fig:minimal-elem-count} \todo{what do we see}
+
 \section{Program}
 
-	\subsection{Recommendation mode}
-
-		prints recommendations
-
-	\subsection{Advice mode}
-
-		prints advice
-
-	\subsection{Compile mode}
-
-		linkes appropriate lib
-
+	The framework has a few modes of working:
+	\begin{itemize}
+		\item Recommendation mode - the framework analyzes the input files and the data structure operations in
+			them, then outputs the recommended data structure on standard output
+		\item Advice mode - the framework checks if any small change in the data structure operations would give
+			the program a speed boost
+		\item Compile mode - works as the Recommendation mode, but instead of printing the data structure to
+			standard output, it compiles the files and links it with the chosen structure implementation.
+	\end{itemize}
 \end{document}
 % vim: set wrap tw=120:
