@@ -134,82 +134,139 @@
 		operation on a splay tree. It's $O(n)$, but $O(\log n)$ amortized, so it's represented as
 		$((0,1),Amortized)$.
 
-	\subsection{Choosing the best data structure}
+	\subsection{Choosing the best data structure} \label{sec:choose-ds}
 
-		We define a set $DataStructureOperations$. We can further extend this set, but for now assume that
+		We define a set $DataStructureOperation$. We can further extend this set, but for now assume that
 
 		\begin{eqnarray}
-			DataStructureOperations = \{Insert, \; Update, \; Delete, \; FindMax,\; DeleteMax, \; \dots\}.
+			DataStructureOperation = \{Insert, \; Update, \; Delete, \; FindMax,\; DeleteMax, \; \dots\}.
 		\end{eqnarray}
 
-		Each of the $DataStructureOperations$ elements symbolizes an operation you can accomplish on a data
+		Each of the $DataStructureOperation$ elements symbolizes an operation you can accomplish on a data
 		structure.
 
 		The type
 
 		\begin{equation}\label{data-structure-type}
-			DataStructure = DataStructureOperations \rightarrow Complexity
+			DataStructure = DataStructureOperation \rightarrow Complexity
 		\end{equation}
 
-		represents a data structure and all of the operations implemented for it, with their complexities, as a
-		partial function from DataStructureOperations to Complexities.
+		represents a data structure $ds$ and all of the operations implemented for it, with their complexities, as a
+		partial function $f$ from DataStructureOperation to Complexities. It represents some implementation of a
+		data structure, where existing arguments of $f$ are the operations, which are possible to accomplish on
+		$ds$, and the value of the function represents asymptotic speed of the operation. For example in
+		\autoref{tab:rbt} presents such representation for Red-Black Trees.
+
+		\begin{table}[h!]
+			\centering
+			\begin{tabular}{|l|l|}
+				\hline
+				\multicolumn{2}{|c|}{Red-Black Trees} \\
+				\hline
+				Operation & Complexity \\
+				\hline
+				Insert 	        & $O(lg \; n)$ \\
+				Update          & $O(lg \; n)$ \\
+				Delete	        & $O(lg \; n)$ \\
+				Find Max 	& $O(lg \; n)$/$O(1)$\footnote{Depending on implementation} \\
+				Delete Max	& $O(lg \; n)$ \\
+				Search 		& $O(lg \; n)$ \\
+				Successor 	& $O(lg \; n)$/$O(1)$\footnote{Depending on implementation} \\
+				\hline
+			\end{tabular}
+			\caption{A table showing the representation of Red-Black trees}
+			\label{tab:rbt}
+		\end{table}
+
+		\todo{footnote in tabular}
 
 		When trying to find the best suited data structure for a given program $P$, we look for data structure
-		uses in $P$. Let \todo{DSU is a ds, should be [ds]}
+		uses in $P$. Let
 
 		\begin{equation}\label{dsu-type}
-			DSU(P) :: P(DataStructureOperations)
+			DSU(P) :: [P(DataStructureOperation)]
 		\end{equation}
 
-		be the set of data structure operations, that are used somewhere in the source code of $P$.
+		be a set of sets of data structure operations, that are used on one persistent data structure identity
+		somewhere in the source code of $P$.
 
-		We define a parametrized comparison operator for data structures $<_{DSU(P)}$ defined as:
+		For every $ds \in DSU(P)$, we define a parametrized comparison operator for data structures $<_{ds}$
+		defined as \todo{figurize}:
 
 		\begin{center}
 
 			\begin{equation}
-				d_1 <_{DSU(P)} d_2
+				d_1 <_{ds} d_2
 			\end{equation}
 
 			$\Updownarrow$
 
 			\begin{equation} \label{data-structure-order}
-				|\{(o, c_1) \in d_1 | o \in DSU(P) \wedge (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < 0.5 *
-				\lfloor |DSU(P)| \rfloor
+				|\{(o, c_1) \in d_1 | o \in ds \wedge (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < 0.5 *
+				\lfloor |ds| \rfloor
 			\end{equation}
 
-		\end{center} If a data structure implements more operations 'faster' than we choose that structure over
+		\end{center}
+
+		\todo{not implementing all the ops - what then?}
+
+		If a data structure implements more operations 'faster' than we choose that structure over
 		the other one.
 
-		If we fix P, we have a preorder on data structures induced by $<_{DSU(P)}$ and we can sort those data
-		structures using this order. The maximum element is the best data structure for the task.
+		For a fixed P, we have a preorder on data structures induced by $<_{ds}$ and we can sort data structures
+		available to the framework using this order. The maximum element is the best data structure
+		implementation for the persistent data structure identity.
 
 	\subsection{Collecting the program data} \label{dsu-definition}
 
 		In \autoref{dsu-type} the type of the $DSU()$ operation was mentioned, this section shows, how $DSU()$ is
 		defined.
 
-		$DSOPS(P)$ is a set sum of:
+		Let $DSOPS(P) :: [(VariableName, DataStructureOperation)]$ be a set sum of all the pairs that:
 
 		\begin{enumerate}
 
-			\item $\{(g, o)\; |\; g \texttt{ is a global data structure variable in $P$ } \wedge \\
-				o \texttt{ is an operation performed on $g$, somewhere in $P$} \}$
+			\item \label{it:global} $\{(g, o)\; |\; g \texttt{ is a global data structure variable in $P$ }
+				\wedge \\ o \texttt{ is an operation performed on $g$, somewhere in $P$ } \}$
 
-			\item $\{(d, o)\; |\; d \texttt{ is declared somewhere in a body of a function $f$ in $P$ } \wedge \\
-				o \texttt{ is an operation performed on $d$, somewhere in $f$ } \}$
+			\item \label{it:auto} $\{(d, o)\; |\; d \texttt{ is a data structure declared somewhere } \\
+				\texttt{ in a body of a function $f$ in $P$ } \wedge \\ o \texttt{ is an operation
+				performed on $d$, somewhere in $f$ } \}$
 
-			\item $\{(p, o)\; |\; p \texttt{ is a formal parameter of a function $f$ in $P$ } \wedge \\
-				o \texttt{ is an operation performed on $p$, somewhere in $f$ } \}$
+			\item \label{it:param} $\{(p, o)\; |\; p \texttt{ is a formal parameter of data structure type,}
+				\\ \texttt{of a function $f$ in $P$ } \wedge \\ o \texttt{ is an operation performed on
+				$p$, somewhere in $f$ } \}$
 
 		\end{enumerate}
 
-		\subsubsection{C API}
-			split in to dselem and ds
+		We want to group the elements in $DSOPS(P)$ to detect the persistent identities \todo{ref okasaki} of
+		data structures, meaning that in one group, there will be data structure operations conducted on one
+		data structure from its allocation, to the end of the program, counting in passing the structure as a
+		parameter to another function or copying the pointer to the structure.
 
-		\subsubsection{Analysis}
+		To group the operations:
+		\begin{itemize}
 
-			graphs in graphviz
+			\item for every two pairs $(d_1, o_1)$ and $(d_2, o_2)$ created using \autoref{it:global} or
+				\autoref{it:auto}, we put them in them in the same group
+				if $d_1 = d_2$.
+
+			\item for every pair $(p, o_1)$ that was created by using the \autoref{it:param} from function
+				$f$, which was called with the actual data structure parameter $d$, we put operations
+				on $p$ into the group of operations on $d$. For different persistent identities of data
+				structures in function calls of $f$, we don't merge all the actual parameters'
+				operations in one big group, just copy the operations to the according groups.
+
+			\item for every \todo{copy propagation}
+
+			\item for every group, we delete the same elements
+
+		\end{itemize}
+
+		List of those groups is the $DSU(P)$. After this operation, each group has operations performed on the
+		same persistent identity of a data structure. For every such group we find the best matching data
+		structure like shown in \autoref{sec:choose-ds}.
+
 
 \pagebreak
 
@@ -223,7 +280,7 @@
 		element in the duration of one program?  How to modify our framework to handle this kind of situations?
 
 		\begin{eqnarray*}
-			DataStructureOperations = \{\dots, \; FindFirstExtremalElement,\\
+			DataStructureOperation = \{\dots, \; FindFirstExtremalElement,\\
 			DeleteFirstExtremalElement,\\
 			FindSecondExtremalElement,\\
 			DeleteSecondExtremalElement\}.
@@ -271,7 +328,7 @@
 		instructions equally and will probably choose something like Red-Black Trees, to minimize the time of
 		the $delete\_max\_d$, instead of ignoring its cost and using a very fast Hashtable.
 
-		\subsubsection{Code pragmas}
+		\subsubsection{Code pragmas} \label{sec:pragmas}
 
 			A possible solution to this problem is to let the programmer add code pragmas to his source
 			code, so he decides how important an instruction is in relation to other instructions and then
@@ -303,44 +360,51 @@
 			should have high weights, but it's nice when a programmer wants to use it for debug purposes or
 			otherwise tinker with it.
 
-		\subsubsection{Choosing the best data structure with weights}
+		\subsubsection{Choosing the best data structure with weights} \label{sec:choose-weights}
 
 			We need to change the algorithm for choosing the best data structure, for it to handle weights
 			to the operations in the source code. We change the type of the $DSU()$ operation from
 			\autoref{dsu-type} to:
 
 			\begin{equation}
-				DSU_w(P) :: DataStructureOperations -> Int
+				DSU_w(P) :: [(VariableName, DataStructureOperation, Int)]
 			\end{equation}
 
-			This change introduces weights for operations in program $P$. We can use a partial function, or
-			just use $0$ as a value for operations that do not occur in the program. We always want to get
-			the highest weight from all the weighted operation instances in the program, so the $DSU()$
-			definition also needs a change from \autoref{dsu-definition} \todo{do the equation, when you have
-			the first definition}:
+			This change introduces weights for data structure operations in program $P$. We can use the
+			additional $Int$ field to store specified weight of the operation.  For operations that are used
+			multiple times, we sum the weights and the resulting sum is the value for that operation.
 
-			\begin{equation}
-				DSU_w(P) =
-			\end{equation}
+			The $DSU()$ definition needs a change from \autoref{dsu-definition}:
+
+			\begin{itemize}
+				\item Every rule in $DSOPS(P)$ now adds a triple, where the additional argument is
+					weight obtained by using a method from \autoref{sec:pragmas} or
+					\autoref{sec:pgo}
+
+				\item The last step of grouping, that removed the same elements, now sums up the weights
+					of the same operation elements and substitutes it with a new element with the
+					sum as its weight
+			\end{itemize}
 
 			We change the definition of \autoref{data-structure-order} to:
 
 			\begin{equation}
 			\end{equation}
 
-		\subsubsection{Profile-guided optimization}
+		\subsubsection{Profile-guided optimization} \label{sec:pgo}
 
 			Profile-guided optimization (PGO) is a compiler optimization technique in computer programming
 			to improve program runtime performance.  In contrast to traditional optimization techniques that
 			solely use the source code, PGO uses the results of test runs of the instrumented program to
 			optimize the final generated code \todo{reference wikipedia}.
 
-			If the user has some test data, he can run against his program, we can take advantage of that.
-			First we choose the best data structure with an unmodified method and link some library to the
+			If the user has test data, he can run against his program, we can take advantage of that.  First
+			we choose the best data structure using an unmodified method and link some library to the
 			executable. Of course this won't be the best data structure possible. Then user can run the test
-			suite with code coverage option, like \emph{gcov} in GCC, turned on in the compiler.
+			suite with code coverage option, like \emph{gcov} in GCC, turned on in the compiler. This
+			generates a file like shown in \autoref{fig:gcov}.
 
-			\begin{figure}
+			\begin{figure} \label{fig:gcov}
 				\lstinputlisting{thesis-pics/gcov.c}
 
 				\centering \line(1,0){450}
@@ -357,65 +421,14 @@
 			Then the user can pass the \emph{gcov} generated files and the source code to the framework
 			again. The framework can extract line hits from the \emph{gcov} files on the data structure
 			operations and set weights on the operations according to the extracted data and then use the
-			choosing algorithm for operations with weights.
+			choosing algorithm for operations with weights from \autoref{sec:choose-weights}.
 
 			It's a better solution than letting the user set the weights himself, but still, the data the
-			inference is based upon, comes from tests and there's no guarantee the real world data will
+			inference is based upon comes from tests and there's no guarantee the real world data will
 			match the test data.
 
 		\subsubsection{Transforming data structures on-line} \label{sec:transforming-on-line}
 
-	\subsection{Generic data structure modifications}
-
-		When searching for the most apt data structure, we need to have some kind of data structure database,
-		where we keep all the structures' metadata and implementations for the framework to use. Ideally there
-		would be a lot of different data structures there.
-
-		When implementing a data structure, one could easily modify the implementation to maybe match some rare
-		specific task, that is not needed in most cases. It would be wasteful to keep a copy of the data
-		structure for each small combination of those modifications, if we want to return a data structure
-		tailored perfectly to the task. Of course some of the modifications are very data structure specific, so
-		a generalization isn't possible, but for some cases, we can extract a piece of code, like a wrapper for
-		a data structure, that modifies its behavior in some specific way.\todo{reference okasaki}
-
-		\subsubsection{Extremal element cache}
-
-			When we want to be able to lookup extremal elements in the data structure. We don't really have
-			to know the implementation specifics of the data stucture, we only need to intercept the calls
-			which insert and delete elements. When we insert an element, we compare it to a cache variable,
-			which keeps the biggest element (if our extremal element is the maximal element) known to be in
-			the data structure.
-
-			But this road also has some drawbacks, if we delete an element, and it occurs that the deleted
-			element is the current maximum, we have to find the new maximal element from the rest of
-			elements, which can be asymptoticaly more costly than the delete itself.
-
-			\missingfigure{table of cost changes}
-
-			\begin{figure}
-				\lstinputlisting{thesis-pics/elem-cache.c}
-
-				\caption{An example implementation of the extremal element cache data structure wrapper}
-
-				\label{fig:elem-cache}
-			\end{figure}
-
-			We notice that a lot of data strucutures already implement this pattern \todo{which ones, veb?}.
-
-		\subsubsection{Linked elements}
-
-			When we have a structure that keeps some data, to find a precedessor or a successor, it usually
-			takes $O(n)$ or $O(lg n)$ operations.  To help this we can create an overlay with a doubly
-			linked list on the elements, so our precedessor/successor lookups are $O(1)$. Drawback here is
-			that the cost of insert is increased by searching the successor to link it appropriately.
-
-			\begin{figure}
-				\lstinputlisting{thesis-pics/linked-elements.c}
-
-				\caption{An example implementation of the linked elements data structure wrapper}
-
-				\label{fig:linked-cache}
-			\end{figure}
 
 	\subsection{Different element types}
 
@@ -515,7 +528,7 @@
 			\lstinputlisting{thesis-pics/upper-bound-transform.c}
 
 			\caption{An example showing a situation, where beneficial would be to transform a dynamic data
-			structure into a similiar structure, but with all memory statically allocated already}
+			structure into a similar structure, but with all memory statically allocated already}
 
 			\label{fig:upper-bound-transform}
 		\end{figure}
@@ -527,8 +540,8 @@
 
 	\subsection{Minimal element count threshold}
 
-		It's worth noticing that we compare only the asymptotical complexity of data structures. Some awfully
-		complicated structures can have good asymptotical results, but the constant is quite high. We can avoid
+		It's worth noticing that we compare only the asymptotic complexity of data structures. Some awfully
+		complicated structures can have good asymptotic results, but the constant is quite high. We can avoid
 		this problem by setting a threshold for each structure, what is the smallest number of elements to use
 		this data structure.
 
@@ -553,6 +566,63 @@
 		\end{figure}
 
 		In \autoref{fig:minimal-elem-count} \todo{what do we see}
+
+\section{Implementation}
+	\subsection{C API}
+		split in to dselem and ds
+
+
+	\subsection{Generic data structure modifications}
+
+		When searching for the most apt data structure, we need to have some kind of data structure database,
+		where we keep all the structures' metadata and implementations for the framework to use. Ideally there
+		would be a lot of different data structures there.
+
+		When implementing a data structure, one could easily modify the implementation to maybe match some rare
+		specific task, that is not needed in most cases. It would be wasteful to keep a copy of the data
+		structure for each small combination of those modifications, if we want to return a data structure
+		tailored perfectly to the task. Of course some of the modifications are very data structure specific, so
+		a generalization isn't possible, but for some cases, we can extract a piece of code, like a wrapper for
+		a data structure, that modifies its behavior in some specific way.\todo{reference okasaki}
+
+		\subsubsection{Extremal element cache}
+
+			When we want to be able to lookup extremal elements in the data structure. We don't really have
+			to know the implementation specifics of the data stucture, we only need to intercept the calls
+			which insert and delete elements. When we insert an element, we compare it to a cache variable,
+			which keeps the biggest element (if our extremal element is the maximal element) known to be in
+			the data structure.
+
+			But this road also has some drawbacks, if we delete an element, and it occurs that the deleted
+			element is the current maximum, we have to find the new maximal element from the rest of
+			elements, which can be asymptoticaly more costly than the delete itself.
+
+			\missingfigure{table of cost changes}
+
+			\begin{figure}
+				\lstinputlisting{thesis-pics/elem-cache.c}
+
+				\caption{An example implementation of the extremal element cache data structure wrapper}
+
+				\label{fig:elem-cache}
+			\end{figure}
+
+			We notice that a lot of data strucutures already implement this pattern \todo{which ones, veb?}.
+
+		\subsubsection{Linked elements}
+
+			When we have a structure that keeps some data, to find a precedessor or a successor, it usually
+			takes $O(n)$ or $O(lg n)$ operations.  To help this we can create an overlay with a doubly
+			linked list on the elements, so our precedessor/successor lookups are $O(1)$. Drawback here is
+			that the cost of insert is increased by searching the successor to link it appropriately.
+
+			\begin{figure}
+				\lstinputlisting{thesis-pics/linked-elements.c}
+
+				\caption{An example implementation of the linked elements data structure wrapper}
+
+				\label{fig:linked-cache}
+			\end{figure}
 
 \section{Program}
 
