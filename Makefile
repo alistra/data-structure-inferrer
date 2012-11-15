@@ -33,14 +33,13 @@ doc:	${SRC}
 
 thesis: thesis.tex thesis-pics/*
 	rubber -d thesis.tex
-	make texclean
+	rubber --clean thesis.tex
+	-chgrp jenkins thesis.pdf > /dev/null
+	-chmod 775 thesis.pdf > /dev/null
 
-clean:	texclean
+clean:
 	rm -f Il/Lexer.hs Il/Parser.hs
 	rm -f *.o *.hi C/*.o C/*.hi Defs/*.o Defs/*.hi
-
-texclean:
-	rm -f thesis.aux thesis.log thesis.toc thesis.out
 
 binclean: clean
 	rm -f dsinf

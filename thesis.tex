@@ -33,12 +33,12 @@
 
 \begin{abstract}
 
-	When you need to store data, \todo{Connect the parts of the sentence} most of popular languages today already
-	have libraries with all the important data structures implemented.  Programmers just have to be taught when to
-	use them.  Some of the cases of choosing the right data structure look sufficiently easy, so a computer could do
-	it automatically. This work describes the \emph{dsinf} project, a framework for inferring the best data
-	structure matching your task, based on the program's source code in C language. \missingfigure{ result,
-	conclusion, http://www.ece.cmu.edu/~koopman/essays/abstract.html}
+	When you need to store data in a data structure, most of popular languages today already
+	have libraries with convinience data structures implemented. Programmers just have to be taught when to
+	use a data structure. Some of the cases of choosing the right data structure look sufficiently easy,
+	so a program could do it automatically. This work describes the \emph{dsinf} project, a framework for
+	inferring the best data structure matching the task, based on the program's source code in C language.
+	\missingfigure{ result, conclusion, http://www.ece.cmu.edu/~koopman/essays/abstract.html}
 
 \end{abstract}
 
@@ -50,14 +50,13 @@
 
 \section{Introduction}
 	In computer science, a data structure is a particular way of storing and organizing data in a computer so that
-	it can be used efficiently.\todo{wikipedia}
+	it can be used efficiently\cite{Wi}.
 
 	The interface of a data stucture is a set of operation that you can perform on a data structure and some
 	semantics of those functions.
 
 	The implementation of a data structure is a realization of some data structure interface in some programming
 	language, that is consistent with the semantics.
-
 
 	We can distinguish a lot of different types of data stuctures:
 	\begin{itemize}
@@ -81,8 +80,20 @@
 	\end{itemize}
 
 	\missingfigure{Introduction here}
-	\subsection{Comparing a database} \label{sub:database}
-
+	\subsection{Comparing to a database} \label{sub:database}
+		The main difference between dsinf and a database is that a database has to implement all the operations
+		for all the possible SQL queries, including some crosschecks, counting, summations, extremal elements
+		and with dsinf your data structure implementation doesn't have to be ready for all the possible SQL
+		queries that can be constructed, but only the ones you used in your source code, which enables it to
+		potentially gain some performance over a database.
+	\subsection{Comparing to class clusters} \label{sub:classcluster}
+		A class cluster is an architecture that groups a number of private, concrete subclasses under a public,
+		abstract superclass. The grouping of classes in this way provides a simplified interface to the user,
+		who sees only the publicly visible architecture. Behind the scenes, though, the abstract class is
+		calling up the private subclass most suited for performing a particular task\cite{AppleCC}. One could
+		have an object representing e.g. an array, and have a lot of different private implementations for it, like
+		large, sparse arrays, or arrays with sizes known at compile time and optimize operations for those
+		cases.
 \section{Data structure inference}
 
 	\subsection{Comparison of the complexities}
@@ -635,5 +646,12 @@
 		\item Compile mode - works as the Recommendation mode, but instead of printing the data structure to
 			standard output, it compiles the files and links it with the chosen structure implementation.
 	\end{itemize}
+
+\begin{thebibliography}{9}
+	\bibitem{Wi} http://en.wikipedia.org/
+	\bibitem{AppleCC} https://developer.apple.com/library/mac/\#documentation/General/Conceptual/DevPedia-CocoaCore/ClassCluster.html
+\end{thebibliography}
+
+
 \end{document}
 % vim: set wrap tw=120:
