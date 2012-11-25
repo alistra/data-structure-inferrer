@@ -79,7 +79,7 @@ stupidMerge (dsi:dsis) = let (same, different) = partition (\dsi' -> getDSINames
 stupidMerge [] = []
 
 -- | Merges the simple 'DSInfo's based on function calls from the functions
-analyzeFunctions ::[DSFun t] -> [DSInfo]
+analyzeFunctions :: FunctionName -> [DSFun t] -> [DSInfo]
 analyzeFunctions startingFunction dsfs = let startingDSF = lookupDSF dsfs startingFunction in
     let functions = map getDSFFun dsfs in
     let startingVars = map snd $ concatMap getDSINames $ getDSFDSI startingDSF in

@@ -6,6 +6,7 @@ LEXPAR=Il/Lexer.hs Il/Parser.hs
 CDOPTS=-package-conf cabal-dev/packages-7.2.2.conf
 
 dsinf:  ${SRC}
+	cabal-dev configure
 	cabal-dev build
 	install -m755 dist/build/dsinf/dsinf .
 
@@ -34,8 +35,6 @@ doc:	${SRC}
 thesis: thesis.tex thesis-pics/*
 	rubber -d thesis.tex
 	rubber --clean thesis.tex
-	-chgrp jenkins thesis.pdf > /dev/null
-	-chmod 775 thesis.pdf > /dev/null
 
 clean:
 	rm -f Il/Lexer.hs Il/Parser.hs

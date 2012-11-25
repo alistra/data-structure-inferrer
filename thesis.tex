@@ -48,7 +48,7 @@
 
 \vfill
 
-\section{Introduction}
+\section{Introduction} \label{sec:intro}
 	In computer science, a data structure is a particular way of storing and organizing data in a computer so that
 	it can be used efficiently\cite{Wi}.
 
@@ -79,13 +79,37 @@
 		\item Others, which usually are a mix of those previous ones
 	\end{itemize}
 
-	\missingfigure{Introduction here}
+	\subsection{What is dsinf?} \label{sub:intro}
+
+		dsinf is a source code analyzer. It works by analyzing specially prepared C code, that C code for every
+		instance of a data structure uses a type defined in the dsinf library, we will call the type a data
+		structure wildcard. The type represents a data structure with the most general interface, i.e. a set sum
+		of interfaces of all data structures available in the dsinf framework. It connects the data structures
+		and operations performed on them and then reasons about which of the available data structure
+		implementations would be best for the instances of data structure wildcards in your code, finally (if
+		possible) chosing the best matches and printing them out or linking them to your code to create a
+		working binary.
+
+		The analysis now works after preprocessing, before the actual compilation. In the future it can be
+		pushed to the phase between compilation and linking as described in \autoref{sec:future}.
+
+		The analysis process uses asymptotical complexity for data structure comparison. The process can also be
+		modified by providing some source code annotations or you can use test data to tailor your data
+		structure as described in \autoref{sub:importance}.
+
+		The idea of the framework is to provide a data structure, that when used is always good enough. Due to
+		unsolvability of the general case of the problem, the effect always will be worse than a hand tailored
+		data structure to your task, but can save up some time (both programming time and execution time) if we
+		need to write something fast. To reiterate, using dsinf for the most critical bottleneck of your
+		application probably isn't a good idea.
+
 	\subsection{Comparing to a database} \label{sub:database}
 		The main difference between dsinf and a database is that a database has to implement all the operations
 		for all the possible SQL queries, including some crosschecks, counting, summations, extremal elements
 		and with dsinf your data structure implementation doesn't have to be ready for all the possible SQL
 		queries that can be constructed, but only the ones you used in your source code, which enables it to
 		potentially gain some performance over a database.
+
 	\subsection{Comparing to class clusters} \label{sub:classcluster}
 		A class cluster is an architecture that groups a number of private, concrete subclasses under a public,
 		abstract superclass. The grouping of classes in this way provides a simplified interface to the user,
@@ -93,7 +117,10 @@
 		calling up the private subclass most suited for performing a particular task\cite{AppleCC}. One could
 		have an object representing e.g. an array, and have a lot of different private implementations for it, like
 		large, sparse arrays, or arrays with sizes known at compile time and optimize operations for those
-		cases.
+		cases. The downside of such method is that you can alternate between the data structure representations
+		that need a lot of time to transform into each other. dsinf knows exactly what operations can occur and
+		tailors the data structure to the operations that will happen.
+
 \section{Data structure inference}
 
 	\subsection{Comparison of the complexities}
@@ -179,17 +206,16 @@
 				Insert 	        & $O(lg \; n)$ \\
 				Update          & $O(lg \; n)$ \\
 				Delete	        & $O(lg \; n)$ \\
-				Find Max 	& $O(lg \; n)$/$O(1)$\footnote{Depending on implementation} \\
+				Find Max 	& $O(lg \; n)$/$O(1)$\\
 				Delete Max	& $O(lg \; n)$ \\
 				Search 		& $O(lg \; n)$ \\
-				Successor 	& $O(lg \; n)$/$O(1)$\footnote{Depending on implementation} \\
+				Successor 	& $O(lg \; n)$/$O(1)$\\
 				\hline
 			\end{tabular}
-			\caption{A table showing the representation of Red-Black trees}
+			\caption{A table showing the representation of Red-Black trees; complexity varies on
+			implementation, more in \autoref{sub:gdsm}}
 			\label{tab:rbt}
 		\end{table}
-
-		\todo{footnote in tabular}
 
 		When trying to find the best suited data structure for a given program $P$, we look for data structure
 		uses in $P$. Let
@@ -202,7 +228,7 @@
 		somewhere in the source code of $P$.
 
 		For every $ds \in DSU(P)$, we define a parametrized comparison operator for data structures $<_{ds}$
-		defined as \todo{figurize}:
+		defined as:
 
 		\begin{center}
 
@@ -219,7 +245,8 @@
 
 		\end{center}
 
-		\todo{not implementing all the ops - what then?}
+		The equation doesn't take into account the data structures that don't implement the needed operations,
+		we discard them first.
 
 		If a data structure implements more operations 'faster' than we choose that structure over
 		the other one.
@@ -301,7 +328,7 @@
 		so the cheaper one can be used primarily, and the more expensive one in situations when we need both
 		types of extremal elements.
 
-	\subsection{Importance of operations}
+	\subsection{Importance of operations} \label{sub:importance}
 
 		Detecting the importance of a single data structure operation is an important problem, because a lot of
 		programs will fall into a class where compilation time data structure selection is undecidable. This
@@ -583,7 +610,7 @@
 		split in to dselem and ds
 
 
-	\subsection{Generic data structure modifications}
+	\subsection{Generic data structure modifications} \label{sub:gdsm}
 
 		When searching for the most apt data structure, we need to have some kind of data structure database,
 		where we keep all the structures' metadata and implementations for the framework to use. Ideally there
@@ -646,6 +673,14 @@
 		\item Compile mode - works as the Recommendation mode, but instead of printing the data structure to
 			standard output, it compiles the files and links it with the chosen structure implementation.
 	\end{itemize}
+
+\section{Future work} \label{sec:future}
+	It may be a good idea to rewrite the framework to analyze LLVM IR internally, instead of the C language AST. This
+	could yield better results because of the optimizations that compiler can apply to the initial code, like
+	removing unnecesary calls to data structure operations, so the framework can infer the data structure based on
+	the optimized code. LLVM also enables a link-time optimization, so after linking the chosen data structure
+	to a program, another optimization step is performed. Also analyzing LLVM IR is easier that analyzing
+	the C language.
 
 \begin{thebibliography}{9}
 	\bibitem{Wi} http://en.wikipedia.org/

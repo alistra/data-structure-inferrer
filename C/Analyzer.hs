@@ -54,9 +54,9 @@ getType declSpecs = let (_,_,_,specs,_) = partitionDeclSpecs declSpecs in
         then error $ show specs -- >:D
         else head specs
 
--- | Get a list of pairs: argument, type, of a function
+-- | Get a list of pairs: argument, type, of a function --TODO [] ??
 getArgsWithTypes :: CDeclr -> [(VariableName, CTypeSpec)]
-getArgsWithTypes (CDeclr _ [CFunDeclr eidsdecls _ _] _ _ _) = either (error "report the source code example") () eidsdecls
+getArgsWithTypes (CDeclr _ [CFunDeclr eidsdecls _ _] _ _ _) = either (error "report the source code example") ([]) eidsdecls
 getArgsWithTypes _ = error "not CFunDeclr"
 
 analyzeCTranslUnit :: CTranslUnit -> TermAnalyzer [Either Output (DSFun CTypeSpec)] --TODO add global variables here

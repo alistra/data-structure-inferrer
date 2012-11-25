@@ -100,7 +100,7 @@ main = do
                     AAdvice ->           mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printAdviceFromAnalysis output) files
                     ADefaultRecommend -> mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printRecommendationFromAnalysis output) files
                     ARecommend ->        mapM_ (\f -> output (f ++ ":\n") >> analyzeC f >>= printRecommendationFromAnalysis output) files
-                    ACompile -> compile files ccopts >> return ()
+                    ACompile -> void $ compile files ccopts
                     AInline -> hPutStrLn stderr "Not implemented yet"
             exitSuccess
 
