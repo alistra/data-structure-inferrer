@@ -34,7 +34,7 @@
 \begin{abstract}
 
 	When you need to store data in a data structure, most of popular languages today already
-	have libraries with convinience data structures implemented. Programmers just have to be taught when to
+	have libraries with convenience data structures implemented. Programmers just have to be taught when to
 	use a data structure. Some of the cases of choosing the right data structure look sufficiently easy,
 	so a program could do it automatically. This work describes the \emph{dsinf} project, a framework for
 	inferring the best data structure matching the task, based on the program's source code in C language.
@@ -52,13 +52,13 @@
 	In computer science, a data structure is a particular way of storing and organizing data in a computer so that
 	it can be used efficiently\cite{Wi}.
 
-	The interface of a data stucture is a set of operation that you can perform on a data structure and some
-	semantics of those functions.
+	The interface of a data structure is a set of operation that you can perform on a data structure and some
+	semantics of those operations.
 
 	The implementation of a data structure is a realization of some data structure interface in some programming
 	language, that is consistent with the semantics.
 
-	We can distinguish a lot of different types of data stuctures:
+	We can distinguish a lot of different types of data structures:
 	\begin{itemize}
 		\item Map/Associative array/Dictionary is a data structure for storing $(key,\;value)$ pairs, it allows
 			insertion, deletion, modification and lookup
@@ -67,7 +67,7 @@
 		\item Set is a data structure for storing unordered sets of values
 		\item Multiset is the same as Set, but with the possibility of storing multiple objects that are equal
 			under some equivalence relation
-		\item Queue is a data structure implementing operations for enqueuing and dequeuing elements
+		\item Queue is a data structure implementing operations for queuing and dequeuing elements
 		\item Deque is a queue, where you can add and remove elements from both ends as opposing to one
 		\item Stack is a data structure implementing operations for putting something on the top of the stack or
 			removing the top element from it
@@ -79,6 +79,9 @@
 		\item Others, which usually are a mix of those previous ones
 	\end{itemize}
 
+	The different implementation of those data structures make it possible, that specific operations run time is
+	lower than the others, so we can't use one data structure, for all the tasks.
+
 	\subsection{What is dsinf?} \label{sub:intro}
 
 		dsinf is a source code analyzer. It works by analyzing specially prepared C code, that C code for every
@@ -87,13 +90,13 @@
 		of interfaces of all data structures available in the dsinf framework. It connects the data structures
 		and operations performed on them and then reasons about which of the available data structure
 		implementations would be best for the instances of data structure wildcards in your code, finally (if
-		possible) chosing the best matches and printing them out or linking them to your code to create a
+		possible) choosing the best matches and printing them out or linking them to your code to create a
 		working binary.
 
 		The analysis now works after preprocessing, before the actual compilation. In the future it can be
 		pushed to the phase between compilation and linking as described in \autoref{sec:future}.
 
-		The analysis process uses asymptotical complexity for data structure comparison. The process can also be
+		The analysis process uses asymptotic complexity for data structure comparison. The process can also be
 		modified by providing some source code annotations or you can use test data to tailor your data
 		structure as described in \autoref{sub:importance}.
 
@@ -125,12 +128,13 @@
 
 	\subsection{Comparison of the complexities}
 
-		When trying to define some kind of ordering on data structures - so we can decide which is best at the
-		moment - we encounter a problem.  We want to compare the asymptotical complexities of operations on data
-		structures.  We can't do it for the general case, because it's too complicated, because an arbitrary
-		function can describe the complexity of an operation.
+		If we want to find the best possible data structure for a task, we have to define some kind of ordering
+		on the data structures, so we can judge which structures are better than others.  We want to compare the
+		asymptotic complexities of operations on data structures. When trying to define such ordering, we
+		encounter a problem.  We can't do it for the general case, because an arbitrary function can describe
+		the complexity of an operation and a comparison of asymptotic complexities is complicated.
 
-		Asymptotical complexity of an operation we store as a pair of type:
+		Asymptotic complexity of an operation we store as a pair of type:
 
 		\begin{eqnarray}
 			AsymptoticalComplexity = Int \times Int,
@@ -167,6 +171,13 @@
 		\end{eqnarray}
 
 		and that $<$ is transitive.
+
+		The ordering is done in such way, because normal complexity of $O(f(n))$ guarantees that no operation
+		will exceed that time multiplied by a constant. Amortized is worse, because here, we can only guarantee
+		that $n$ consecutive operations will have the average time $O(f(n))$, but single operations can spike
+		heavily. Expected is worse than amortized, because here we can only have some probability of achieving
+		the mentioned complexity for an operation and there's no bound on the number of spikes, which were under
+		control in an amortized complexity.
 
 		We also always choose the smallest asymptotic-complexity-wise complexity.  For example, we have a search
 		operation on a splay tree. It's $O(n)$, but $O(\log n)$ amortized, so it's represented as
@@ -279,7 +290,7 @@
 
 		We want to group the elements in $DSOPS(P)$ to detect the persistent identities \todo{ref okasaki} of
 		data structures, meaning that in one group, there will be data structure operations conducted on one
-		data structure from its allocation, to the end of the program, counting in passing the structure as a
+		data structure from its allocation, to deallocation or the end of the program, counting in passing the structure as a
 		parameter to another function or copying the pointer to the structure.
 
 		To group the operations:
@@ -293,7 +304,8 @@
 				$f$, which was called with the actual data structure parameter $d$, we put operations
 				on $p$ into the group of operations on $d$. For different persistent identities of data
 				structures in function calls of $f$, we don't merge all the actual parameters'
-				operations in one big group, just copy the operations to the according groups.
+				operations in one big group, just copy the operations to the according
+				groups.\todo{example}
 
 			\item for every \todo{copy propagation}
 
@@ -511,7 +523,7 @@
 				\label{fig:struct-old}
 			\end{figure}
 
-			In \autoref{fig:struct-old} a comparison function is used, it compares the heigth. We can use
+			In \autoref{fig:struct-old} a comparison function is used, it compares the height. We can use
 			any function that compares a coordinate or a combination of coordinates, but only one order of
 			the elements is available per data structure. This can also be achieved without using structs at
 			all, like in \autoref{fig:struct-pointer-sizeof-reduction}.
@@ -626,14 +638,14 @@
 		\subsubsection{Extremal element cache}
 
 			When we want to be able to lookup extremal elements in the data structure. We don't really have
-			to know the implementation specifics of the data stucture, we only need to intercept the calls
+			to know the implementation specifics of the data structure, we only need to intercept the calls
 			which insert and delete elements. When we insert an element, we compare it to a cache variable,
 			which keeps the biggest element (if our extremal element is the maximal element) known to be in
 			the data structure.
 
 			But this road also has some drawbacks, if we delete an element, and it occurs that the deleted
 			element is the current maximum, we have to find the new maximal element from the rest of
-			elements, which can be asymptoticaly more costly than the delete itself.
+			elements, which can be asymptoticly more costly than the delete itself.
 
 			\missingfigure{table of cost changes}
 
@@ -645,13 +657,13 @@
 				\label{fig:elem-cache}
 			\end{figure}
 
-			We notice that a lot of data strucutures already implement this pattern \todo{which ones, veb?}.
+			We notice that a lot of data structures already implement this pattern \todo{which ones, veb?}.
 
 		\subsubsection{Linked elements}
 
-			When we have a structure that keeps some data, to find a precedessor or a successor, it usually
+			When we have a structure that keeps some data, to find a predecessor or a successor, it usually
 			takes $O(n)$ or $O(lg n)$ operations.  To help this we can create an overlay with a doubly
-			linked list on the elements, so our precedessor/successor lookups are $O(1)$. Drawback here is
+			linked list on the elements, so our predecessor/successor lookups are $O(1)$. Drawback here is
 			that the cost of insert is increased by searching the successor to link it appropriately.
 
 			\begin{figure}
@@ -677,7 +689,7 @@
 \section{Future work} \label{sec:future}
 	It may be a good idea to rewrite the framework to analyze LLVM IR internally, instead of the C language AST. This
 	could yield better results because of the optimizations that compiler can apply to the initial code, like
-	removing unnecesary calls to data structure operations, so the framework can infer the data structure based on
+	removing unnecessary calls to data structure operations, so the framework can infer the data structure based on
 	the optimized code. LLVM also enables a link-time optimization, so after linking the chosen data structure
 	to a program, another optimization step is performed. Also analyzing LLVM IR is easier that analyzing
 	the C language.

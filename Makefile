@@ -6,6 +6,7 @@ LEXPAR=Il/Lexer.hs Il/Parser.hs
 CDOPTS=-package-conf cabal-dev/packages-7.2.2.conf
 
 dsinf:  ${SRC}
+	cabal-dev install --only-dependencies
 	cabal-dev configure
 	cabal-dev build
 	install -m755 dist/build/dsinf/dsinf .
