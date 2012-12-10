@@ -277,18 +277,40 @@
 
 			\item \label{it:global} $\{(g, o)\; |\; g \texttt{ is a global data structure variable in $P$ }
 				\wedge \\ o \texttt{ is an operation performed on $g$, somewhere in $P$ } \}$
+				\begin{figure}
+					\lstinputlisting{thesis-pics/collecting_global.c}
+
+					\caption{An example of using the global variables collection rule}
+
+					\label{fig:undecidable-no-user}
+				\end{figure}
 
 			\item \label{it:auto} $\{(d, o)\; |\; d \texttt{ is a data structure declared somewhere } \\
 				\texttt{ in a body of a function $f$ in $P$ } \wedge \\ o \texttt{ is an operation
 				performed on $d$, somewhere in $f$ } \}$
+				\begin{figure}
+					\lstinputlisting{thesis-pics/collecting_declared.c}
+					\caption{An example of using the declared variables collection rule}
+
+					\label{fig:undecidable-no-user}
+				\end{figure}
 
 			\item \label{it:param} $\{(p, o)\; |\; p \texttt{ is a formal parameter of data structure type,}
 				\\ \texttt{of a function $f$ in $P$ } \wedge \\ o \texttt{ is an operation performed on
 				$p$, somewhere in $f$ } \}$
+				\begin{figure}
+					\lstinputlisting{thesis-pics/collecting_function.c}
+
+					\caption{An example of using the function parameters collection rule}
+
+					\label{fig:undecidable-no-user}
+				\end{figure}
 
 		\end{enumerate}
 
-		We want to group the elements in $DSOPS(P)$ to detect the persistent identities \todo{ref okasaki} of
+		\missingfigure{code examples}
+
+		We want to group the elements in $DSOPS(P)$ to detect the persistent identities \cite{Okasaki} of
 		data structures, meaning that in one group, there will be data structure operations conducted on one
 		data structure from its allocation, to deallocation or the end of the program, counting in passing the structure as a
 		parameter to another function or copying the pointer to the structure.
@@ -687,16 +709,20 @@
 	\end{itemize}
 
 \section{Future work} \label{sec:future}
-	It may be a good idea to rewrite the framework to analyze LLVM IR internally, instead of the C language AST. This
-	could yield better results because of the optimizations that compiler can apply to the initial code, like
-	removing unnecessary calls to data structure operations, so the framework can infer the data structure based on
-	the optimized code. LLVM also enables a link-time optimization, so after linking the chosen data structure
-	to a program, another optimization step is performed. Also analyzing LLVM IR is easier that analyzing
-	the C language.
+	It may be a good idea to rewrite the framework to analyze LLVM\cite{LLVM} IR internally, instead of the C
+	language AST.  This could yield better results because of the optimizations that clang\cite{Clang} can apply to
+	the initial code, like removing unnecessary calls to data structure operations, so the framework can infer the
+	data structure based on the optimized code. LLVM also enables a link-time optimization, so after linking the
+	chosen data structure to a program, another optimization step is performed. Also analyzing LLVM IR is easier
+	that analyzing the C language.
 
 \begin{thebibliography}{9}
-	\bibitem{Wi} http://en.wikipedia.org/
-	\bibitem{AppleCC} https://developer.apple.com/library/mac/\#documentation/General/Conceptual/DevPedia-CocoaCore/ClassCluster.html
+	\bibitem{Wi} Wikipedia - http://en.wikipedia.org/
+	\bibitem{LLVM} The LLVM Compiler Infrastructure - http://llvm.org/
+	\bibitem{Okasaki} Purely Functional Data Structures - Chris Okasaki
+	\bibitem{Clang} clang: a C language family frontend for LLVM - http://clang.llvm.org/
+	\bibitem{AppleCC} Cocoa Core Competencies - Class Clusters - \\
+		https://developer.apple.com/library/mac/\#documentation/General/Conceptual/DevPedia-CocoaCore/ClassCluster.html
 \end{thebibliography}
 
 
