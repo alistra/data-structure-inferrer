@@ -231,7 +231,7 @@
 		When trying to find the best suited data structure for a given program $P$, we look for data structure
 		uses in $P$. Let
 
-		\begin{equation}\label{dsu-type}
+		\begin{equation} \label{dsu-type}
 			DSU(P) :: [P(DataStructureOperation)]
 		\end{equation}
 
@@ -269,46 +269,49 @@
 	\subsection{Collecting the program data} \label{dsu-definition}
 
 		In \autoref{dsu-type} the type of the $DSU()$ operation was mentioned, this section shows, how $DSU()$ is
-		defined.
+		defined. We're not considering the problem of 2 different variables having the same name and/or shadowing each
+        other, to evade this we can just rename each variable to an UUID, and then remember the mapping for nicer
+        output.
 
 		Let $DSOPS(P) :: [(VariableName, DataStructureOperation)]$ be a set sum of all the pairs that:
-
 		\begin{enumerate}
 
 			\item \label{it:global} $\{(g, o)\; |\; g \texttt{ is a global data structure variable in $P$ }
 				\wedge \\ o \texttt{ is an operation performed on $g$, somewhere in $P$ } \}$
-				\begin{figure}
-					\lstinputlisting{thesis-pics/collecting_global.c}
-
-					\caption{An example of using the global variables collection rule}
-
-					\label{fig:undecidable-no-user}
-				\end{figure}
 
 			\item \label{it:auto} $\{(d, o)\; |\; d \texttt{ is a data structure declared somewhere } \\
 				\texttt{ in a body of a function $f$ in $P$ } \wedge \\ o \texttt{ is an operation
 				performed on $d$, somewhere in $f$ } \}$
-				\begin{figure}
-					\lstinputlisting{thesis-pics/collecting_declared.c}
-					\caption{An example of using the declared variables collection rule}
-
-					\label{fig:undecidable-no-user}
-				\end{figure}
 
 			\item \label{it:param} $\{(p, o)\; |\; p \texttt{ is a formal parameter of data structure type,}
 				\\ \texttt{of a function $f$ in $P$ } \wedge \\ o \texttt{ is an operation performed on
 				$p$, somewhere in $f$ } \}$
-				\begin{figure}
-					\lstinputlisting{thesis-pics/collecting_function.c}
-
-					\caption{An example of using the function parameters collection rule}
-
-					\label{fig:undecidable-no-user}
-				\end{figure}
 
 		\end{enumerate}
 
-		\missingfigure{code examples}
+        \begin{figure}[h]
+            \lstinputlisting{thesis-pics/collecting_global.c}
+
+            \caption{An example of using the global variables collection rule}
+
+            \label{fig:global-collection-rule}
+        \end{figure}
+        \begin{figure}[h]
+            \lstinputlisting{thesis-pics/collecting_declared.c}
+            \caption{An example of using the declared variables collection rule}
+
+            \label{fig:declared-collection-rule}
+        \end{figure}
+        \begin{figure}[h]
+            \lstinputlisting{thesis-pics/collecting_function.c}
+
+            \caption{An example of using the function parameters collection rule}
+
+            \label{fig:parameter-collection-rule}
+        \end{figure}
+
+        \clearpage
+
 
 		We want to group the elements in $DSOPS(P)$ to detect the persistent identities \cite{Okasaki} of
 		data structures, meaning that in one group, there will be data structure operations conducted on one
@@ -318,22 +321,31 @@
 		To group the operations:
 		\begin{itemize}
 
-			\item for every two pairs $(d_1, o_1)$ and $(d_2, o_2)$ created using \autoref{it:global} or
-				\autoref{it:auto}, we put them in them in the same group
-				if $d_1 = d_2$.
+            \item \textbf{Persistent Identities} - for every two pairs $(d_1, o_1)$ and $(d_2, o_2)$ created using
+                \autoref{it:global} or \autoref{it:auto}, we put them in the same group if $d_1 = d_2$.
 
-			\item for every pair $(p, o_1)$ that was created by using the \autoref{it:param} from function
-				$f$, which was called with the actual data structure parameter $d$, we put operations
-				on $p$ into the group of operations on $d$. For different persistent identities of data
-				structures in function calls of $f$, we don't merge all the actual parameters'
-				operations in one big group, just copy the operations to the according
-				groups.\todo{example}
+            \item \textbf{Function calls} - for every pair $(p, o_1)$ that was created by using the \autoref{it:param}
+                from function $f$, which was called with the actual data structure parameter $d$ as the formal parameter
+                $p$, we put $o_1$ into the group of operations on $d$. For different persistent identities of data
+                structures in function calls of $f$, we don't merge all the actual parameters' operations in one big
+                group, just copy the operations to the according groups.
 
-			\item for every \todo{copy propagation}
+            \item \textbf{Copy propagation} - for every $(do, o_1)$ and $(dc, o_2)$, where the $dc$ variable was
+                obtained by copying the value of the variable $do$, we put $o_1$ and $o_2$ in the same group.
 
-			\item for every group, we delete the same elements
+            \item \textbf{Uniqueness} - for every group, we delete repeating elements
 
 		\end{itemize}
+
+        \begin{figure}[h]
+            \lstinputlisting{thesis-pics/function-call-grouping.c}
+
+            \caption{An example of using the function call grouping rule}
+
+            \label{fig:function-call-grouping}
+        \end{figure}
+
+        \clearpage
 
 		List of those groups is the $DSU(P)$. After this operation, each group has operations performed on the
 		same persistent identity of a data structure. For every such group we find the best matching data
