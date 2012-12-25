@@ -1,4 +1,14 @@
+env:
+ global:
+   - "ARTIFACTS_S3_BUCKET=alistra-thesis"
+   - secure: "Tozg82OkZV88/nhdf/fTL/M5v59t6YHNS0KBywufeS8PgvRB3OC/zbb+iSzA\nokyik/qpA4eJIYMIGK5vm0RU3d8hOdHG6VIl8nI6YMkNv4qauqyMVQ4k2e5z\n+uojB3yOsSi8Sr2pO2aEahOyth/C4+JvC/Jhj25sNDxMUiRz3mI="
+   - secure: "Yp8zWIlygo5ctmEYBZOFZFCBYhrXR0QjDB9SGrylmg5Y6YKS9Kv0ed9FlIcE\nsr5PXbDLDZHPCHVgrKghWD/u0xRhxBbJhQVMvowkF1vAuaMZ9Wnkcztw8vCe\nsq/pHpcB2+kWE4az8GqDVdUlhJt8c+WMUZtvxPy9EUHPRwuYLYs="
+
 before_install:
  - sudo apt-get install rubber
  - sudo apt-get install texlive-latex-extra
+before_script:
+ - gem install travis-artifacts
+after_success: # and this only on success
+ - travis-artifacts upload thesis.pdf
 script: "make thesis"
