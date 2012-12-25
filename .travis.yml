@@ -12,5 +12,5 @@ before_script:
  - gem install travis-artifacts
 after_success:
  - travis-artifacts upload --path thesis.pdf
- - travis-artifacts upload --path thesis.pdf --target-path thesis.pdf
+ - travis-artifacts upload --path thesis.pdf --target-path /
 script: "make thesis"
