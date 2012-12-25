@@ -10,6 +10,6 @@ before_install:
  - sudo apt-get install texlive-latex-extra
 before_script:
  - gem install travis-artifacts
-after_success: 
- - travis-artifacts upload thesis.pdf
+after_success:
+ - travis-artifacts upload --path thesis.pdf
 script: "make thesis"
