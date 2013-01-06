@@ -5,5 +5,5 @@
 #   watch(%r{file/path}) { `command(s)` }
 #
 guard 'shell' do
-  watch(/(.*).tex/) {|m| `make thesis` }
+  watch(/(thesis\-pics\/(.*).[ch]|(.*).tex)/) {|m| `make thesis` }
 end

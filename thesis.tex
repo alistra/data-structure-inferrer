@@ -370,16 +370,16 @@
 			DeleteSecondExtremalElement\}.
 		\end{eqnarray*}
 
-		Now we can add two complexity costs to the data structure definition. We can always reverse the order,
-		so the cheaper one can be used primarily, and the more expensive one in situations when we need both
-		types of extremal elements.
+        Now we can add two complexity costs to the data structure definition. We always try to map the first extremal
+        element to the kind of element that is used more. We can always reverse the order, so the cheaper one can be
+        used primarily, and the more expensive one in situations when we need both types of extremal elements.
 
 	\subsection{Importance of operations} \label{sub:importance}
 
 		Detecting the importance of a single data structure operation is an important problem, because a lot of
-		programs will fall into a class where compilation time data structure selection is undecidable. This
-		program shows that the problem of compile-time deciding on the best data structure is impossible to
-		solve.
+		programs will fall into a class where compile-time data structure selection is undecidable. The
+        program in \autoref{fig:undecidable} shows that the problem of compile-time deciding on the best data structure
+        is impossible to solve.
 
 		\begin{figure}
 			\lstinputlisting{thesis-pics/undecidable.c}
@@ -399,18 +399,32 @@
 		\begin{figure}
 			\lstinputlisting{thesis-pics/weighted-instructions.c}
 
-			\caption{An example of the problem of choosing the fastest data structure for a program being
-			undecidable, no user interaction}
+			\caption{An example of the problem of choosing the fastest data structure for a program being hard to
+            analyze, no user interaction}
 
-			\label{fig:undecidable-no-user}
+			\label{fig:hard-no-user}
 		\end{figure}
 
-		In the \autoref{fig:undecidable-no-user} we see a very costly instruction used only once
+		In the \autoref{fig:hard-no-user} we see a very costly instruction used only once
 		($delete\_max\_d$), and a few instructions ($insert$, $search$) run in a loop for a few million times.
 		To anyone that knows program complexities it's obvious that this one heavy instruction doesn't affect
 		the execution time of the whole program, yet the framework at the current state treats those
 		instructions equally and will probably choose something like Red-Black Trees, to minimize the time of
 		the $delete\_max\_d$, instead of ignoring its cost and using a very fast Hashtable.
+
+        We can formally show, that the problem of choosing the fastest data structure is undecidable, by showing that
+        it's not easier than the halting problem. In \autoref{fig:undecidable-no-user} we run the $delete\_max\_d$ only
+        if a turing machine that we defined accepts an input, so we don't know if we should choose a datastructure that
+        implements $delete\_max\_d$ fast, or just ignore it, because it won't ever be used because of the machine not
+        stopping the computation.
+
+        \begin{figure}
+			\lstinputlisting{thesis-pics/turing-machine.c}
+
+			\caption{An example formally showing the undecidability of the problem, no user interaction}
+
+			\label{fig:undecidable-no-user}
+		\end{figure}
 
 		\subsubsection{Code pragmas} \label{sec:pragmas}
 
