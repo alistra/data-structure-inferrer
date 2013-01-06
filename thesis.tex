@@ -124,6 +124,10 @@
 		that need a lot of time to transform into each other. dsinf knows exactly what operations can occur and
 		tailors the data structure to the operations that will happen.
 
+	\subsection{C API}
+		split in to dselem and ds
+
+
 \section{Data structure inference}
 
 	\subsection{Comparison of the complexities}
@@ -446,8 +450,9 @@
 
 			There would be an API change needed.
 
+            \todo{introduce the first api first}
 			\begin{figure}
-				\lstinputlisting{thesis-pics/code-pragmas-api-change.c}
+				\lstinputlisting{thesis-pics/dsw.h}
 
 				\caption{dsinf API, using additional arguments for operation importance}
 
@@ -664,11 +669,6 @@
 		\end{figure}
 
 		In \autoref{fig:minimal-elem-count} \todo{what do we see}
-
-\section{Implementation}
-	\subsection{C API}
-		split in to dselem and ds
-
 
 	\subsection{Generic data structure modifications} \label{sub:gdsm}
 

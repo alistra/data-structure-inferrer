@@ -17,3 +17,7 @@ script: "make thesis"
 
 notifications:
  irc: "irc.freenode.org#137"
+ template:
+  - "%{repository}#%{build_number} (%{commit}) : %{message} [%{author}]"
+  - "Build url: %{build_url}"
+  - "Thesis url: https://s3.amazonaws.com/alistra-thesis/artifacts/%{build_number}/%{build_number}.1/thesis.pdf"
