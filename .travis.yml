@@ -14,3 +14,6 @@ after_success:
  - travis-artifacts upload --path thesis.pdf
  - travis-artifacts upload --path thesis.pdf --target-path "current"
 script: "make thesis"
+
+notifications:
+ irc: "irc.freenode.org#137"
