@@ -33,12 +33,13 @@
 
 \begin{abstract}
 
-	When you need to store data in a data structure, most of popular languages today already
-	have libraries with convenience data structures implemented. Programmers just have to be taught when to
-	use a data structure. Some of the cases of choosing the right data structure look sufficiently easy,
-	so a program could do it automatically. This work describes the \emph{dsinf} project, a framework for
-	inferring the best data structure matching the task, based on the program's source code in C language.
-	\missingfigure{ result, conclusion, http://www.ece.cmu.edu/~koopman/essays/abstract.html}
+    When you need to store data in a data structure, most of popular languages today already have libraries with
+    convenience data structures implemented. Programmers just have to be taught when to use a data structure. Some of
+    the cases of choosing the right data structure look sufficiently easy, so a program could do it automatically. A
+    novice programmer doesn't have to know what are those data structures for, he can just use this framework.  This
+    work describes the \emph{dsinf} project, a framework for inferring the best data structure matching the task, based
+    on the program's source code in C language. \missingfigure{result, conclusion,
+    http://www.ece.cmu.edu/~koopman/essays/abstract.html}
 
 \end{abstract}
 
@@ -125,8 +126,44 @@
 		tailors the data structure to the operations that will happen.
 
 	\subsection{C API}
-		split in to dselem and ds
+        The framework detects specific C functions in the source code and bases the inference on them. Now we define,
+        what are those functions.
+		The examples will be using the following API:
+        \begin{figure}[h!]
+            \lstinputlisting{thesis-pics/ds1.h}
 
+            \caption{The dsinf C API}
+
+            \label{fig:C-api-v1}
+        \end{figure}
+
+        There is a problem with the above API, if we want to use an operation on a data structure that is asymptoticly
+        faster than the speed of a lookup of an element, we simply don't know how to do it. Let's say we have a balanced
+        search tree that guarantees $O(log n)$ lookups, with a linked list of all the elements \todo{ref gen mods} to
+        enhance the speed of the successor and predecessor operations to $O(1)$. If we wanted to create a successor
+        function using this API convention, it would look like this:
+
+        \begin{lstlisting}
+dstype successor_d(ds, dstype);
+        \end{lstlisting}
+        The problem with this function is that it doesn't take a pointer to the element in a data structure, so it has
+        to actually find the value given in the actual parameter of the function, and then compute the successor in
+        $O(1)$, but the search takes $O(log n)$, so the whole operation takes $O(log n)$, which is bad.
+
+        To fix this we declare a new type for an data structure element. The type encompasses a pointer to the place in
+        he data structure, from where we can start our search, so we don't have to waste time on finding the element.
+
+        This is the second version of the API, updated to use the $dselem$ struct, instead of a plain value:
+
+        \begin{figure}[h!]
+            \lstinputlisting{thesis-pics/ds2.h}
+
+            \caption{The dsinf C API}
+
+            \label{fig:C-api-v2}
+        \end{figure}
+
+        The following code examples will sometimes use the first API convention for simplicity.
 
 \section{Data structure inference}
 
@@ -263,7 +300,7 @@
 		The equation doesn't take into account the data structures that don't implement the needed operations,
 		we discard them first.
 
-		If a data structure implements more operations 'faster' than we choose that structure over
+		If a data structure implements more operations "faster" than we choose that structure over
 		the other one.
 
 		For a fixed P, we have a preorder on data structures induced by $<_{ds}$ and we can sort data structures
@@ -736,7 +773,7 @@
 
 \section{Future work} \label{sec:future}
 	It may be a good idea to rewrite the framework to analyze LLVM\cite{LLVM} IR internally, instead of the C
-	language AST.  This could yield better results because of the optimizations that clang\cite{Clang} can apply to
+	language AST. This could yield better results because of the optimizations that clang\cite{Clang} can apply to
 	the initial code, like removing unnecessary calls to data structure operations, so the framework can infer the
 	data structure based on the optimized code. LLVM also enables a link-time optimization, so after linking the
 	chosen data structure to a program, another optimization step is performed. Also analyzing LLVM IR is easier

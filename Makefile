@@ -36,7 +36,7 @@ doc:	${SRC}
 thesis: thesis.tex thesis-pics/*
 	rubber -d thesis.tex
 	rubber --clean thesis.tex
-	-mplayer -really-quiet /opt/WorldOfGoo/res/sounds/fling01.ogg
+	-mplayer -really-quiet /opt/world-of-goo/res/sounds/fling01.ogg
 
 clean:
 	rm -f Il/Lexer.hs Il/Parser.hs
