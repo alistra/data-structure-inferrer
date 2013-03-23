@@ -127,8 +127,8 @@
 
 	\subsection{C API}
         The framework detects specific C functions in the source code and bases the inference on them. Now we define,
-        what are those functions.
-		The examples will be using the following API:
+        what are those functions. Our first api is on the \autoref{fig:C-api-v1}.
+
         \begin{figure}[h!]
             \lstinputlisting{thesis-pics/ds1.h}
 
@@ -137,11 +137,11 @@
             \label{fig:C-api-v1}
         \end{figure}
 
-        There is a problem with the above API, if we want to use an operation on a data structure that is asymptoticly
-        faster than the speed of a lookup of an element, we simply don't know how to do it. Let's say we have a balanced
-        search tree that guarantees $O(log n)$ lookups, with a linked list of all the elements \todo{ref gen mods} to
-        enhance the speed of the successor and predecessor operations to $O(1)$. If we wanted to create a successor
-        function using this API convention, it would look like this:
+        There is a problem with the \autoref{fig:C-api-v1} API, if we want to use an operation on a data structure that
+        is asymptoticly faster than the speed of a lookup of an element, we simply don't know how to do it. Let's say we
+        have a balanced search tree that guarantees $O(log n)$ lookups, with a linked list of all the elements \todo{ref
+        gen mods} to enhance the speed of the successor and predecessor operations to $O(1)$. If we wanted to create a
+        successor function using this API convention, it would look like this:
 
         \begin{lstlisting}
 dstype successor_d(ds, dstype);
@@ -153,17 +153,18 @@ dstype successor_d(ds, dstype);
         To fix this we declare a new type for an data structure element. The type encompasses a pointer to the place in
         he data structure, from where we can start our search, so we don't have to waste time on finding the element.
 
-        This is the second version of the API, updated to use the $dselem$ struct, instead of a plain value:
+        This is the second version of the API, updated to use the $dselem$ struct, instead of a plain value is on the
+        \autoref{fig:C-api-v2}.
 
         \begin{figure}[h!]
             \lstinputlisting{thesis-pics/ds2.h}
 
-            \caption{The dsinf C API}
+            \caption{The better dsinf C API}
 
             \label{fig:C-api-v2}
         \end{figure}
 
-        The following code examples will sometimes use the first API convention for simplicity.
+        The following code examples will sometimes use the \autoref{fig:C-api-v1} API convention for simplicity.
 
 \section{Data structure inference}
 
@@ -352,7 +353,7 @@ dstype successor_d(ds, dstype);
         \end{figure}
 
         \clearpage
-
+ 
 
 		We want to group the elements in $DSOPS(P)$ to detect the persistent identities \cite{Okasaki} of
 		data structures, meaning that in one group, there will be data structure operations conducted on one
@@ -422,7 +423,7 @@ dstype successor_d(ds, dstype);
         program in \autoref{fig:undecidable} shows that the problem of compile-time deciding on the best data structure
         is impossible to solve.
 
-		\begin{figure}
+        \begin{figure}[!h]
 			\lstinputlisting{thesis-pics/undecidable.c}
 
 			\caption{An example of the problem of choosing the fastest data structure for a program being
@@ -435,9 +436,9 @@ dstype successor_d(ds, dstype);
 		compile time. If we analyze it as is, it will decide basing on the information, that every operation is
 		used, so the final data structure won't be specific to the task, but just average at everything.
 
-		Also code that is not totally dependent on user input can cause problems to analyze.
+		The code that is not totally dependent on the user input can also cause problems to analyze.
 
-		\begin{figure}
+        \begin{figure}[!h]
 			\lstinputlisting{thesis-pics/weighted-instructions.c}
 
 			\caption{An example of the problem of choosing the fastest data structure for a program being hard to
@@ -473,7 +474,7 @@ dstype successor_d(ds, dstype);
 			code, so he decides how important an instruction is in relation to other instructions and then
 			the framework makes use of those values in choosing the data structure.
 
-			\begin{figure}
+            \begin{figure}[!h]
 				\lstinputlisting{thesis-pics/code-pragmas.c}
 
 				\caption{Source code with pragmas, that state the importance of the operation}
@@ -481,14 +482,13 @@ dstype successor_d(ds, dstype);
 				\label{fig:code-pragmas}
 			\end{figure}
 
-			In the above example programmer can add a weights to the operations, assigning very low values
+            In the example on \autoref{fig:code-pragmas} programmer can add a weights to the operations, assigning very low values
 			for statements that are used rarely or for debug purposes, and very high values for crucial
 			parts of the program.
 
-			There would be an API change needed.
+            We would have to extend the API like on the \autoref{fig:code-pragmas-api}.
 
-            \todo{introduce the first api first}
-			\begin{figure}
+            \begin{figure}[!h]
 				\lstinputlisting{thesis-pics/dsw.h}
 
 				\caption{dsinf API, using additional arguments for operation importance}
@@ -526,10 +526,21 @@ dstype successor_d(ds, dstype);
 					sum as its weight
 			\end{itemize}
 
-			We change the definition of \autoref{data-structure-order} to:
+            We change the definition of \autoref{data-structure-order} to \todo{weights}:
 
-			\begin{equation}
-			\end{equation}
+
+            \begin{equation}
+                d_1 <_{ds} d_2
+            \end{equation}
+
+            \begin{center}
+                $\Updownarrow$
+            \end{center}
+
+            \begin{equation} \label{data-structure-order-weights}
+                \displaystyle \sum^n_n \{w_1 - w_2| (o, c_1, w_1) \in d_1, o \in ds, (o,c_2, w_2) \in d_2, c_1 < c_2 \} > 0
+            \end{equation}
+
 
 		\subsubsection{Profile-guided optimization} \label{sec:pgo}
 
