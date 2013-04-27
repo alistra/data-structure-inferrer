@@ -353,7 +353,7 @@ dstype successor_d(ds, dstype);
         \end{figure}
 
         \clearpage
- 
+
 
 		We want to group the elements in $DSOPS(P)$ to detect the persistent identities \cite{Okasaki} of
 		data structures, meaning that in one group, there will be data structure operations conducted on one
@@ -552,6 +552,10 @@ dstype successor_d(ds, dstype);
 			solely use the source code, PGO uses the results of test runs of the instrumented program to
             optimize the final generated code \cite{Wipgo}.
 
+            Usually the technique is used for optimizing hot loops and if statements, the binary saves logs of it
+            working and the lines which are hit more, then a system-wide daemon can recompile the parts of the binary to
+            make it faster for the common case.
+
 			If the user has test data, he can run against his program, we can take advantage of that.  First
 			we choose the best data structure using an unmodified method and link some library to the
 			executable. Of course this won't be the best data structure possible. Then user can run the test
@@ -582,6 +586,23 @@ dstype successor_d(ds, dstype);
 			match the test data.
 
 		\subsubsection{Transforming data structures on-line} \label{sec:transforming-on-line}
+
+            Another technique known in compilers we might use is called Just-In-Time Compilation (JIT). JIT, also known
+            as dynamic translation, is a method to improve the runtime performance of computer programs based on byte
+            code (virtual machine code). Since byte code is interpreted it executes more slowly than compiled machine
+            code, unless it is actually compiled to machine code, which could be performed before the execution – making
+            the program loading slow – or during the execution. In this latter case – which is the basis for JIT
+            compilation – the program is stored in memory as byte code, but the code segment currently running is
+            preparatively compiled to physical machine code in order to run faster.\cite{Wijit}
+
+            This technique is, as PGO (\autoref{sec:pgo}), used mostly for peephole optimizations, which means we always
+            look at a small part of the code, like a hot if statement or a loop, with PGO we gathered information
+            overtime and changed the binary, JIT does basically the same thing, only works in runtime. Usually we
+            implement some proxy abstraction, that decides if, at the current time, it's profitable, to compile the
+            executed part to assembly instead of interpreting it.
+
+            
+
 
 
 	\subsection{Different element types}
@@ -800,6 +821,7 @@ dstype successor_d(ds, dstype);
 \begin{thebibliography}{9}
 	\bibitem{Wids} Wikipedia - http://en.wikipedia.org/wiki/Data\_structure
     \bibitem{Wipgo} Wikipedia - http://en.wikipedia.org/wiki/Profile-guided\_optimization
+    \bibitem{Wijit} Wikipedia - http://en.wikipedia.org/wiki/Just-in-time\_compilation
     \bibitem{Wiveb} Wikipedia - http://en.wikipedia.org/wiki/Van\_Emde\_Boas\_tree\#cite\_note-3
 	\bibitem{LLVM} The LLVM Compiler Infrastructure - http://llvm.org/
 	\bibitem{Okasaki} Purely Functional Data Structures - Chris Okasaki

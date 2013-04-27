@@ -6,6 +6,7 @@ env:
    - secure: "Yp8zWIlygo5ctmEYBZOFZFCBYhrXR0QjDB9SGrylmg5Y6YKS9Kv0ed9FlIcE\nsr5PXbDLDZHPCHVgrKghWD/u0xRhxBbJhQVMvowkF1vAuaMZ9Wnkcztw8vCe\nsq/pHpcB2+kWE4az8GqDVdUlhJt8c+WMUZtvxPy9EUHPRwuYLYs="
 
 before_install:
+ - sudo apt-get update --fix-missing
  - sudo apt-get install rubber
  - sudo apt-get install texlive-latex-extra
 before_script:
