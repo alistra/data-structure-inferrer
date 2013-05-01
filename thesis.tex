@@ -526,24 +526,37 @@ dstype successor_d(ds, dstype);
 					sum as its weight
 			\end{itemize}
 
-            We change the definition of \autoref{data-structure-order} to:
+            The change the definition of \autoref{data-structure-order} is needed. We could still simply compare data
+            structure operations on their complexity, making that one point, and multiply that point by the weight of
+            the operation for that data structure identity. That's not a very precise solution, because a lot of
+            less-weighted heavy operations can overpower a crucial bottleneck fast operation.
 
+            \todo{example}
 
-            \begin{equation}
-                d_1 <_{ds} d_2
-            \end{equation}
-
-            \begin{center}
-                $\Updownarrow$
-            \end{center}
+            A better approach would be to approximate the current element count $N$ and actually evaluate the complexity
+            function on the element count, multiplied by the weight, then the sum of those would be our metric of
+            profitability of a data structure implementation. That would more accurately describe the cost and would be
+            resistant to less-weighted operations making a big impact. We modify it as follows:
 
             \begin{equation} \label{data-structure-order-weights}
-                \displaystyle \sum \{w_1 - w_2| (o, c_1, w_1) \in d_1, o \in ds, (o,c_2, w_2) \in d_2, c_1 < c_2 \} > 0
+                d_1 <_{ds} d_2 \Leftrightarrow OPCOST(d_1, ds) <= OPCOST(d_2, ds)
             \end{equation}
 
-            The \autoref{data-structure-order-weights} is the generalization of the previous equation, which was the
-            instantiation of this equation with all the weights equal.
+            where:
 
+            \begin{equation}
+                DSCOST(d,ds) = \sum \{OPCOST(o,c,ds) | (o,c) in \d, o \in ds\}
+            \end{equation}
+            \begin{equation} \label{data-structure-order-weights}
+                OPCOST(o,c,ds) = c(N) * w(o, ds) \texttt{ where } w(o, ds) is the weight of the operation o in ds
+            \end{equation}
+
+            This generalization invalidates the point of storing data structure complexities in a easily comparable way.
+            Now we can just use any functions, that are reasonable to compute in small time, or even more complex ones
+            if not using any runtime solutions like in \autoref{sec:transforming-on-line}.
+
+            For user guided approaches, like in \autoref{sec:pragmas}, user would have to manually specify a global
+            count approximation for the cost optimization.
 
 		\subsubsection{Profile-guided optimization} \label{sec:pgo}
 
@@ -581,6 +594,9 @@ dstype successor_d(ds, dstype);
 			operations and set weights on the operations according to the extracted data and then use the
 			choosing algorithm for operations with weights from \autoref{sec:choose-weights}.
 
+            In this method we can approximate the element count $N$ basing on our coverage data, counting all inserting
+            and deleting operations.
+
 			It's a better solution than letting the user set the weights himself, but still, the data the
 			inference is based upon comes from tests and there's no guarantee the real world data will
 			match the test data.
@@ -601,9 +617,21 @@ dstype successor_d(ds, dstype);
             implement some proxy abstraction, that decides if, at the current time, it's profitable, to compile the
             executed part to assembly instead of interpreting it.
 
-            
+            Instead of compiling a bytecode to assembly, we can use a proxy, to count the specific operations on our
+            data structure, using the counts of usage as the new weights in the data structure inference algorithm in
+            \autoref{sec:choose-weights}. We substitute the data structure with a faster one, if the program would
+            obviously benefit time-wise from the substitution. New implementation could of course be compiled from a
+            bytecode (e.g. LLVM IR) to assembly just like the standard JIT approach does it.
 
+            The element count $N$ can be computed precisely, because we proxy all the data structure operations, so we
+            just keep a counter.
 
+            The heuristics for detection of a good moment for the substitution should be stronger and more careful than
+            in the standard JIT way, beacause compiling a part of code to assembly, in most cases, isn't that costly as
+            rebuilding a data structure, because unused code won't be run and a wrong data structure can slow down the
+            whole program quite a bit. Building a sensible set of heuristics is very hard even for the standard JIT, e.g
+            the PyPy project tried five different JIT approaches, before finding the one that is working well. Depending
+            on the heuristics here, this may be the most beneficial option for a program, or a big performance hit.
 
 	\subsection{Different element types}
 
