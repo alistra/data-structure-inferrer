@@ -531,8 +531,17 @@ dstype successor_d(ds, dstype);
             the operation for that data structure identity. That's not a very precise solution, because a lot of
             less-weighted heavy operations can overpower a crucial bottleneck fast operation.
 
-            \todo{example}
+            \begin{figure}[!h]
+                \lstinputlisting{thesis-pics/dsu-weight-bad-example.c}
 
+                \caption{}
+
+                \label{fig:dsu-weight-bad-example}
+            \end{figure}
+
+            \begin{verbatim}
+            \texttt{http://www.wolframalpha.com/input/?i=x+\%2B+2+*n+\%3E+\%28x+\%2B+2\%29*+log\_2\%28n\%29\%2C+n+between+0+and+1000\%2C+x+between+0+and+1000&dataset=&equal=Submit}
+            \end{verbatim}
             A better approach would be to approximate the current element count $N$ and actually evaluate the complexity
             function on the element count, multiplied by the weight, then the sum of those would be our metric of
             profitability of a data structure implementation. That would more accurately describe the cost and would be
