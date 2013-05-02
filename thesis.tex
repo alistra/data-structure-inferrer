@@ -539,16 +539,19 @@ dstype successor_d(ds, dstype);
             resistant to less-weighted operations making a big impact. We modify it as follows:
 
             \begin{equation} \label{data-structure-order-weights}
-                d_1 <_{ds} d_2 \Leftrightarrow OPCOST(d_1, ds) <= OPCOST(d_2, ds)
+                d_1 <_{ds} d_2 \Leftrightarrow OPCOST(d_1, ds) \leq OPCOST(d_2, ds)
             \end{equation}
 
             where:
 
             \begin{equation}
-                DSCOST(d,ds) = \sum \{OPCOST(o,c,ds) | (o,c) in \d, o \in ds\}
+                DSCOST(d,ds) = \sum \{OPCOST(o,c,ds) | (o,c) \in d \wedge o \in ds\}
             \end{equation}
-            \begin{equation} \label{data-structure-order-weights}
-                OPCOST(o,c,ds) = c(N) * w(o, ds) \texttt{ where } w(o, ds) is the weight of the operation o in ds
+            \begin{equation}
+                OPCOST(o,c,ds) = c(N) * w(o, ds)
+            \end{equation}
+            \begin{equation}
+                w(o, ds) \texttt{ is the weight of the operation } o \texttt{ in } ds
             \end{equation}
 
             This generalization invalidates the point of storing data structure complexities in a easily comparable way.
