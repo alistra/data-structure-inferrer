@@ -158,7 +158,6 @@ dstype successor_d(ds, dstype);
 
         \begin{figure}[h!]
             \lstinputlisting{thesis-pics/ds2.h}
-
             \caption{The better dsinf C API}
 
             \label{fig:C-api-v2}
@@ -528,20 +527,44 @@ dstype successor_d(ds, dstype);
 
             The change the definition of \autoref{data-structure-order} is needed. We could still simply compare data
             structure operations on their complexity, making that one point, and multiply that point by the weight of
-            the operation for that data structure identity. That's not a very precise solution, because a lot of
-            less-weighted heavy operations can overpower a crucial bottleneck fast operation.
+            the operation for that data structure identity. That's not a very precise solution, let's consider an
+            example on \autoref{fig:dsu-weight-bad-example}.
 
             \begin{figure}[!h]
                 \lstinputlisting{thesis-pics/dsu-weight-bad-example.c}
 
-                \caption{}
+                \caption{Example for weighted data structure choice algorithm; using pragmas API; the weight is
+                counted per call site, not per function call, so the weight won't be $x^2$, but $x$ for $search\_d$ }
 
                 \label{fig:dsu-weight-bad-example}
             \end{figure}
 
-            \begin{verbatim}
-            \texttt{http://www.wolframalpha.com/input/?i=x+\%2B+2+*n+\%3E+\%28x+\%2B+2\%29*+log\_2\%28n\%29\%2C+n+between+0+and+1000\%2C+x+between+0+and+1000&dataset=&equal=Submit}
-            \end{verbatim}
+            Let's consider the class of programs, like on \autoref{fig:dsu-weigth-bad-example}, but with different $n$
+            and $x$ values. Assuming for simplicity that the complexity functions of $search\_d$, $delete\_max\_d$ and
+            $delete\_min\_d$ are $log n$, $log n$, $log n$ for Red Black Trees and $1$, $n$ and $n$ respectively - we
+            discard big-O constants. Then, the answer to the question which data structure is better for this case can
+            be stated as the inequality:
+
+            \begin{equation}
+                x + 2n > (x + 2)log_2(n)
+            \end{equation}
+
+            \begin{figure}[!h]
+                \begin{center}
+                    \includegraphics[width=0.7\textwidth]{thesis-pics/dsu-weight-example.png}
+                \end{center}
+
+                \caption{Plot of profitability of data structures for \autoref{fig:dsu-weight-bad-example} for different
+                $n$ and $x$; blue - Red Black Trees, white - Hashtables}
+
+                \label{fig:dsu-weight-bad-plot}
+            \end{figure}
+
+            This plot on \autoref{fig:dsu-weight-bad-plot} shows, where the better solution would be to use Red Black
+            Trees - blue area, and where to use Hashtables - white area. The blue cone, although smaller, still covers a
+            lot of cases. The earlier alogrithm yields hashtables for virtually all examples here ($x > 2$), which means
+            that the data structures chosen in the blue cone on the plot are not the best ones for the case.
+
             A better approach would be to approximate the current element count $N$ and actually evaluate the complexity
             function on the element count, multiplied by the weight, then the sum of those would be our metric of
             profitability of a data structure implementation. That would more accurately describe the cost and would be
@@ -565,7 +588,8 @@ dstype successor_d(ds, dstype);
 
             This generalization invalidates the point of storing data structure complexities in a easily comparable way.
             Now we can just use any functions, that are reasonable to compute in small time, or even more complex ones
-            if not using any runtime solutions like in \autoref{sec:transforming-on-line}.
+            if not using any runtime solutions like in \autoref{sec:transforming-on-line}. One could even try to
+            approximate the time better than just in the big-O notation, so the actual constants would matter.
 
             For user guided approaches, like in \autoref{sec:pragmas}, user would have to manually specify a global
             count approximation for the cost optimization.
@@ -857,6 +881,9 @@ dstype successor_d(ds, dstype);
 	data structure based on the optimized code. LLVM also enables a link-time optimization, so after linking the
 	chosen data structure to a program, another optimization step is performed. Also analyzing LLVM IR is easier
 	that analyzing the C language.
+
+    Framework can be easily generalized to substitute data structure comparison functions, so one could write a function
+    that takes e.g. I/O into account, or any combination of I/O and big-O complexity or even something more complicated.
 
 \begin{thebibliography}{9}
 	\bibitem{Wids} Wikipedia - http://en.wikipedia.org/wiki/Data\_structure
