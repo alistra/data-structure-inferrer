@@ -12,6 +12,6 @@ int main(int argc, const char *argv[])
 
 	search_d(d, 4, height_order);
 
-	max_d(d, weight_order);
+	delete_max_d(d, weight_order);
 }
 

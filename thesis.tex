@@ -6,9 +6,6 @@
 \usepackage[section]{placeins}
 \lstset{language=C}
 
-%\usepackage[]{polski}
-
-% 1-inch margins, from fullpage.sty by H.Partl, Version 2, Dec. 15, 1988.
 \topmargin 0pt
 \advance \topmargin by -\headheight
 \advance \topmargin by -\headsep
@@ -19,7 +16,6 @@
 \textwidth 6.5in
 \parindent 0in
 \parskip 1.5ex
-%\renewcommand{\baselinestretch}{1.25}
 
 \title{\emph{dsinf}: Source Based Data Structure Inference}
 \author{Aleksander Balicki}
@@ -127,7 +123,7 @@
 
 	\subsection{C API}
         The framework detects specific C functions in the source code and bases the inference on them. Now we define,
-        what are those functions. Our first api is on the \autoref{fig:C-api-v1}.
+        what are those functions. Our first APO is on the \autoref{fig:C-api-v1}.
 
         \begin{figure}[h!]
             \lstinputlisting{thesis-pics/ds1.h}
@@ -455,7 +451,7 @@ dstype successor_d(ds, dstype);
 
         We can formally show, that the problem of choosing the fastest data structure is undecidable, by showing that
         it's not easier than the halting problem. In \autoref{fig:undecidable-no-user} we run the $delete\_max\_d$ only
-        if a turing machine that we defined accepts an input, so we don't know if we should choose a datastructure that
+        if a turing machine that we defined accepts an input, so we don't know if we should choose a data structure that
         implements $delete\_max\_d$ fast, or just ignore it, because it won't ever be used because of the machine not
         stopping the computation.
 
@@ -562,7 +558,7 @@ dstype successor_d(ds, dstype);
 
             This plot on \autoref{fig:dsu-weight-bad-plot} shows, where the better solution would be to use Red Black
             Trees - blue area, and where to use Hashtables - white area. The blue cone, although smaller, still covers a
-            lot of cases. The earlier alogrithm yields hashtables for virtually all examples here ($x > 2$), which means
+            lot of cases. The earlier algorithm yields hashtables for virtually all examples here ($x > 2$), which means
             that the data structures chosen in the blue cone on the plot are not the best ones for the case.
 
             A better approach would be to approximate the current element count $N$ and actually evaluate the complexity
@@ -663,11 +659,12 @@ dstype successor_d(ds, dstype);
             just keep a counter.
 
             The heuristics for detection of a good moment for the substitution should be stronger and more careful than
-            in the standard JIT way, beacause compiling a part of code to assembly, in most cases, isn't that costly as
+            in the standard JIT way, because compiling a part of code to assembly, in most cases, isn't that costly as
             rebuilding a data structure, because unused code won't be run and a wrong data structure can slow down the
-            whole program quite a bit. Building a sensible set of heuristics is very hard even for the standard JIT, e.g
-            the PyPy project tried five different JIT approaches, before finding the one that is working well. Depending
-            on the heuristics here, this may be the most beneficial option for a program, or a big performance hit.
+            whole program quite a bit. Building a sensible set of heuristics is very hard even for the standard JIT,
+            e.g.  the PyPy project tried five different JIT approaches, before finding the one that is working well.
+            Depending on the heuristics here, this may be the most beneficial option for a program, or a big performance
+            hit.
 
 	\subsection{Different element types}
 
@@ -750,15 +747,42 @@ dstype successor_d(ds, dstype);
             \begin{figure}[h!]
 				\lstinputlisting{thesis-pics/struct-api-change.c}
 
-				\caption{Change for the API, so we can definine multiple orders on data}
+				\caption{Change for the API, so we can define multiple orders on data}
 
 				\label{fig:struct-api-change}
 			\end{figure}
 
-			For us to achieve such thing, we need to change how we choose structures for record types. First
-			we modify the $DSU()$ definition for record variables.
-			\todo{rest}
+            For us to achieve such thing, we need to change how we choose structures for record types. We will check all
+            the data structure tuples, of length of the order count, in the cross-product of all data structures. The
+            result will be a linked data structure, i.e. a number of data structures, in which elements have pointers to
+            elements in other data structures, representing the same element value - like on
+            \autoref{fig:linked-data-structures}. For example, if we have the code from the earlier example
+            \autoref{fig:struct-new}, we may have a (Red-Black-Tree, Hashtable) pair, where the RBT is for the $weight$
+            order, and the hashtable is for the $height$ order.
 
+            \begin{figure}[h!]
+                \missingfigure{obrazek}
+				\caption{Visualization of a linked data structure}
+
+				\label{fig:linked-data-structures}
+			\end{figure}
+
+            First we modify the $DSU()$ definition for record variables.
+
+            In the choice algorithm we make distinctions to the operations that are order specific and general
+            operations. An example of an order specific operation is $max\_d$, which finds an element that is maximal in
+            the given order; an example of a general operation is $insert\_d$, which doesn't take the order as an
+            argument, it has to perform an operation on both linked data structures. Sometimes order specific
+            operations, aside from performing an operation on the data structure responsible for their order, they have
+            to update the state in other data structures, e.g. $delete\_max\_d$ after firing has to run a $delete\_d$
+            operation on the element on the other data structures responsible for different orders It doesn't have to
+            be the same operation, like in the example, $delete\_max\_d$ doesn't have to call $delete\_max\_d$, because
+            it already has the data structure element pointer, and can just call $delete\_d$ - we call the operation
+            that will have the desired effect with the smallest complexity cost. For the final cost of an operation on a
+            linked data structure we take the sum of costs of operations on all the data structures - which is
+            big-O-wise just the most costly operation.
+
+            \todo{rest}
 	\subsection{Upper bound on the element count}
 
 		When analyzing the input program, we can try to get the information, if the maximum element count in the
@@ -834,7 +858,7 @@ dstype successor_d(ds, dstype);
 		structure for each small combination of those modifications, if we want to return a data structure
 		tailored perfectly to the task. Of course some of the modifications are very data structure specific, so
 		a generalization isn't possible, but for some cases, we can extract a piece of code, like a wrapper for
-        a data structure, that modifies its behavior in some specific way (similiar pattern was used in
+        a data structure, that modifies its behavior in some specific way (similar pattern was used in
         \cite{Okasaki}).
 
 		\subsubsection{Extremal element cache}
