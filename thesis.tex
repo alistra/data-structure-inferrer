@@ -695,7 +695,7 @@ dstype successor_d(ds, dstype);
 			framework, at the moment, could generate some data structure for this kind of structs. The
 			operation on the data structure would look like on \autoref{fig:struct-old}.
 
-			\begin{figure}
+            \begin{figure}[h!]
 				\lstinputlisting{thesis-pics/linked-struct.c}
 
 				\caption{An example record, that we want to store in a data structure}
@@ -703,7 +703,7 @@ dstype successor_d(ds, dstype);
 				\label{fig:linked-struct}
 			\end{figure}
 
-			\begin{figure}
+            \begin{figure}[h!]
 				\lstinputlisting{thesis-pics/struct-old.c}
 
 				\caption{Use of the dsinf calls, to perform some data structure operations with the
@@ -717,7 +717,7 @@ dstype successor_d(ds, dstype);
 			the elements is available per data structure. This can also be achieved without using structs at
 			all, like in \autoref{fig:struct-pointer-sizeof-reduction}.
 
-			\begin{figure}
+            \begin{figure}[h!]
 				\lstinputlisting{thesis-pics/struct-pointer-sizeof-reduction.c}
 
 				\caption{Encoding of the problem of having one order data structure on records in C,
@@ -732,13 +732,27 @@ dstype successor_d(ds, dstype);
 			program enabled things like comparing structs by more than one condition in one program. We
 			would want to be able to use operations like in \autoref{fig:struct-new}.
 
-			\begin{figure}
+            \begin{figure}[h!]
 				\lstinputlisting{thesis-pics/struct-new.c}
 
 				\caption{Examples of the new dsinf API, that takes different orders on structs into
 				account}
 
 				\label{fig:struct-new}
+			\end{figure}
+
+            We change the current API of dsinf (\autoref{fig:struct-api-change}), to enable passing an arbitrary number
+            of comparison functions defining orders on the data to the constructor $init\_d$. We use the $va\_args$
+            mechanism in C, that's why we need the order count as the first argument, because the $va\_arg$ macro needs
+            the first argument of a known type, to start iterating over the rest of the arguments. Next arguments are
+            function pointers of type $int(void *, void *)$.
+
+            \begin{figure}[h!]
+				\lstinputlisting{thesis-pics/struct-api-change.c}
+
+				\caption{Change for the API, so we can definine multiple orders on data}
+
+				\label{fig:struct-api-change}
 			\end{figure}
 
 			For us to achieve such thing, we need to change how we choose structures for record types. First
