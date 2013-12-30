@@ -3,7 +3,7 @@ C=C/Analyzer.hs C/Functions.hs
 SRC=Main.hs Advice.hs AllStructures.hs Recommend.hs Analyzer.hs CompileDriver.hs Defs/*.hs ${C}
 LEXPAR=Il/Lexer.hs Il/Parser.hs
 
-CDOPTS=-package-conf cabal-dev/packages-7.2.2.conf
+CDOPTS=-package-conf cabal-dev/packages-7*.conf
 
 dsinf:  ${SRC}
 	cabal-dev install --only-dependencies
@@ -36,7 +36,7 @@ doc:	${SRC}
 thesis: thesis.tex thesis-pics/*
 	rubber -d thesis.tex
 	rubber --clean thesis.tex
-	-mplayer -really-quiet /opt/world-of-goo/res/sounds/fling01.ogg
+	-@mplayer -really-quiet /opt/world-of-goo/res/sounds/fling01.ogg
 
 clean:
 	rm -f Il/Lexer.hs Il/Parser.hs

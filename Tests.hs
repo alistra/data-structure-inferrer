@@ -7,7 +7,7 @@ import Il.Parser
 import Defs.Util
 import Defs.AST
 import Analyzer
-import Typechecker
+import Il.Typechecker
 import Control.DeepSeq
 
 import System.FilePath.Posix

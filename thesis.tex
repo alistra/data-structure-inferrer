@@ -29,13 +29,17 @@
 
 \begin{abstract}
 
-    When you need to store data in a data structure, most of popular languages today already have libraries with
-    convenience data structures implemented. Programmers just have to be taught when to use a data structure. Some of
-    the cases of choosing the right data structure look sufficiently easy, so a program could do it automatically. A
-    novice programmer doesn't have to know what are those data structures for, he can just use this framework.  This
-    work describes the \emph{dsinf} project, a framework for inferring the best data structure matching the task, based
-    on the program's source code in C language. \missingfigure{result, conclusion,
-    http://www.ece.cmu.edu/~koopman/essays/abstract.html}
+    When you need to store data in a data structure, most of popular languages
+    today already have libraries with convenience data structures implemented.
+    Programmers just have to be taught when to use a data structure. Some of
+    the cases of choosing the right data structure look sufficiently easy, so a
+    program could do it automatically. A novice programmer doesn't have to know
+    what are those data structures for, he can just use this framework.  This
+    work describes the \emph{dsinf} project, a framework for inferring the best
+    data structure matching the task, based on the program's source code in C
+    language. The fully static approach may not be enough for effective results
+    as the problem is undecidable. In practice the data driven approach may
+    yield better results.
 
 \end{abstract}
 
@@ -55,7 +59,7 @@
 	The implementation of a data structure is a realization of some data structure interface in some programming
 	language, that is consistent with the semantics.
 
-	We can distinguish a lot of different types of data structures:
+	There is a lot different known types of data structures:
 	\begin{itemize}
 		\item Map/Associative array/Dictionary is a data structure for storing $(key,\;value)$ pairs, it allows
 			insertion, deletion, modification and lookup
@@ -73,16 +77,16 @@
 		\item String is a data structure for storing text
 		\item Tree is a data structure, to hold some tree-like hierarchical structure
 		\item Graph is a data structure, to store elements and a relation on those elements
-		\item Others, which usually are a mix of those previous ones
+		\item Others, which usually are a modification or a mix of previous ones
 	\end{itemize}
 
 	The different implementation of those data structures make it possible, that specific operations run time is
-	lower than the others, so we can't use one data structure, for all the tasks.
+	lower than the others, so there is no one data structure perfect for all the tasks.
 
 	\subsection{What is dsinf?} \label{sub:intro}
 
-		dsinf is a source code analyzer. It works by analyzing specially prepared C code, that C code for every
-		instance of a data structure uses a type defined in the dsinf library, we will call the type a data
+		dsinf is a source code analyzer. It works by analyzing specially prepared C code, that C code, for every
+		instance of a data structure, uses a type defined in the dsinf library, a type called a data
 		structure wildcard. The type represents a data structure with the most general interface, i.e. a set sum
 		of interfaces of all data structures available in the dsinf framework. It connects the data structures
 		and operations performed on them and then reasons about which of the available data structure
@@ -99,8 +103,8 @@
 
 		The idea of the framework is to provide a data structure, that when used is always good enough. Due to
 		unsolvability of the general case of the problem, the effect always will be worse than a hand tailored
-		data structure to your task, but can save up some time (both programming time and execution time) if we
-		need to write something fast. To reiterate, using dsinf for the most critical bottleneck of your
+		data structure to your task, but can save up some time (both programming time and execution time) if the
+        time is an important factor. To reiterate, using dsinf for the most critical bottleneck of your
 		application probably isn't a good idea.
 
 	\subsection{Comparing to a database} \label{sub:database}
@@ -108,7 +112,7 @@
 		for all the possible SQL queries, including some crosschecks, counting, summations, extremal elements
 		and with dsinf your data structure implementation doesn't have to be ready for all the possible SQL
 		queries that can be constructed, but only the ones you used in your source code, which enables it to
-		potentially gain some performance over a database.
+		potentially gain some performance over a database, both in space and time complexity.
 
 	\subsection{Comparing to class clusters} \label{sub:classcluster}
 		A class cluster is an architecture that groups a number of private, concrete subclasses under a public,
@@ -123,7 +127,7 @@
 
 	\subsection{C API}
         The framework detects specific C functions in the source code and bases the inference on them. Now we define,
-        what are those functions. Our first APO is on the \autoref{fig:C-api-v1}.
+        what are those functions. The first API version is on the \autoref{fig:C-api-v1}.
 
         \begin{figure}[h!]
             \lstinputlisting{thesis-pics/ds1.h}
@@ -133,21 +137,25 @@
             \label{fig:C-api-v1}
         \end{figure}
 
-        There is a problem with the \autoref{fig:C-api-v1} API, if we want to use an operation on a data structure that
-        is asymptoticly faster than the speed of a lookup of an element, we simply don't know how to do it. Let's say we
-        have a balanced search tree that guarantees $O(log n)$ lookups, with a linked list of all the elements (like in
-        \autoref{sec:gdsm:le}) to enhance the speed of the successor and predecessor operations to $O(1)$. If we wanted to create a
-        successor function using this API convention, it would look like this:
+        There is a problem with the \autoref{fig:C-api-v1} API, if there's an
+        operation on a data structure that is asymptoticly faster than the
+        speed of a lookup of an element, it's impossible to obtain in the
+        desired time with this API. For example, a balanced search tree
+        that guarantees $O(log n)$ lookups, with a linked list of all the
+        elements (like in \autoref{sec:gdsm:le}) to enhance the speed of the
+        successor and predecessor operations to $O(1)$. Defining a successor
+        function using this API convention, it would look like this:
 
         \begin{lstlisting}
 dstype successor_d(ds, dstype);
         \end{lstlisting}
+
         The problem with this function is that it doesn't take a pointer to the element in a data structure, so it has
         to actually find the value given in the actual parameter of the function, and then compute the successor in
         $O(1)$, but the search takes $O(log n)$, so the whole operation takes $O(log n)$, which is bad.
 
         To fix this we declare a new type for an data structure element. The type encompasses a pointer to the place in
-        he data structure, from where we can start our search, so we don't have to waste time on finding the element.
+        he data structure, from where the search can start, so there is no need to waste time on finding the element.
 
         This is the second version of the API, updated to use the $dselem$ struct, instead of a plain value is on the
         \autoref{fig:C-api-v2}.
@@ -761,9 +769,12 @@ dstype successor_d(ds, dstype);
             order, and the hashtable is for the $height$ order.
 
             \begin{figure}[h!]
-                \missingfigure{obrazek}
-				\caption{Visualization of a linked data structure}
+                \begin{center}
+                    \includegraphics[width=0.9\textwidth]{thesis-pics/linked-dses.png}
+                \end{center}
 
+				\caption{Visualization of a linked data structure, elements from a balanced tree, represeting one order of data,
+                 connected with the elements of a linked list, representing the second order of data}
 				\label{fig:linked-data-structures}
 			\end{figure}
 
