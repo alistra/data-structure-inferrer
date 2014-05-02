@@ -14,5 +14,5 @@ int main()
 
 //yielding 	[(global_ds, insert_d), (global_ds, delete_max_d),
 //		 (global_ds, max_d),
-//	  	 (global_ds2, indert_d), (global_ds2, delete_d)]}
+//	  	 (global_ds2, indert_d), (global_ds2, delete_d)]
 
