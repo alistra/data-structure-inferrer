@@ -31,15 +31,13 @@
 
     When you need to store data in a data structure, most of popular languages
     today already have libraries with convenience data structures implemented.
-    Programmers just have to be taught when to use a data structure. Some of
+    Programmers just have to be taught when to use a particular data structure. Some of
     the cases of choosing the right data structure look sufficiently easy, so a
-    program could do it automatically. A novice programmer doesn't have to know
-    what are those data structures for, he can just use this framework.  This
-    work describes the \emph{dsinf} project, a framework for inferring the best
-    data structure matching the task, based on the program's source code in C
-    language. The fully static approach may not be enough for effective results
-    as the problem is undecidable. In practice the data driven approach may
-    yield better results.
+    program could do it automatically. This work describes the \emph{dsinf} project,
+    an analysis framework for inferring the best data structure matching the task,
+    based on the program's source code in C language. \emph{dsinf} analyses the 
+    uses of data structures throughout the program and suggests the fastest one.     
+    To further enhance the quality of the suggestion, it uses profiler data.
 
 \end{abstract}
 
@@ -62,22 +60,22 @@
 	There is a lot different known types of data structures:
 	\begin{itemize}
 		\item Map/Associative array/Dictionary is a data structure for storing $(key,\;value)$ pairs, it allows
-			insertion, deletion, modification and lookup
-		\item Multimap is the same as Map, but with the possibility of storing multiple values for a one key
-		\item List is a data structure for storing ordered sets of values
-		\item Set is a data structure for storing unordered sets of values
-		\item Multiset is the same as Set, but with the possibility of storing multiple objects that are equal
-			under some equivalence relation
-		\item Queue is a data structure implementing operations for queuing and dequeuing elements
-		\item Deque is a queue, where you can add and remove elements from both ends as opposed to one
-		\item Stack is a data structure implementing operations for putting something on the top of the stack or
-			removing the top element from it
-		\item Priority queue is like a regular queue, but each element has a priority associated with it, which
-			is used for ordered dequeuing of the elements
-		\item String is a data structure for storing text
-		\item Tree is a data structure, to hold some tree-like hierarchical structure
-		\item Graph is a data structure, to store elements and a relation on those elements
-		\item Others, which usually are a modification or a mix of previous ones
+			insertion, deletion, modification and lookup,
+		\item multimap is the same as Map, but with the possibility of storing multiple values for a one key,
+		\item list is a data structure for storing ordered sets of values,
+		\item set is a data structure for storing unordered sets of values,
+		\item multiset is the same as Set, but with the possibility of storing multiple objects that are equal
+			under some equivalence relation,
+		\item queue is a data structure implementing operations for queuing and dequeuing elements,
+		\item deque is a queue, where you can add and remove elements from both ends as opposed to one,
+		\item stack is a data structure implementing operations for putting something on the top of the stack or
+			removing the top element from it,
+		\item priority queue is like a regular queue, but each element has a priority associated with it, which
+			is used for ordered dequeuing of the elements,
+		\item string is a data structure for storing text,
+		\item tree is a data structure, to hold some tree-like hierarchical structure,
+		\item graph is a data structure, to store elements and a relation on those elements,
+		\item others, which usually are a modification or a mix of previous ones.
 	\end{itemize}
 
 	The different implementation of those data structures make it possible, that specific operations run time is
@@ -534,35 +532,37 @@ dstype successor_d(ds, dstype);
             \begin{figure}[!h]
                 \lstinputlisting{thesis-pics/dsu-weight-bad-example.c}
 
-                \caption{Example for weighted data structure choice algorithm; using pragmas API; the weight is
+                \caption{Example for weighted data structure choice algorithm, using pragmas API; the weight is
                 counted per call site, not per function call, so the weight won't be $x^2$, but $x$ for $search\_d$ }
 
                 \label{fig:dsu-weight-bad-example}
             \end{figure}
 
-            Let's consider the class of programs, like on \autoref{fig:dsu-weigth-bad-example}, but with different $n$
-            and $x$ values. Assuming for simplicity that the complexity functions of $search\_d$, $delete\_max\_d$ and
-            $delete\_min\_d$ are $log n$, $log n$, $log n$ for Red Black Trees and $1$, $n$ and $n$ respectively - we
-            discard big-O constants. Then, the answer to the question which data structure is better for this case can
-            be stated as the inequality:
+            Let's consider the class of programs, like on \autoref{fig:dsu-weight-bad-example}, but with different $n$
+            and $x$ values. Assuming for simplicity that we ignore the insertions and the complexity functions of $search\_d$,
+            $delete\_max\_d$ and $delete\_min\_d$ are $log_2 n$, $log_2 n$, $log_2 n$ for Red Black Trees and $1$, $n$ and $n$
+            for Hashtables respectively --- we discard big-O constants. Then, the answer to the question which data structure 
+            is better for this case can be stated as the inequality:
 
             \begin{equation}
                 x + 2n > (x + 2)log_2(n)
             \end{equation}
-
-            \begin{figure}[!h]
+            
+            The left side is the cost of $x$ searches ($x * 1$) and deleting the maximal ($n$) and the minimal ($n$) element on Hashtables.
+            The right side is the cost of $x$ searches ($x * log_2 n$) and deleting the maximal ($log_2 n$) and the minimal ($log_2 n$) element on Red Black Trees.
+                \begin{figure}[!h]
                 \begin{center}
                     \includegraphics[width=0.7\textwidth]{thesis-pics/dsu-weight-example.png}
                 \end{center}
 
                 \caption{Plot of profitability of data structures for \autoref{fig:dsu-weight-bad-example} for different
-                $n$ and $x$; blue - Red Black Trees, white - Hashtables}
+                $n$ and $x$; blue --- Red Black Trees, white --- Hashtables}
 
                 \label{fig:dsu-weight-bad-plot}
             \end{figure}
 
             This plot on \autoref{fig:dsu-weight-bad-plot} shows, where the better solution would be to use Red Black
-            Trees - blue area, and where to use Hashtables - white area. The blue cone, although smaller, still covers a
+            Trees (blue area), and where to use Hashtables (white area). The blue cone, although smaller, still covers a
             lot of cases. The earlier algorithm yields hashtables for virtually all examples here ($x > 2$), which means
             that the data structures chosen in the blue cone on the plot are not the best ones for the case.
 
@@ -608,9 +608,9 @@ dstype successor_d(ds, dstype);
 
 			If the user has test data, he can run against his program, we can take advantage of that.  First
 			we choose the best data structure using an unmodified method and link some library to the
-			executable. Of course this won't be the best data structure possible. Then user can run the test
+			executable. Of course this doesn't have to be the best data structure possible. Then user can run the test
 			suite with code coverage option, like \emph{gcov} in GCC, turned on in the compiler. This
-			generates a file like shown in \autoref{fig:gcov}.
+			generates a file like the one shown in \autoref{fig:gcov}.
 
 			\begin{figure} \label{fig:gcov}
 				\lstinputlisting{thesis-pics/gcov.c}
@@ -649,12 +649,12 @@ dstype successor_d(ds, dstype);
             preparatively compiled to physical machine code in order to run faster.\cite{Wijit}
 
             This technique is, as PGO (\autoref{sec:pgo}), used mostly for peephole optimizations, which means we always
-            look at a small part of the code, like a hot if statement or a loop, with PGO we gathered information
+            look at a small part of the code, like a hot if statement or a loop. With PGO we gathered information
             overtime and changed the binary, JIT does basically the same thing, only works in runtime. Usually we
             implement some proxy abstraction, that decides if, at the current time, it's profitable, to compile the
             executed part to assembly instead of interpreting it.
 
-            Instead of compiling a bytecode to assembly, we can use a proxy, to count the specific operations on our
+            Instead of compiling a bytecode to assembly, we can use a proxy to count the specific operations on our
             data structure, using the counts of usage as the new weights in the data structure inference algorithm in
             \autoref{sec:choose-weights}. We substitute the data structure with a faster one, if the program would
             obviously benefit time-wise from the substitution. New implementation could of course be compiled from a
@@ -664,10 +664,10 @@ dstype successor_d(ds, dstype);
             just keep a counter.
 
             The heuristics for detection of a good moment for the substitution should be stronger and more careful than
-            in the standard JIT way, because compiling a part of code to assembly, in most cases, isn't that costly as
+            in the standard JIT way. Compiling a part of code to assembly, in most cases, isn't as costly as
             rebuilding a data structure, because unused code won't be run and a wrong data structure can slow down the
             whole program quite a bit. Building a sensible set of heuristics is very hard even for the standard JIT,
-            e.g.  the PyPy project tried five different JIT approaches, before finding the one that is working well.
+            e.g. the PyPy project tried a lot of different JIT approaches, before finding the one that is working well.
             Depending on the heuristics here, this may be the most beneficial option for a program, or a big performance
             hit.
 
@@ -728,8 +728,8 @@ dstype successor_d(ds, dstype);
 				\label{fig:struct-pointer-sizeof-reduction}
 			\end{figure}
 
-			In \autoref{fig:struct-pointer-sizeof-reduction} above we dereference structs as arrays of
-			chars, to get to any field, we just take a pointer to a field in the array and cast it to the
+			In \autoref{fig:struct-pointer-sizeof-reduction} we dereference structs as arrays of
+			chars. To get to any field, we just take a pointer to a field in the array and cast it to the
 			right type. So it doesn't really give us any more expressiveness. It would be nice if our
 			program enabled things like comparing structs by more than one condition in one program. We
 			would want to be able to use operations like in \autoref{fig:struct-new}.
@@ -757,10 +757,10 @@ dstype successor_d(ds, dstype);
 				\label{fig:struct-api-change}
 			\end{figure}
 
-            For us to achieve such thing, we need to change how we choose structures for record types. We will check all
+            To achieve such thing, we need to change the way we choose structures for record types. We will check all
             the data structure tuples, of length of the order count, in the cross-product of all data structures. The
             result will be a linked data structure, i.e. a number of data structures, in which elements have pointers to
-            elements in other data structures, representing the same element value - like on
+            elements in other data structures, representing the same element value --- like on
             \autoref{fig:linked-data-structures}. For example, if we have the code from the earlier example
             \autoref{fig:struct-new}, we may have a (Red-Black-Tree, Hashtable) pair, where the RBT is for the $weight$
             order, and the hashtable is for the $height$ order.
@@ -783,14 +783,15 @@ dstype successor_d(ds, dstype);
             argument, it has to perform an operation on both linked data structures. Sometimes order specific
             operations, aside from performing an operation on the data structure responsible for their order, they have
             to update the state in other data structures, e.g. $delete\_max\_d$ after firing has to run a $delete\_d$
-            operation on the element on the other data structures responsible for different orders It doesn't have to
+            operation on the element on the other data structures responsible for different orders. It doesn't have to
             be the same operation, like in the example, $delete\_max\_d$ doesn't have to call $delete\_max\_d$, because
-            it already has the data structure element pointer, and can just call $delete\_d$ - we call the operation
+            it already has the data structure element pointer, and can just call $delete\_d$ --- we call the operation
             that will have the desired effect with the smallest complexity cost. For the final cost of an operation on a
-            linked data structure we take the sum of costs of operations on all the data structures - which is
+            linked data structure we take the sum of costs of operations on all the data structures, which is
             big-O-wise just the most costly operation.
 
-            \todo{rest}
+            \todo{Finish the rest}
+            
 	\subsection{Upper bound on the element count}
 
 		When analyzing the input program, we can try to get the information, if the maximum element count in the
@@ -798,16 +799,16 @@ dstype successor_d(ds, dstype);
 		probably will be undecidable), we can use it to enhance the data structure generated for the program.
 
 		When the element count in the data structure is potentially infinite, we have to create an
-		implementation of the structure, that allocates memory lazily, when it needs the space for new elements.
+		implementation of the structure that allocates memory lazily, when it needs the space for new elements.
 		We can imagine that a structure can allocate one chunk on every insertion and free a chunk on every
-		deletion, or even allocate twice as big chunks and amortize the number of allocations to $O(lg n)$.
+		deletion, or even allocate twice as big chunks and amortize the number of allocations to $O(log \; n)$.
 
 		When we have the information about the element count, we can allocate the whole static buffer for the
-		data structure and this removes the whole cost of allocation during insertions and deletions.
+		data structure, and this removes the whole cost of allocation during insertions and deletions.
 
 		Using the technique described in \autoref{sec:transforming-on-line} we can transform our dynamic
 		allocating data structure in a static one, if we are in a place in the program, from which we can't
-		insert any more elements. This is an example of such program:
+		insert any more elements. The example on \autoref{fig:upper-bound-transform} shows such a program.
 
 		\begin{figure}
 			\lstinputlisting{thesis-pics/upper-bound-transform.c}
@@ -866,13 +867,13 @@ dstype successor_d(ds, dstype);
 		structure for each small combination of those modifications, if we want to return a data structure
 		tailored perfectly to the task. Of course some of the modifications are very data structure specific, so
 		a generalization isn't possible, but for some cases, we can extract a piece of code, like a wrapper for
-        a data structure, that modifies its behavior in some specific way (similar pattern was used in
+        a data structure that modifies its behavior in some specific way (similar pattern was used in
         \cite{Okasaki}).
 
 		\subsubsection{Extremal element cache}
 
-			When we want to be able to lookup extremal elements in the data structure. We don't really have
-			to know the implementation specifics of the data structure, we only need to intercept the calls
+			When we want to be able to lookup extremal elements in the data structure, we don't really have
+			to know the implementation specifics of the data structure. We only need to intercept the calls
 			which insert and delete elements. When we insert an element, we compare it to a cache variable,
 			which keeps the biggest element (if our extremal element is the maximal element) known to be in
 			the data structure.
@@ -896,7 +897,7 @@ dstype successor_d(ds, dstype);
         \subsubsection{Linked elements}\label{sec:gdsm:le}
 
 			When we have a structure that keeps some data, to find a predecessor or a successor, it usually
-			takes $O(n)$ or $O(lg n)$ operations.  To help this we can create an overlay with a doubly
+			takes $O(n)$ or $O(log \; n)$ operations.  To help this we can create an overlay with a doubly
 			linked list on the elements, so our predecessor/successor lookups are $O(1)$. Drawback here is
 			that the cost of insert is increased by searching the successor to link it appropriately.
 
