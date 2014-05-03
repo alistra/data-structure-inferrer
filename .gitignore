@@ -18,3 +18,5 @@ thesis.log
 thesis.pdf
 
 thesis-pics/a.out
+.cabal-sandbox/
+cabal.sandbox.config
