@@ -988,6 +988,55 @@ Hashtable with extreme element caching
 	\end{verbatim}
 	
 	\subsection{Implementation}
+		\subsubsection{Core - Recommend.hs} \label{sec:recommend-impl}
+		The core part of the recommendation engine is actually very simple:
+
+\begin{verbatim}
+recommendDS :: [OperationName] -> IO Structure
+recommendDS opns =  do
+    let sorted = reverse $ sortBy (\x y-> compareDS x y opns) allStructures
+    let bestStructures = head $ groupBy (\x y -> compareDS x y opns == EQ) sorted
+    ridx <- randomRIO (0, length bestStructures - 1)
+    return $ bestStructures !! ridx
+\end{verbatim}
+		The argument \emph{opns :: [OperationName]} of this function is a list of data 
+		structure operations performed on a persistent data structure identity in the 
+		analyzed program. The \emph{allStructures} contains all the data structure definitions
+		available for the recommendation engine. More about \emph{allStructures} is explained
+		in \autoref{sec:all-structures-impl}. The \emph{compareDS} function is an implementation
+		of the ordering in \autoref{data-structure-order}.
+		
+		In this functions elements from \emph{allStructures} are sorted using the \emph{compareDS} order.
+		Then we take the group of first elements that are equal within this ordering --- the structures
+		represent the fastest structures for the persistent data structure identity. We return a random
+		fastest data structure.
+		
+		\subsubsection{C Analyzer - C/Analyzer.hs, Analyzer.hs}
+		This part of the code uses the \emph{language-c} Haskell library to parse C code. 
+		It analyzes the functions in the source files and extracts the data and passes it
+		to the Core part in an easily understandable format as $DSU$s like defined in \autoref{dsu-definition}.
+
+		To run the whole analysis, we call the \emph{analyzeC} function. It takes the file path as an argument.
+\begin{verbatim}
+		analyzeC :: FilePath -> IO [DSInfo]
+\end{verbatim}
+		The return value is a list of $DSInfo$s which are just lists of $DSU$s with all the names, 
+		which the particular persistent data structure identity can be called. This information is 
+		sufficient to pass it to the Core described in \autoref{sec:recommend-impl}.
+
+		The \emph{analyzeC} function traverses the whole abstract syntax tree of the program, which
+		is obtained from the \emph{language-c} parser. It recurses through C statements, expressions 
+		and other language parts as described in the C99 standard. It gathers the $DSU$s and groups them
+		according to rules described in \autoref{dsu-definition}.
+				
+		\subsubsection{Data structure definitions - AllStructures.hs} \label{sec:all-structures-impl}
+		This file stores all structure definitions available to the recommendation engine. 
+		This is how an example definition looks like:
+		
+		This part also implements the technique described in \autoref{} that provides generic 
+		data structure modifications, like e.g. extremal element caching:
+		
+		
 \end{appendices}
 
 \newpage
