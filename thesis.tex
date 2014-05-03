@@ -2,9 +2,12 @@
 \usepackage[utf8]{inputenc}
 \usepackage[colorinlistoftodos, textwidth=2cm, shadow]{todonotes}
 \usepackage{listings}
+\usepackage{appendix}
 \usepackage[colorlinks=true,linkcolor=blue]{hyperref}
 \usepackage[section]{placeins}
-\lstset{language=C}
+\lstset{
+	language=C
+  }
 
 \topmargin 0pt
 \advance \topmargin by -\headheight
@@ -909,18 +912,6 @@ dstype successor_d(ds, dstype);
 				\label{fig:linked-cache}
 			\end{figure}
 
-\section{Program}
-
-	The framework has a few modes of working:
-	\begin{itemize}
-		\item Recommendation mode - the framework analyzes the input files and the data structure operations in
-			them, then outputs the recommended data structure on standard output
-		\item Advice mode - the framework checks if any small change in the data structure operations would give
-			the program a speed boost
-		\item Compile mode - works as the Recommendation mode, but instead of printing the data structure to
-			standard output, it compiles the files and links it with the chosen structure implementation.
-	\end{itemize}
-
 \section{Future work} \label{sec:future}
 	It may be a good idea to rewrite the framework to analyze LLVM\cite{LLVM} intermediate representation internally,
     instead of the C language abstract syntax tree. This could yield better results because of the optimizations that clang
@@ -933,6 +924,72 @@ dstype successor_d(ds, dstype);
     Framework can be easily generalized to substitute data structure comparison functions, so one could write a function
     that takes e.g. I/O into account, or any combination of I/O and big-O complexity or even something more complicated.
 
+\newpage
+\begin{appendices}
+\section{Technical Documentation}
+	\subsection{Compilation}
+	To install \emph{dsinf} you need \emph{cabal} --- a haskell build manager. The preferred way of obtaining
+	\emph{cabal} is by downloading the Haskell Platform (\href{http://www.haskell.org/platform/}{http://www.haskell.org/platform/})
+	--- it has cabal bundled inside. You can also use a package manager of your favorite Linux distribution.
+	
+	After installing \emph{cabal}, clone the repository and build by running the following commands:
+	  	\begin{lstlisting}
+git clone https://github.com/alistra/data-structure-inferrer
+cd data-structure-inferrer/
+make dsinf
+		\end{lstlisting}
+	This will clone the \emph{dsinf} git repository and build the package using a \emph{cabal sandbox}.
+	This can take a little while, but all the dependencies are installed locally and won't affect your 
+	haskell setup in the system. This will install the \emph{dsinf} binary in your current working directory.
+	\subsection{Usage}
+
+	The program has a few modes of working:
+	\begin{itemize}
+		\item Recommendation mode - the framework analyzes the input files and the data structure operations in
+			them, then outputs the recommended data structure on standard output
+		\item Advice mode - the framework checks if any small change in the data structure operations would give
+			the program a speed boost
+		\item Compile mode - works as the Recommendation mode, but instead of printing the data structure to
+			standard output, it compiles the files and links it with the chosen structure implementation.
+	\end{itemize}
+	
+	We can trigger the modes using appropriate flags:
+	
+	\begingroup
+    \fontsize{8pt}{12pt}\selectfont
+    \begin{verbatim}  
+% ./dsinf -h
+dsinf [-OPT1 [VAL1] [-OPT2 [VAL2] [...]] [-- [CCOPTS]]
+  -o file  --output=file  Output file
+  -r       --recommend    Give recommendations about the data structure in the supplied code (default)
+  -a       --advice       Give advice about the data structure in the supplied code
+  -c       --compile      Compile the code with recommended structure linked
+  -i       --inline       Inline the code implementing the recommended structure in the supplied code
+  -v       --verbose      Enable verbose messages
+  -h       --help         Show help
+
+CCOPTS are passed directly to the compiler
+    \end{verbatim}  
+\endgroup
+	
+	We can run \emph{dsinf} on some test files just to check if everything is working alright.
+	\begin{verbatim}
+% ./dsinf C/tests/d1_delmax_d2_max.c
+C/tests/d1_delmax_d2_max.c:
+The recommended structure for:
+d1 in main
+is:
+Red-Black Trees
+The recommended structure for:
+d2 in main
+is:
+Hashtable with extreme element caching
+	\end{verbatim}
+	
+	\subsection{Implementation}
+\end{appendices}
+
+\newpage
 \begin{thebibliography}{9}
 	\bibitem{Wids} Wikipedia - http://en.wikipedia.org/wiki/Data\_structure
     \bibitem{Wipgo} Wikipedia - http://en.wikipedia.org/wiki/Profile-guided\_optimization
