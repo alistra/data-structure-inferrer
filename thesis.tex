@@ -188,7 +188,7 @@ dstype successor_d(ds, dstype);
 
 		where
 
-		\begin{eqnarray}
+		\begin{eqnarray} \label{eqn:linlog}
 			(k, \; l) \; means \; O(n^k \log^l{ n}).
 		\end{eqnarray}
 
@@ -1018,7 +1018,7 @@ recommendDS opns =  do
 
 		To run the whole analysis, we call the \emph{analyzeC} function. It takes the file path as an argument.
 \begin{verbatim}
-		analyzeC :: FilePath -> IO [DSInfo]
+analyzeC :: FilePath -> IO [DSInfo]
 \end{verbatim}
 		The return value is a list of $DSInfo$s which are just lists of $DSU$s with all the names, 
 		which the particular persistent data structure identity can be called. This information is 
@@ -1032,9 +1032,43 @@ recommendDS opns =  do
 		\subsubsection{Data structure definitions - AllStructures.hs} \label{sec:all-structures-impl}
 		This file stores all structure definitions available to the recommendation engine. 
 		This is how an example definition looks like:
+\begin{verbatim}
+-- | Linked list
+ll :: Structure
+ll = DS "Linked List"       [
+                            Op BoundByRef           (LinLog 1 0, N),
+                            Op DecreaseValByRef     (LinLog 0 0, N),
+                            Op DeleteByRef          (LinLog 0 0, N),
+                            Op DeleteExtremalVal    (LinLog 1 0, N),
+                            Op Difference           (LinLog 2 0, N),
+                            Op Empty                (LinLog 0 0, N),
+                            Op ExtremalVal          (LinLog 1 0, N),
+                            Op FindByVal            (LinLog 1 0, N),
+                            Op InsertVal            (LinLog 0 0, N),
+                            Op Intersection         (LinLog 2 0, N),
+                            Op Map                  (LinLog 1 0, N),
+                            Op Size                 (LinLog 0 0, N),
+                            Op SymDifference        (LinLog 2 0, N),
+                            Op Union                (LinLog 0 0, N),
+                            Op UpdateByRef          (LinLog 0 0, N)
+                                                                    ]
+\end{verbatim}
+		The \emph{LinLog} constructor is stores the asymptotic complexity as described in 
+		\autoref{eqn:linlog}. The \emph{N} part is a marker, that this is a normal complexity,
+		as opposed to an expected or amortized complexity.
 		
-		This part also implements the technique described in \autoref{} that provides generic 
+		This part also implements the technique described in \autoref{sub:gdsm} that provides generic 
 		data structure modifications, like e.g. extremal element caching:
+\begin{verbatim}
+-- | A function that adds an extremal element cache to a data structure
+extremalElemCache :: Structure -> Structure
+extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") ops' where
+    extVal = fromJust $ find (\dsop -> getOpName dsop == ExtremalVal) ops
+    delByRef = fromJust $ find (\dsop -> getOpName dsop == DeleteByRef) ops
+    ops' = [Op DeleteByRef (max (getComplexity extVal) (getComplexity delByRef)),
+            Op ExtremalVal (LinLog 0 0, N)] ++
+            filter (\dsop -> getOpName dsop `notElem` [ExtremalVal, DeleteByRef]) ops
+\end{verbatim}
 		
 		
 \end{appendices}
