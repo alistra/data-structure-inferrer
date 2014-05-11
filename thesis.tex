@@ -1069,6 +1069,14 @@ extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") o
             Op ExtremalVal (LinLog 0 0, N)] ++
             filter (\dsop -> getOpName dsop `notElem` [ExtremalVal, DeleteByRef]) ops
 \end{verbatim}
+	The \emph{extremalElemCache} function takes a data structure definition as an input and 
+	return a data structure definition with modified costs according to the generic modification.
+	As adding an extremal element cache will speed up (to constant time) the lookup of an 
+	extremal value, the resulting data structure definition has the cost of \emph{ExtremalVal}
+	as \emph{(LinLog 0 0, N)} --- normal constant time. The tradeoff in this case is that, 
+	the \emph{DeleteByRef} operation has to update the cache, if it removed the extremal value.
+	Which adds the cost of the old \emph{ExtremalVal} (the new is constant) to the cost of 
+	deletion.
 		
 		
 \end{appendices}
