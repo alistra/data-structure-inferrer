@@ -5,6 +5,10 @@
 \usepackage{appendix}
 \usepackage[colorlinks=true,linkcolor=blue]{hyperref}
 \usepackage[section]{placeins}
+\usepackage{color}
+\definecolor{darkgreen}{rgb}{0,0.4,0}
+
+
 \lstset{
 	language=C
   }
@@ -885,7 +889,47 @@ dstype successor_d(ds, dstype);
 			element is the current maximum, we have to find the new maximal element from the rest of
 			elements, which can be asymptoticly more costly than the delete itself.
 
-			\missingfigure{table of cost changes}
+				\begin{table}[h!]
+				\centering
+				\begin{tabular}{|l|l|l|}
+					\hline
+					\multicolumn{3}{|c|}{Red-Black Trees cost changes with cache} \\
+					\hline
+					Operation & Complexity & Complexity with cache \\
+					\hline
+					Insert 	        & $O(log \; n)$ & $O(log \; n)$ \\
+					Update          & $O(log \; n)$ & $O(log \; n)$ \\
+					Delete	        & $O(log \; n)$ & $O(log \; n)$ \\
+					Find Max 	& $O(log \; n)$ & {\color{darkgreen}$O(1)$}\\
+					Delete Max	& $O(log \; n)$ & $O(log \; n)$ \\
+					Search 		& $O(log \; n)$ & $O(log \; n)$ \\
+					\hline
+				\end{tabular}
+				\caption{A table showing the cost changes of Red-Black trees; complexities without and with the
+				extremal element cache}
+				\label{tab:rbt-cost-change}
+			\end{table}
+
+				\begin{table}[h!]
+				\centering
+				\begin{tabular}{|l|l|l|}
+					\hline
+					\multicolumn{3}{|c|}{Hashtables cost changes with cache} \\
+					\hline
+					Operation & Complexity & Complexity with cache \\
+					\hline
+					Insert 	        & $O(1)$ & $O(1)$ \\
+					Update          & $O(1)$ & {\color{red}$O(n)$} \\
+					Delete	        & $O(1)$ & {\color{red}$O(n)$} \\
+					Find Max 	& $O(n)$ & {\color{darkgreen}$O(1)$}\\
+					Delete Max	& $O(n)$ & $O(n)$ \\
+					Search 		& $O(1)$ & $O(1)$ \\
+					\hline
+				\end{tabular}
+				\caption{A table showing the cost changes of Red-Black trees; complexities without and with the
+				extremal element cache}
+				\label{tab:rbt-cost-change}
+			\end{table}
 
 			\begin{figure}
 				\lstinputlisting{thesis-pics/elem-cache.c}
@@ -902,15 +946,9 @@ dstype successor_d(ds, dstype);
 			When we have a structure that keeps some data, to find a predecessor or a successor, it usually
 			takes $O(n)$ or $O(log \; n)$ operations.  To help this we can create an overlay with a doubly
 			linked list on the elements, so our predecessor/successor lookups are $O(1)$. Drawback here is
-			that the cost of insert is increased by searching the successor to link it appropriately.
-
-			\begin{figure}
-				\lstinputlisting{thesis-pics/linked-elements.c}
-
-				\caption{An example implementation of the linked elements data structure wrapper}
-
-				\label{fig:linked-cache}
-			\end{figure}
+			that the cost of insert is increased by searching the successor to link it appropriately. Cost of
+			update is also affected. Delete cost stays the same, becasue we can wire the elements in $O(1)$, 
+			just like the removal of an element in a double linked list.
 
 \section{Future work} \label{sec:future}
 	It may be a good idea to rewrite the framework to analyze LLVM\cite{LLVM} intermediate representation internally,
