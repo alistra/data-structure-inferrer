@@ -1,4 +1,7 @@
 # About the project
+
+Link to thesis: http://s3.amazonaws.com/alistra-thesis/current/thesis.pdf
+
 This project is meant to be a compiler feature/wrapper that analyzes your code and chooses the best data structure depending on your source code. It analyzes the functions used on a wildcard data structure and chooses the type of structure that minimizes the time complexity on compile time.
 
 It can also work as a standalone source code analyzer. It recommends you the best data structure and advises which operation to cut out, to get a better performance.
