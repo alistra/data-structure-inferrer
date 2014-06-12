@@ -6,6 +6,7 @@
 \usepackage[colorlinks=true,linkcolor=blue]{hyperref}
 \usepackage[section]{placeins}
 \usepackage{color}
+
 \definecolor{darkgreen}{rgb}{0,0.4,0}
 
 
@@ -811,17 +812,18 @@ dstype successor_d(ds, dstype);
 		deletion, or even allocate twice as big chunks and amortize the number of allocations to $O(log \; n)$.
 
 		When we have the information about the element count, we can allocate the whole static buffer for the
-		data structure, and this removes the whole cost of allocation during insertions and deletions.
+		data structure, and this removes the whole cost of allocation during insertions and deletions. The
+		example on \autoref{fig:upper-bound-transform} shows such a program.
 
 		Using the technique described in \autoref{sec:transforming-on-line} we can transform our dynamic
 		allocating data structure in a static one, if we are in a place in the program, from which we can't
-		insert any more elements. The example on \autoref{fig:upper-bound-transform} shows such a program.
+		insert any more elements. 
 
 		\begin{figure}
 			\lstinputlisting{thesis-pics/upper-bound-transform.c}
 
-			\caption{An example showing a situation, where beneficial would be to transform a dynamic data
-			structure into a similar structure, but with all memory statically allocated already}
+			\caption{An example showing a situation, where beneficial would be to create a statically allocated data
+			structure instead of a dynamically allocated, because of statically known element count}
 
 			\label{fig:upper-bound-transform}
 		\end{figure}
