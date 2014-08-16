@@ -1,5 +1,6 @@
 \documentclass[a4paper,11pt]{article}
-\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
 \usepackage[colorinlistoftodos, textwidth=2cm, shadow]{todonotes}
 \usepackage{listings}
 \usepackage{appendix}
@@ -8,7 +9,7 @@
 \usepackage{color}
 
 \definecolor{darkgreen}{rgb}{0,0.4,0}
-
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
 \lstset{
 	language=C
@@ -25,16 +26,99 @@
 \parindent 0in
 \parskip 1.5ex
 
-\title{\emph{dsinf}: Source Based Data Structure Inference}
-\author{Aleksander Balicki}
-\date{\today}
-
 \begin{document}
+
+%Polish title page
+
+\begin{titlepage}
+\begin{center}
+
+\textsc{\LARGE \\ Uniwersytet Wrocławski }\\
+Wydział Matematyki i Informatyki \\
+Instytut Informatyki \\[1.5cm]
+
+\textsc{\Large Praca Magisterska}\\[0.5cm]
+
+\HRule \\[0.4cm]
+{ \huge \bfseries \emph{dsinf}: Inferencja stuktur danych oparta na kodzie źródłowym \\[0.4cm] }
+
+\HRule \\[1.5cm]
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Autor:}\\
+Aleksander \textsc{Balicki}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Promotor:} \\
+Prof. Witold \textsc{Charatonik}
+\end{flushright}
+\end{minipage}
 
 \vfill
 
-\maketitle
+{\large Wrzesień 2014}
+\thispagestyle{empty}
+\end{center}
+\end{titlepage}
 
+% Polish abstract
+\renewcommand{\abstractname}{Streszczenie}
+\begin{abstract}
+
+	Gdy chcemy przechowywać dane, większość dzisiejszych popularnych języków programowania posiada już zaimplementowane biblioteki z wieloma dostępnymi strukturami danych. 
+	Programiści po prostu muszą nauczyć się, kiedy należy używać danej struktury. W niektórych przypadkach, ten wybór jest na tyle prosty,
+	że program mógłby automatycznie dobrać najlepszą strukturę danych. Praca ta opisuje \emph{dsinf} - framework do dobierania najlepszej struktury danych pasującej do zadania na podstawie kodu źródłowego programu w języku C. \emph{dsinf} analizuje przypadki użycia struktur danych w całym programie i proponuje najszybszą. 
+	Aby jeszcze bardziej poprawić jakość sugestii, używa danych profilera.
+
+\end{abstract}
+\thispagestyle{empty}
+\pagebreak
+
+% English title page
+
+\begin{titlepage}
+\begin{center}
+
+\textsc{\LARGE \\ University of Wrocław} \\
+Department of Matemathics and Computer Science \\
+Computer Science Institute\\[1.5cm]
+
+\textsc{\Large Master's Thesis}\\[0.5cm]
+
+\HRule \\[0.4cm]
+{ \huge \bfseries \emph{dsinf}: Source based data structure inference \\[0.4cm] }
+
+\HRule \\[1.5cm]
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Author:}\\
+Aleksander \textsc{Balicki}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Supervisor:} \\
+Prof. Witold \textsc{Charatonik}
+\end{flushright}
+\end{minipage}
+
+\vfill
+
+{\large September 2014}
+\thispagestyle{empty}
+\end{center}
+\end{titlepage}
+
+\vfill
+
+\pagebreak
+
+% English abstract
+\renewcommand{\abstractname}{Abstract}
 \begin{abstract}
 
     When you need to store data in a data structure, most of popular languages
@@ -48,7 +132,7 @@
     To further enhance the quality of the suggestion, it uses profiler data.
 
 \end{abstract}
-
+\thispagestyle{empty}
 \pagebreak
 
 \tableofcontents
@@ -65,7 +149,7 @@
 	The implementation of a data structure is a realization of some data structure interface in some programming
 	language, that is consistent with the semantics.
 
-	There is a lot different known types of data structures:
+	There is a lot of different known types of data structures:
 	\begin{itemize}
 		\item Map/Associative array/Dictionary is a data structure for storing $(key,\;value)$ pairs, it allows
 			insertion, deletion, modification and lookup,
@@ -86,7 +170,7 @@
 		\item others, which usually are a modification or a mix of previous ones.
 	\end{itemize}
 
-	The different implementation of those data structures make it possible, that specific operations run time is
+	A different implementation of those data structures makes it possible, that specific operations run time is
 	lower than the others. So there is no data structure perfect for all the tasks.
 
 	\subsection{What is dsinf?} \label{sub:intro}
@@ -928,7 +1012,7 @@ dstype successor_d(ds, dstype);
 					Search 		& $O(1)$ & $O(1)$ \\
 					\hline
 				\end{tabular}
-				\caption{A table showing the cost changes of Red-Black trees; complexities without and with the
+				\caption{A table showing the cost changes of Hashtables; complexities without and with the
 				extremal element cache}
 				\label{tab:rbt-cost-change}
 			\end{table}
@@ -966,7 +1050,8 @@ dstype successor_d(ds, dstype);
 
 \newpage
 \begin{appendices}
-\section{Technical Documentation}
+\section{Implementation}
+	\subsection{Progress}
 	\subsection{Compilation}
 	To install \emph{dsinf} you need \emph{cabal} --- a haskell build manager. The preferred way of obtaining
 	\emph{cabal} is by downloading the Haskell Platform (\href{http://www.haskell.org/platform/}{http://www.haskell.org/platform/})
@@ -1027,7 +1112,7 @@ is:
 Hashtable with extreme element caching
 	\end{verbatim}
 	
-	\subsection{Implementation}
+	\subsection{System Architecture}
 		\subsubsection{Core - Recommend.hs} \label{sec:recommend-impl}
 		The core part of the recommendation engine is actually very simple:
 
@@ -1115,7 +1200,7 @@ extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") o
 	extremal value, the resulting data structure definition has the cost of \emph{ExtremalVal}
 	as \emph{(LinLog 0 0, N)} --- normal constant time. The tradeoff in this case is that, 
 	the \emph{DeleteByRef} operation has to update the cache, if it removed the extremal value.
-	Which adds the cost of the old \emph{ExtremalVal} (the new is constant) to the cost of 
+	This adds the cost of the old \emph{ExtremalVal} (the new is constant) to the cost of 
 	deletion.
 		
 		
