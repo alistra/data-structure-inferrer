@@ -901,8 +901,7 @@ dstype successor_d(ds, dstype);
 	\subsection{Upper bound on the element count}
 
 		When analyzing the input program, we can try to get the information, if the maximum element count in the
-		data structure is bounded by some constant. If we can obtain such an information (for most programs it
-		probably will be undecidable), we can use it to enhance the data structure generated for the program.
+		data structure is bounded by some constant. If we can obtain such an information (in general it is of course undecidable), we can use it to enhance the data structure generated for the program.
 
 		When the element count in the data structure is potentially infinite, we have to create an
 		implementation of the structure that allocates memory lazily, when it needs the space for new elements.
@@ -912,10 +911,6 @@ dstype successor_d(ds, dstype);
 		When we have the information about the element count, we can allocate the whole static buffer for the
 		data structure, and this removes the whole cost of allocation during insertions and deletions. The
 		example on \autoref{fig:upper-bound-transform} shows such a program.
-
-		Using the technique described in \autoref{sec:transforming-on-line} we can transform our dynamic
-		allocating data structure in a static one, if we are in a place in the program, from which we can't
-		insert any more elements. 
 
 		\begin{figure}
 			\lstinputlisting{thesis-pics/upper-bound-transform.c}
@@ -927,9 +922,7 @@ dstype successor_d(ds, dstype);
 		\end{figure}
 
 		In \autoref{fig:upper-bound-transform} after the first loop, there are no more insertions into the data
-		structure, so we can mark this spot and when we the control goes to that place, we transform the data
-		structure into a static version of it, allocating a big chunk of memory and deallocating all that was
-		left. This way to the end of the program we won't have to do any allocations.
+		structure, so if we can detect it during our analysis, then we can create a statically allocated version of the data structure.
 
 	\subsection{Minimal element count threshold}
 
