@@ -10,9 +10,17 @@ int main()
 	printf("%d\n", max_d(global_ds));
 	insert_d(global_ds2, 7);
 	delete_d(global_ds2, 5);
+	delete_d(global_ds2, 5);
+	f();
 }
 
-//yielding 	[(global_ds, insert_d), (global_ds, delete_max_d),
+void f() {
+	update_d(global_ds2, 7, 2);
+}
+
+//yielding:
+//       [(global_ds, insert_d), (global_ds, delete_max_d),
 //		 (global_ds, max_d),
-//	  	 (global_ds2, indert_d), (global_ds2, delete_d)]
+//	  	 (global_ds2, indert_d), (global_ds2, delete_d),
+//       (global_ds2, delete_d), (global_ds2, update_d)]
 

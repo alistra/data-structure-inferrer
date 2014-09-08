@@ -11,8 +11,10 @@ void f(ds parameter_ds)
 int main()
 {
 	ds declared_ds;
+	update_d(declared_ds, 5, 7)
 	f(declared_ds);
 }
 
-//yielding: 	[(parameter_ds, insert_d), (parameter_ds, delete_max_d),
+//yielding:
+//  	[(parameter_ds, insert_d), (parameter_ds, delete_max_d),
 //		(parameter_ds, max_d)]

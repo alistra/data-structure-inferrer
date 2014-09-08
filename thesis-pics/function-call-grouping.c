@@ -21,14 +21,16 @@ int main()
 	update_d(ds3, 5, 7);
 }
 
-//parameter rule yields [(parameter_ds, delete_max_d), (parameter_ds, min_d)]
+//parameter rule yields:
+//		[(parameter_ds, delete_max_d), (parameter_ds, min_d)]
 //
-//declared rule yields [(ds1, insert_d), (ds1, max_d),
-//			(ds2, insert_d),
-//			(ds3, update_d)]
+//declared rule yields:
+//		[(ds1, insert_d), (ds1, max_d),
+//		(ds2, insert_d),
+//		(ds3, update_d)]
 //
 //grouping yields following groups:
-// [(ds1, insert_d), (ds1, max_d), (parameter_ds,
+// 		[(ds1, insert_d), (ds1, max_d), (parameter_ds,
 // 		 delete_max_d), (parameter_ds, min_d)],
-// [(ds2, insert_d), (parameter_ds, delete_max_d),
+// 		[(ds2, insert_d), (parameter_ds, delete_max_d),
 // 		 (parameter_ds, min_d), (ds3, update_d)]

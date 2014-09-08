@@ -363,17 +363,17 @@ dstype successor_d(ds, dstype);
 			\label{tab:rbt}
 		\end{table}
 
-		When trying to find the best suited data structure for a given program $P$, we look for data structure
-		uses in $P$. Let
+		When trying to find the best suited data structure for a given program $p$, we look for data structure
+		uses in $p$. Let
 
 		\begin{equation} \label{dsu-type}
-			DSU(P) :: [P(DataStructureOperation)]
+			DSU(p) :: [P(DataStructureOperation)]
 		\end{equation}
 
 		be a set of groups of data structure operations. One group represents operations on one persistent
-        data structure identity in the source code of $P$.
+        data structure identity in the source code of $p$.
 
-		For every $ds \in DSU(P)$, we define a parametrized comparison operator for data structures $<_{ds}$
+		For every $ds \in DSU(p)$, we define a parametrized comparison operator for data structures $<_{ds}$
 		defined as:
 
 		\begin{center}
@@ -385,61 +385,66 @@ dstype successor_d(ds, dstype);
 			$\Updownarrow$
 
 			\begin{equation} \label{data-structure-order}
-|\{(o, c_1) \in d_1 | o \in ds \wedge o \texttt{ used in $P$} \wedge (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < 0.5 *
- |\{o \in ds | o \texttt{ used in $P$} \}|
+|\{(o, c_1) \in d_1 | o \in ds \wedge o \texttt{ used in $p$} \wedge (o,c_2) \in d_2 \wedge c_1 < c_2 \}| < 0.5 *
+ |\{o \in ds | o \texttt{ used in $p$} \}|
 			\end{equation}
 
 		\end{center}
 
-        From data structures $d_1$ and $d_2$ we compare costs ($c_1$, $c_2$ respectively) of all the operations.
+		The \autoref{data-structure-order} defines an order we use for the comparison of data
+		structures. Intuitively a data structure $d_1$ is better than a data stucture $d_2$ if
+		it implements "faster" at least half of types of operations used in $p$.
 
-		If a data structure implements more operations "faster" then that structure is higher in the order defined
-        in \autoref{data-structure-order}.
-
-		For a fixed P, we have a preorder on data structures induced by $<_{ds}$ and we can sort data structures
+		For a fixed $p$, we have a preorder on data structures induced by $<_{ds}$ and we can sort data structures
 		available to the framework using this order. The maximum element is the best data structure
 		implementation for the persistent data structure identity.
 
 	\subsection{Collecting the program data} \label{dsu-definition}
 
-		In \autoref{dsu-type} the type of the $DSU()$ operation was mentioned, this section shows, how $DSU()$ is
+		In \autoref{dsu-type} the type of the $DSU()$ operation was mentioned. This section shows, how $DSU()$ is
 		defined. We're not considering the problem of 2 different variables having the same name and/or shadowing each
         other, to evade this we can just rename each variable to an UUID, and then remember the mapping for nicer
         output.
 
-		Let $DSOPS(P) :: [(VariableName, DataStructureOperation)]$ be the union of:
+		Let $DSOPS(p) :: [(VariableName, DataStructureOperation)]$ be the union of:
 		\begin{enumerate}
 
-			\item \label{it:global} $\{(g, o)\; |\; g \texttt{ is a global data structure variable in $P$ }
-				\wedge \\ o \texttt{ is an operation performed on $g$, somewhere in $P$ } \}$
+			\item \label{it:global} $\{(g, o)\; |\; g \texttt{ is a global data structure variable in $p$ }
+				\wedge \\ o \texttt{ is an operation performed on the value of $g$, somewhere in $p$ } \}$
 
 			\item \label{it:auto} $\{(d, o)\; |\; d \texttt{ is a data structure declared somewhere } \\
-				\texttt{ in a body of a function $f$ in $P$ } \wedge \\ o \texttt{ is an operation
-				performed on $d$, somewhere in $f$ } \}$
+				\texttt{ in a body of a function $f$ in $p$ } \wedge \\ o \texttt{ is an operation
+				performed on the value of $d$, somewhere in $f$ } \}$
 
-			\item \label{it:param} $\{(p, o)\; |\; p \texttt{ is a formal parameter of data structure type,}
-				\\ \texttt{of a function $f$ in $P$ } \wedge \\ o \texttt{ is an operation performed on
-				$p$, somewhere in $f$ } \}$
+			\item \label{it:param} $\{(p', o)\; |\; p' \texttt{ is a formal parameter of data structure type,}
+				\\ \texttt{of a function $f$ in $p$ } \wedge \\ o \texttt{ is an operation performed on the value of 
+				$p'$, somewhere in $f$ } \}$
 
 		\end{enumerate}
+
+		Example of the first rule is on \autoref{fig:global-collection-rule}. In the example there are two global data structure variables declared ($global\_ds\_1$, $global\_ds\_2$) and in the bodies of functions we perform some operations on them. The rule returns list of pairs of data structures and operations as they were called.
+
+		Example of the second rule is on \autoref{fig:declared-collection-rule}. This rule is similiar to the first rule, but it works on variables with an auto storage specifier (local variables in C code) like the $declared\_ds$ variable in the example.
+
+		Example of the third rule is on \autoref{fig:parameter-collection-rule}. This rule works similiarly to the two above, only gathering results on variables declared as a function parameter of any function in the program, like the $parameter\_ds$ variable in the example.
 
         \begin{figure}[h]
             \lstinputlisting{thesis-pics/collecting_global.c}
 
-            \caption{Shows sn example of the global variables collection rule}
+            \caption{Global variables collection rule}
 
             \label{fig:global-collection-rule}
         \end{figure}
         \begin{figure}[h]
             \lstinputlisting{thesis-pics/collecting_declared.c}
-            \caption{Shows sn example of the declared variables collection rule}
+            \caption{Declared variables collection rule}
 
             \label{fig:declared-collection-rule}
         \end{figure}
         \begin{figure}[h]
             \lstinputlisting{thesis-pics/collecting_function.c}
 
-            \caption{Shows sn example of the function parameters collection rule}
+            \caption{Function parameters collection rule}
 
             \label{fig:parameter-collection-rule}
         \end{figure}
@@ -447,41 +452,51 @@ dstype successor_d(ds, dstype);
         \clearpage
 
 
-		We want to group the elements in $DSOPS(P)$ to detect the persistent identities \cite{Okasaki} of
+		We want to group the elements in $DSOPS(p)$ to detect the persistent identities \cite{Okasaki} of
 		data structures, meaning that in one group, there will be data structure operations conducted on one
 		data structure from its allocation, to deallocation or the end of the program, counting in passing the structure as a
 		parameter to another function or copying the pointer to the structure.
+
+		$DSU(p)$ is the list of groups created in this step. After this operation, each group has operations performed on the same persistent identity of a data structure. For every such group we find the best matching data structure like shown in 
+		\autoref{sec:choose-ds}.
 
 		To group the operations:
 		\begin{itemize}
 
             \item \textbf{Persistent Identities} - for every two pairs $(d_1, o_1)$ and $(d_2, o_2)$ created using
-                \autoref{it:global} or \autoref{it:auto}, we put them in the same group if $d_1 = d_2$.
+                \autoref{it:global} or \autoref{it:auto}, we put them in the same group if $d_1 = d_2$. This rule for the example \autoref{fig:global-collection-rule} would group all the operations on $global\_ds\_1$ into one group, and all the operations on $global\_ds\_2$ into another.
 
             \item \textbf{Function calls} - for every pair $(p, o_1)$ that was created by using \autoref{it:param}
                 from function $f$, which was called with the actual data structure parameter $d$ as the formal parameter
                 $p$, we put $o_1$ into the group of operations on $d$.
+                This rule for the example \autoref{fig:parameter-collection-rule} would group all the operations on $declared\_ds$ and $parameter\_ds$ into one group. More complex example is described on \autoref{fig:function-call-grouping}.
 
             \item \textbf{Copy propagation} - for every $(do, o_1)$ and $(dc, o_2)$, where the $dc$ variable was
-                obtained by copying the value of the variable $do$, we put $o_1$ and $o_2$ in the same group.
+                obtained by copying the value of the variable $do$, we put $o_1$ and $o_2$ in the same group. On \autoref{fig:copy-grouping} this rule would group 
+                $declared\_ds$ and $copied\_ds$ into one group.
 
-            \item \textbf{Uniqueness} - for every group, we delete repeating elements
+            \item \textbf{Uniqueness} - for every group, we delete repeating elements. We notice that in example \autoref{fig:global-collection-rule} the method yields a list with $(global\_ds\_2, delete\_d)$ two times. This rule takes care of that and leaves only one.
 
 		\end{itemize}
 
         \begin{figure}[h]
             \lstinputlisting{thesis-pics/function-call-grouping.c}
 
-            \caption{An example of using the function call grouping rule}
+            \caption{Function call grouping rule}
 
             \label{fig:function-call-grouping}
         \end{figure}
 
-        \clearpage
 
-		$DSU(P)$ is the list of those groups. After this operation, each group has operations performed on the
-		same persistent identity of a data structure. For every such group we find the best matching data
-		structure like shown in \autoref{sec:choose-ds}.
+        \begin{figure}[h]
+            \lstinputlisting{thesis-pics/grouping_copy.c}
+
+            \caption{Copy propagation grouping rule}
+
+            \label{fig:copy-grouping}
+        \end{figure}
+
+        \clearpage
 
 
 \pagebreak
@@ -597,23 +612,23 @@ dstype successor_d(ds, dstype);
 			\autoref{dsu-type} to:
 
 			\begin{equation}
-				DSU_w(P) :: [(VariableName, DataStructureOperation, Int)]
+				DSU_w(p) :: [(VariableName, DataStructureOperation, Int)]
 			\end{equation}
 
-			This change introduces weights for data structure operations in program $P$. We can use the
-			additional $Int$ field to store specified weight of the operation.  For operations that are used
+			This change introduces weights for data structure operations in program $\mathit{p}$. We can use the
+			additional $\mathit{Int}$ field to store specified weight of the operation. For operations that are used
 			multiple times, we sum the weights and the resulting sum is the value for that operation.
 
 			The $DSU()$ definition needs a change from \autoref{dsu-definition}:
 
 			\begin{itemize}
-				\item Every rule in $DSOPS(P)$ now adds a triple, where the additional argument is
+				\item Every rule in $DSOPS(p)$ now adds a triple, where the additional argument is
 					weight obtained by using a method from \autoref{sec:pragmas} or
-					\autoref{sec:pgo}
+					\autoref{sec:pgo}.
 
 				\item The last step of grouping, which removed repeated elements, now sums up the weights
 					of the same operation elements and substitutes it with a new element with the
-					sum as its weight
+					sum as its weight.
 			\end{itemize}
 
             The change the definition of \autoref{data-structure-order} is needed. We could still simply compare data
@@ -625,13 +640,13 @@ dstype successor_d(ds, dstype);
                 \lstinputlisting{thesis-pics/dsu-weight-bad-example.c}
 
                 \caption{Example for weighted data structure choice algorithm, using pragmas API; the weight is
-                counted per call site, not per function call, so the weight won't be $x^2$, but $x$ for $search\_d$ }
+                counted per call site, not per function call, so the weight won't be $x^2$, but $x$ for $search\_d$ .}
 
                 \label{fig:dsu-weight-bad-example}
             \end{figure}
 
             Let's consider the class of programs, like on \autoref{fig:dsu-weight-bad-example}, but with different $n$
-            and $x$ values. Assuming for simplicity that we ignore the insertions and the complexity functions of $search\_d$,
+            and $x$ values. Assume for simplicity that we ignore the insertions and the complexity functions of $search\_d$,
             $delete\_max\_d$ and $delete\_min\_d$ are $log_2 n$, $log_2 n$, $log_2 n$ for Red Black Trees and $1$, $n$ and $n$
             for Hashtables respectively --- we discard big-O constants. Then, the answer to the question which data structure 
             is better for this case can be stated as the inequality:
@@ -694,14 +709,13 @@ dstype successor_d(ds, dstype);
 			solely use the source code, PGO uses the results of test runs of the instrumented program to
             optimize the final generated code \cite{Wipgo}.
 
-            Usually the technique is used for optimizing hot loops and if statements, the binary saves logs of it
+            Usually the technique is used for optimizing hot loops and if statements. The binary saves logs of it
             working and the lines which are hit more, then a system-wide daemon can recompile the parts of the binary to
             make it faster for the common case.
 
 			If the user has test data, he can run against his program, we can take advantage of that.  First
 			we choose the best data structure using an unmodified method and link some library to the
-			executable. Of course this doesn't have to be the best data structure possible. Then user can run the test
-			suite with code coverage option, like \emph{gcov} in GCC, turned on in the compiler. This
+			executable. Of course this doesn't have to be the best data structure possible. Then the user can run the test suite with code coverage option, like \emph{gcov} in GCC, turned on in the compiler. This
 			generates a file like the one shown in \autoref{fig:gcov}.
 
 			\begin{figure} \label{fig:gcov}
@@ -735,9 +749,9 @@ dstype successor_d(ds, dstype);
             Another technique known in compilers we might use is called Just-In-Time Compilation (JIT). JIT, also known
             as dynamic translation, is a method to improve the runtime performance of computer programs based on byte
             code (virtual machine code). Since byte code is interpreted it executes more slowly than compiled machine
-            code, unless it is actually compiled to machine code, which could be performed before the execution – making
-            the program loading slow – or during the execution. In this latter case – which is the basis for JIT
-            compilation – the program is stored in memory as byte code, but the code segment currently running is
+            code, unless it is actually compiled to machine code, which could be performed before the execution –-- making
+            the program loading slow –-- or during the execution. In this latter case, which is the basis for JIT
+            compilation, the program is stored in memory as byte code, but the code segment currently running is
             preparatively compiled to physical machine code in order to run faster.\cite{Wijit}
 
             This technique is, as PGO (\autoref{sec:pgo}), used mostly for peephole optimizations, which means we always
@@ -759,7 +773,7 @@ dstype successor_d(ds, dstype);
             in the standard JIT way. Compiling a part of code to assembly, in most cases, isn't as costly as
             rebuilding a data structure, because unused code won't be run and a wrong data structure can slow down the
             whole program quite a bit. Building a sensible set of heuristics is very hard even for the standard JIT,
-            e.g. the PyPy project tried a lot of different JIT approaches, before finding the one that is working well.
+            e.g. the PyPy project tried a lot of different JIT approaches, before finding the one that is working well \cite{PyPy}.
             Depending on the heuristics here, this may be the most beneficial option for a program, or a big performance
             hit.
 
@@ -1215,6 +1229,7 @@ extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") o
 	\bibitem{LLVM} The LLVM Compiler Infrastructure - http://llvm.org/
 	\bibitem{Okasaki} Purely Functional Data Structures - Chris Okasaki
 	\bibitem{Clang} clang: a C language family frontend for LLVM - http://clang.llvm.org/
+	\bibitem{PyPy} The Architecture of Open Source Applications - http://www.aosabook.org/en/pypy.html, Chapter 19.7
 	\bibitem{AppleCC} Cocoa Core Competencies - Class Clusters - \\
 		https://developer.apple.com/library/mac/\#documentation/General/Conceptual/DevPedia-CocoaCore/ClassCluster.html
 \end{thebibliography}
