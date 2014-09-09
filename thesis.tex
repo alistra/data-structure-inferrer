@@ -320,13 +320,13 @@ dstype successor_d(ds, dstype);
 
 	\subsection{Choosing the best data structure} \label{sec:choose-ds}
 
-		We define a set $DataStructureOperation$. We can further extend this set, but for now assume that
+		We define a set \emph{DataStructureOperation}. We can further extend this set, but for now assume that
 
 		\begin{eqnarray}
-			DataStructureOperation = \{Insert, \; Update, \; Delete, \; FindMax,\; DeleteMax, \; \dots\}.
+			\mathit{DataStructureOperation} = \{Insert, \; Update, \; Delete, \; FindMax,\; DeleteMax, \; \dots\}.
 		\end{eqnarray}
 
-		Each of the $DataStructureOperation$ elements symbolizes an operation you can accomplish on a data
+		Each of the \emph{DataStructureOperation} elements symbolizes an operation you can accomplish on a data
 		structure.
 
 		The type
@@ -406,7 +406,7 @@ dstype successor_d(ds, dstype);
         other, to evade this we can just rename each variable to an UUID, and then remember the mapping for nicer
         output.
 
-		Let $DSOPS(p) :: [(VariableName, DataStructureOperation)]$ be the union of:
+		Let $DSOPS(p) :: [(\mathit{VariableName}, \mathit{DataStructureOperation})]$ be the union of:
 		\begin{enumerate}
 
 			\item \label{it:global} $\{(g, o)\; |\; g \texttt{ is a global data structure variable in $p$ }
@@ -612,11 +612,11 @@ dstype successor_d(ds, dstype);
 			\autoref{dsu-type} to:
 
 			\begin{equation}
-				DSU_w(p) :: [(VariableName, DataStructureOperation, Int)]
+				\mathit{DSU}_w(p) :: [(\mathit{VariableName}, \mathit{DataStructureOperation}, \mathit{Int})]
 			\end{equation}
 
-			This change introduces weights for data structure operations in program $\mathit{p}$. We can use the
-			additional $\mathit{Int}$ field to store specified weight of the operation. For operations that are used
+			This change introduces weights for data structure operations in program \emph{p}. We can use the
+			additional \emph{Int} field to store specified weight of the operation. For operations that are used
 			multiple times, we sum the weights and the resulting sum is the value for that operation.
 
 			The $DSU()$ definition needs a change from \autoref{dsu-definition}:
@@ -737,7 +737,7 @@ dstype successor_d(ds, dstype);
 			operations and set weights on the operations according to the extracted data and then use the
 			choosing algorithm for operations with weights from \autoref{sec:choose-weights}.
 
-            In this method we can approximate the element count $N$ basing on our coverage data, counting all inserting
+            In this method we can approximate the element count \emph{N} basing on our coverage data, counting all inserting
             and deleting operations.
 
 			It's a better solution than letting the user set the weights himself, but still, the data the
@@ -766,7 +766,7 @@ dstype successor_d(ds, dstype);
             obviously benefit time-wise from the substitution. New implementation could of course be compiled from a
             bytecode (e.g. LLVM IR) to assembly just like the standard JIT approach does it.
 
-            The element count $N$ can be computed precisely, because we proxy all the data structure operations, so we
+            The element count \emph{N} can be computed precisely, because we proxy all the data structure operations, so we
             just keep a counter.
 
             The heuristics for detection of a good moment for the substitution should be stronger and more careful than
@@ -850,8 +850,8 @@ dstype successor_d(ds, dstype);
 			\end{figure}
 
             We change the current API of dsinf (\autoref{fig:struct-api-change}), to enable passing an arbitrary number
-            of comparison functions defining orders on the data to the constructor $init\_d$. We use the $va\_args$
-            mechanism in C, that's why we need the order count as the first argument, because the $va\_arg$ macro needs
+            of comparison functions defining orders on the data to the constructor \emph{init\_d}. We use the \emph{va\_args}
+            mechanism in C, that's why we need the order count as the first argument, because the \emph{va\_arg} macro needs
             the first argument of a known type, to start iterating over the rest of the arguments. Next arguments are
             function pointers of type $int(void *, void *)$.
 
@@ -868,8 +868,8 @@ dstype successor_d(ds, dstype);
             result will be a linked data structure, i.e. a number of data structures, in which elements have pointers to
             elements in other data structures, representing the same element value --- like on
             \autoref{fig:linked-data-structures}. For example, if we have the code from the earlier example
-            \autoref{fig:struct-new}, we may have a (Red-Black-Tree, Hashtable) pair, where the RBT is for the $weight$
-            order, and the hashtable is for the $height$ order.
+            \autoref{fig:struct-new}, we may have a (Red-Black-Tree, Hashtable) pair, where the RBT is for the \emph{weight}
+            order, and the hashtable is for the \emph{height} order.
 
             \begin{figure}[h!]
                 \begin{center}
@@ -881,20 +881,57 @@ dstype successor_d(ds, dstype);
 				\label{fig:linked-data-structures}
 			\end{figure}
 
+			In the choice algorithm we make distinctions to the operations that are order specific and general
+            operations. An example of an order specific operation is \emph{max\_d}, which finds an element that is maximal in
+            the given order; an example of a general operation is \emph{insert\_d}, which doesn't take the order as an
+            argument, it has to perform an operation on both linked data structures. 
+
+            Sometimes order specific operations, aside from performing an operation on the data structure related to their order, they have to update the state in other data structures, e.g. \emph{delete\_d} after firing has to run a \emph{delete\_d} operation on the element on the other data structures responsible for different orders. It doesn't have to be the same operation. For example, \emph{delete\_max\_d} doesn't have to call \emph{delete\_max\_d}, because it already has the data structure element pointer, and can just call \emph{delete\_d} --- we call the operation
+            that will have the desired effect with the smallest complexity cost. Calling \emph{delete\_max\_d} wouldn't be correct for this example, because it would delete the maximal element from another order.
+
+			We define a function:
+
+			\begin{equation}
+                RELATED :: DataStructureOperation -> Maybe DataStructureOperation
+            \end{equation}
+
+            For read-only general operations the function is defined as:
+
+			\begin{equation}
+                RELATED(Size) = Minimal cost of on any structure
+                RELATED(AnyElement) = Minimal cost of on any structure
+            \end{equation}
+
+
+            For read-write general operations the function is defined as:
+
+			\begin{equation}
+                RELATED(Insert) = Just Insert
+                RELATED(Delete) = Just Delete
+            \end{equation}
+
+            For read-only order specific operations he function is defined as:
+
+			\begin{equation}
+                RELATED(FindMax) = Nothing
+                RELATED(FindMin) = Nothing
+                RELATED(Find) = Nothing
+                RELATED(Successor) = Nothing
+                RELATED(Predecessor) = Nothing
+            \end{equation}
+
+			For read-write order specific operations he function is defined as:
+
+			\begin{equation}
+                RELATED(DeleteMax) = Just Delete
+                RELATED(DeleteMin) = Just Delete
+            \end{equation}
+
             First we modify the $DSU()$ definition for record variables.
 
-            In the choice algorithm we make distinctions to the operations that are order specific and general
-            operations. An example of an order specific operation is $max\_d$, which finds an element that is maximal in
-            the given order; an example of a general operation is $insert\_d$, which doesn't take the order as an
-            argument, it has to perform an operation on both linked data structures. Sometimes order specific
-            operations, aside from performing an operation on the data structure responsible for their order, they have
-            to update the state in other data structures, e.g. $delete\_max\_d$ after firing has to run a $delete\_d$
-            operation on the element on the other data structures responsible for different orders. It doesn't have to
-            be the same operation, like in the example, $delete\_max\_d$ doesn't have to call $delete\_max\_d$, because
-            it already has the data structure element pointer, and can just call $delete\_d$ --- we call the operation
-            that will have the desired effect with the smallest complexity cost. For the final cost of an operation on a
-            linked data structure we take the sum of costs of operations on all the data structures, which is
-            big-O-wise just the most costly operation.
+            
+           	NOT ALWAYS
+            For the final cost of an operation on a linked data structure we take the sum of costs of operations on all the data structures, which is big-O-wise just the most costly operation.
 
             \missingfigure{Finish the rest}
             
@@ -1152,13 +1189,13 @@ recommendDS opns =  do
 \begin{verbatim}
 analyzeC :: FilePath -> IO [DSInfo]
 \end{verbatim}
-		The return value is a list of $DSInfo$s which are just lists of $DSU$s with all the names, 
+		The return value is a list of \emph{DSInfo}s which are just lists of \emph{DSU}s with all the names, 
 		which the particular persistent data structure identity can be called. This information is 
 		sufficient to pass it to the Core described in \autoref{sec:recommend-impl}.
 
 		The \emph{analyzeC} function traverses the whole abstract syntax tree of the program, which
 		is obtained from the \emph{language-c} parser. It recurses through C statements, expressions 
-		and other language parts as described in the C99 standard. It gathers the $DSU$s and groups them
+		and other language parts as described in the C99 standard. It gathers the \emph{DSU}s and groups them
 		according to rules described in \autoref{dsu-definition}.
 				
 		\subsubsection{Data structure definitions - AllStructures.hs} \label{sec:all-structures-impl}
