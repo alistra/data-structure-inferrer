@@ -7,6 +7,7 @@
 \usepackage[colorlinks=true,linkcolor=blue]{hyperref}
 \usepackage[section]{placeins}
 \usepackage{color}
+\usepackage{amsmath}
 
 \definecolor{darkgreen}{rgb}{0,0.4,0}
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
@@ -679,19 +680,20 @@ dstype successor_d(ds, dstype);
             resistant to less-weighted operations making a big impact. We modify it as follows:
 
             \begin{equation} \label{data-structure-order-weights}
-                d_1 <_{ds} d_2 \Leftrightarrow DSCOST(d_1, ds) \leq DSCOST(d_2, ds)
+                d_1 <_{dsu} d_2 \Leftrightarrow DSCOST(d_1, dsu) \leq DSCOST(d_2, dsu)
             \end{equation}
 
-            where:
+            \emph{DSCOST} describes the cost to use the data structure \emph{d} for \emph{dsu} usages.
 
             \begin{equation}
-                DSCOST(d,ds) = \sum \{OPCOST(o,c,ds) | (o,c) \in d \wedge o \in ds\}
+                DSCOST(d,dsu) = \sum_{u \in dsu} OPCOST(u,d)
             \end{equation}
+
+            \emph{OPCOST} describes the cost of a single operation \emph{o}, with weight \emph{w} and 
+            complexity function \emph{c} for a single data structure usage \emph{u}.
+
             \begin{equation}
-                OPCOST(o,c,ds) = c(N) * w(o, ds)
-            \end{equation}
-            \begin{equation}
-                w(o, ds) \texttt{ is the weight of the operation } o \texttt{ in } ds
+                OPCOST(u,d) = c(N) * w \; \textrm{where} \; (o,c) \in d, u = (v, o, w)
             \end{equation}
 
             This generalization invalidates the point of storing data structure complexities in a easily comparable way.
@@ -891,41 +893,41 @@ dstype successor_d(ds, dstype);
 
 			We define a function:
 
-			\begin{equation}
+			\begin{eqnarray}
                 RELATED :: DataStructureOperation -> Maybe DataStructureOperation
-            \end{equation}
+            \end{eqnarray}
 
             For read-only general operations the function is defined as:
 
-			\begin{equation}
-                RELATED(Size) = Minimal cost of on any structure
+			\begin{eqnarray}
+                RELATED(Size) = Minimal cost of on any structure \\
                 RELATED(AnyElement) = Minimal cost of on any structure
-            \end{equation}
+            \end{eqnarray}
 
 
             For read-write general operations the function is defined as:
 
-			\begin{equation}
-                RELATED(Insert) = Just Insert
+			\begin{eqnarray}
+                RELATED(Insert) = Just Insert\\
                 RELATED(Delete) = Just Delete
-            \end{equation}
+            \end{eqnarray}
 
             For read-only order specific operations he function is defined as:
 
-			\begin{equation}
-                RELATED(FindMax) = Nothing
-                RELATED(FindMin) = Nothing
-                RELATED(Find) = Nothing
-                RELATED(Successor) = Nothing
-                RELATED(Predecessor) = Nothing
-            \end{equation}
+			\begin{eqnarray}
+                RELATED(FindMax) = Nothing\\
+                RELATED(FindMin) = Nothing\\
+                RELATED(Find) = Nothing\\
+                RELATED(Successor) = Nothing\\
+                RELATED(Predecessor) = Nothing\\
+            \end{eqnarray}
 
 			For read-write order specific operations he function is defined as:
 
-			\begin{equation}
-                RELATED(DeleteMax) = Just Delete
+			\begin{eqnarray}
+                RELATED(DeleteMax) = Just Delete\\
                 RELATED(DeleteMin) = Just Delete
-            \end{equation}
+            \end{eqnarray}
 
             First we modify the $DSU()$ definition for record variables.
 
@@ -933,6 +935,47 @@ dstype successor_d(ds, dstype);
            	NOT ALWAYS
             For the final cost of an operation on a linked data structure we take the sum of costs of operations on all the data structures, which is big-O-wise just the most costly operation.
 
+            \begin{equation} \label{data-structure-order-different-types}
+                ld_1 <_{dsu} ld_2 \Leftrightarrow DSCOST(ld_1, dsu) \leq DSCOST(ld_2, dsu) 
+            \end{equation}
+
+            Variables $ld_1$ and $ld_2$ are linked data structures consisting of \emph{m} linked simple structures.
+
+            \begin{eqnarray}
+            	ld_1 = d_{1,1}, d_{1,2}, ..., d_{1,m}\\            
+            	ld_2 = d_{2,1}, d_{2,2}, ..., d_{2,m}
+            \end{eqnarray}
+
+            \emph{DSCOST} describes the cost of the linked data structure \emph{ld} for usages \emph{dsu}.
+
+            \begin{eqnarray}
+                DSCOST(ld,dsu) = \sum_{u \in dsu} OPCOST(u, ld)
+            \end{eqnarray}
+
+			\emph{OPCOST} describes the cost of a single usage \emph{u} on the linked data structure \emph{ld}.
+
+            \begin{equation}
+                OPCOST(u, ld) = \begin{cases}
+   						\min_{d \in ld} SINGLEOPCOST(u,d) & \text{if } u = (v, o, w) \wedge o \text{ read-only order independent operation} \\
+   						\sum_{d \in ld} SINGLEOPCOST(u,d) + RELCOST(u, d, ld) & \mathit{otherwise}
+  					\end{cases}
+            \end{equation}
+
+            \emph{SINGLEOPCOST} describes the cost of a single usage \emph{u} on one of the substructures \emph{d}
+            related to the ordering the operation uses.
+
+			\begin{eqnarray}
+				SINGLEOPCOST(u,d) = c(N) * w \; \textrm{where} \; (o,c) \in d, u = (v, o, w)
+            \end{eqnarray}
+
+			\emph{RELCOST} describes the cost of a single usage \emph{u} on all the substructures other than \emph{d}.
+
+            \begin{eqnarray}
+                RELCOST(u, d, ld) = \sum_{d' \in ld, d \neq d'} SINGLEOPCOST(u,d') HERE ADD OTHER COST WITH RELATED()
+            \end{eqnarray}
+
+
+            
             \missingfigure{Finish the rest}
             
 	\subsection{Upper bound on the element count}
