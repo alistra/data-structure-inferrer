@@ -249,7 +249,7 @@ dstype successor_d(ds, dstype);
         To fix this we declare a new type for an data structure element. The type encompasses a pointer to the place in
         the data structure. The search can be started from this pointer, so there is no need to waste time on finding the element.
 
-        The second version of the API is on \autoref{fig:C-api-v2}. It's updated to use the $dselem$ struct. We use the pointer value instead of the simple value like before.
+        The second version of the API is on \autoref{fig:C-api-v2}. It's updated to use the \emph{dselem} struct. We use the pointer value instead of the simple value like before.
 
         \begin{figure}[h!]
             \lstinputlisting{thesis-pics/ds2.h}
@@ -336,10 +336,10 @@ dstype successor_d(ds, dstype);
 			DataStructure = DataStructureOperation \rightarrow Complexity
 		\end{equation}
 
-		represents a data structure $ds$ and all of the operations implemented for it, with their complexities, as a
-		partial function $f$ from DataStructureOperation to Complexities. It represents some implementation of a
-		data structure, where existing arguments of $f$ are the operations, which are possible to accomplish on
-		$ds$, and the value of the function represents asymptotic speed of the operation. For example
+		represents a data structure \emph{ds} and all of the operations implemented for it, with their complexities, as a
+		partial function \emph{f} from DataStructureOperation to Complexities. It represents some implementation of a
+		data structure, where existing arguments of \emph{f} are the operations, which are possible to accomplish on
+		\emph{ds}, and the value of the function represents asymptotic speed of the operation. For example
 		\autoref{tab:rbt} presents such representation for Red-Black Trees.
 
 		\begin{table}[h!]
@@ -364,15 +364,15 @@ dstype successor_d(ds, dstype);
 			\label{tab:rbt}
 		\end{table}
 
-		When trying to find the best suited data structure for a given program $p$, we look for data structure
-		uses in $p$. Let
+		When trying to find the best suited data structure for a given program \emph{p}, we look for data structure
+		uses in \emph{p}. Let
 
 		\begin{equation} \label{dsu-type}
 			DSU(p) :: [P(DataStructureOperation)]
 		\end{equation}
 
 		be a set of groups of data structure operations. One group represents operations on one persistent
-        data structure identity in the source code of $p$.
+        data structure identity in the source code of \emph{p}.
 
 		For every $ds \in DSU(p)$, we define a parametrized comparison operator for data structures $<_{ds}$
 		defined as:
@@ -949,7 +949,7 @@ dstype successor_d(ds, dstype);
                 \mathit{DSCOST}(ld,dsu) = \sum_{u \in dsu} \mathit{OPCOST}(u, ld)
             \end{eqnarray}
 
-			\emph{OPCOST} describes the cost of a single usage \emph{u} on the linked data structure \emph{ld}.
+			\emph{OPCOST} describes the cost of a single usage \emph{u} on the linked data structure \emph{ld}. This has 2 cases because for read-only order-independent operations we can use the data structure, that performs the operation the fastest. The other case is the sum of the main operation on the order specific data structure plus all cost of all the related operations on all the other data structures.
 
             \begin{equation} \label{eqn:opcost}
                 OPCOST(u, ld) = \begin{cases}
@@ -1228,7 +1228,7 @@ recommendDS opns =  do
 		\subsubsection{C Analyzer - C/Analyzer.hs, Analyzer.hs}
 		This part of the code uses the \emph{language-c} Haskell library to parse C code. 
 		It analyzes the functions in the source files and extracts the data and passes it
-		to the Core part in an easily understandable format as $DSU$s like defined in \autoref{dsu-definition}.
+		to the Core part in an easily understandable format as \emph{DSU}s like defined in \autoref{dsu-definition}.
 
 		To run the whole analysis, we call the \emph{analyzeC} function. It takes the file path as an argument.
 \begin{verbatim}
