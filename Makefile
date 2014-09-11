@@ -42,6 +42,7 @@ thesis: thesis.tex thesis-pics/*
 clean:
 	rm -f Il/Lexer.hs Il/Parser.hs
 	rm -f *.o *.hi C/*.o C/*.hi Defs/*.o Defs/*.hi
+	rubber --clean thesis.tex
 
 binclean: clean
 	rm -f dsinf

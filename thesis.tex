@@ -883,10 +883,10 @@ dstype successor_d(ds, dstype);
 				\label{fig:linked-data-structures}
 			\end{figure}
 
-			In the choice algorithm we make distinctions to the operations that are order specific and general
+			In the choice algorithm we make distinctions to the operations that are order specific and order independent
             operations. An example of an order specific operation is \emph{max\_d}, which finds an element that is maximal in
-            the given order; an example of a general operation is \emph{insert\_d}, which doesn't take the order as an
-            argument, it has to perform an operation on both linked data structures. 
+            a given order; an example of an order independent operation is \emph{insert\_d}, which doesn't take the order as an
+            argument, it has to perform an operation on all the linked data structures. 
 
             Sometimes order specific operations, aside from performing an operation on the data structure related to their order, they have to update the state in other data structures, e.g. \emph{delete\_d} after firing has to run a \emph{delete\_d} operation on the element on the other data structures responsible for different orders. It doesn't have to be the same operation. For example, \emph{delete\_max\_d} doesn't have to call \emph{delete\_max\_d}, because it already has the data structure element pointer, and can just call \emph{delete\_d} --- we call the operation
             that will have the desired effect with the smallest complexity cost. Calling \emph{delete\_max\_d} wouldn't be correct for this example, because it would delete the maximal element from another order.
@@ -894,49 +894,46 @@ dstype successor_d(ds, dstype);
 			We define a function:
 
 			\begin{eqnarray}
-                RELATED :: DataStructureOperation -> Maybe DataStructureOperation
+                \mathit{RELATED} :: \mathit{DataStructureOperation} \rightarrow \mathit{DataStructureOperation}
             \end{eqnarray}
 
-            For read-only general operations the function is defined as:
+            For read-only general operations the function is undefined, as we have an edge case for that in \autoref{eqn:opcost}:
 
 			\begin{eqnarray}
-                RELATED(Size) = Minimal cost of on any structure \\
-                RELATED(AnyElement) = Minimal cost of on any structure
+                \mathit{RELATED}(Size) = undefined\\
+                \mathit{RELATED}(AnyElement) = undefined
             \end{eqnarray}
-
 
             For read-write general operations the function is defined as:
 
 			\begin{eqnarray}
-                RELATED(Insert) = Just Insert\\
-                RELATED(Delete) = Just Delete
+                \mathit{RELATED}(Insert) = Insert\\
+                \mathit{RELATED}(Delete) = Delete
             \end{eqnarray}
 
-            For read-only order specific operations he function is defined as:
+            For read-only order specific operations we use \emph{Nop}, an operation that does nothing:
 
 			\begin{eqnarray}
-                RELATED(FindMax) = Nothing\\
-                RELATED(FindMin) = Nothing\\
-                RELATED(Find) = Nothing\\
-                RELATED(Successor) = Nothing\\
-                RELATED(Predecessor) = Nothing\\
+                \mathit{RELATED}(FindMax) = Nop\\
+                \mathit{RELATED}(FindMin) = Nop\\
+                \mathit{RELATED}(Find) = Nop\\
+                \mathit{RELATED}(Successor) = Nop\\
+                \mathit{RELATED}(Predecessor) = Nop\\
             \end{eqnarray}
 
 			For read-write order specific operations he function is defined as:
 
 			\begin{eqnarray}
-                RELATED(DeleteMax) = Just Delete\\
-                RELATED(DeleteMin) = Just Delete
+                \mathit{RELATED}(DeleteMax) = Delete\\
+                \mathit{RELATED}(DeleteMin) = Delete
             \end{eqnarray}
 
-            First we modify the $DSU()$ definition for record variables.
+            For every supported operation one has to decide if it's read-only or read-write, is it order specific or independent and define what is the related operation for it.
 
-            
-           	NOT ALWAYS
-            For the final cost of an operation on a linked data structure we take the sum of costs of operations on all the data structures, which is big-O-wise just the most costly operation.
+            To create an ordering of linked data structures we modify the \autoref{data-structure-order-weights} as follows:
 
             \begin{equation} \label{data-structure-order-different-types}
-                ld_1 <_{dsu} ld_2 \Leftrightarrow DSCOST(ld_1, dsu) \leq DSCOST(ld_2, dsu) 
+                ld_1 <_{dsu} ld_2 \Leftrightarrow \mathit{DSCOST}(ld_1, dsu) \leq \mathit{DSCOST}(ld_2, dsu) 
             \end{equation}
 
             Variables $ld_1$ and $ld_2$ are linked data structures consisting of \emph{m} linked simple structures.
@@ -949,34 +946,39 @@ dstype successor_d(ds, dstype);
             \emph{DSCOST} describes the cost of the linked data structure \emph{ld} for usages \emph{dsu}.
 
             \begin{eqnarray}
-                DSCOST(ld,dsu) = \sum_{u \in dsu} OPCOST(u, ld)
+                \mathit{DSCOST}(ld,dsu) = \sum_{u \in dsu} \mathit{OPCOST}(u, ld)
             \end{eqnarray}
 
 			\emph{OPCOST} describes the cost of a single usage \emph{u} on the linked data structure \emph{ld}.
 
-            \begin{equation}
+            \begin{equation} \label{eqn:opcost}
                 OPCOST(u, ld) = \begin{cases}
-   						\min_{d \in ld} SINGLEOPCOST(u,d) & \text{if } u = (v, o, w) \wedge o \text{ read-only order independent operation} \\
-   						\sum_{d \in ld} SINGLEOPCOST(u,d) + RELCOST(u, d, ld) & \mathit{otherwise}
+   						\displaystyle \min_{d \in ld} \mathit{SOPCOST}(u,d) & \text{if } ROOI(u)\\
+   						\displaystyle \sum_{d \in ld} \mathit{SOPCOST}(u,d) + \mathit{RELCOST}(u, d, ld) & \mathit{otherwise}
   					\end{cases}
             \end{equation}
 
-            \emph{SINGLEOPCOST} describes the cost of a single usage \emph{u} on one of the substructures \emph{d}
+            \emph{ROOI} is a predicate that is true only for read-only order independent operations:
+            \begin{equation}
+                \mathit{ROOI}(u) = \mathit{True} \text{ iff }u = (v, o, w) \wedge o \text{ read-only order independent operation}
+            \end{equation}
+
+            \emph{SOPCOST} describes the cost of a single usage \emph{u} on one of the substructures \emph{d}
             related to the ordering the operation uses.
 
 			\begin{eqnarray}
-				SINGLEOPCOST(u,d) = c(N) * w \; \textrm{where} \; (o,c) \in d, u = (v, o, w)
+				\mathit{SOPCOST}(u,d) = c(N) * w \; \textrm{where} \; (o,c) \in d, u = (v, o, w)
             \end{eqnarray}
 
-			\emph{RELCOST} describes the cost of a single usage \emph{u} on all the substructures other than \emph{d}.
+			\emph{RELCOST} describes the cost of a single usage \emph{u} on all the substructures other than \emph{d}. It uses the \emph{ROPCOST} cost for the operations, as we perform the related operation of the operation \emph{o} on all the other structures.
 
             \begin{eqnarray}
-                RELCOST(u, d, ld) = \sum_{d' \in ld, d \neq d'} SINGLEOPCOST(u,d') HERE ADD OTHER COST WITH RELATED()
+                \mathit{RELCOST}(u, d, ld) = \sum_{d' \in ld, d \neq d'} \mathit{ROPCOST}(u,d')
+            \end{eqnarray}
+            \begin{eqnarray}
+                \mathit{ROPCOST}(u,d) = c(N) * w \; \textrm{where} \; (\mathit{RELATED}(o),c) \in d, u = (v, o, w)
             \end{eqnarray}
 
-
-            
-            \missingfigure{Finish the rest}
             
 	\subsection{Upper bound on the element count}
 
