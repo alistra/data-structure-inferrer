@@ -27,6 +27,9 @@
 \parindent 0in
 \parskip 1.5ex
 
+\let\subsectionautorefname\sectionautorefname
+\let\subsubsectionautorefname\sectionautorefname
+
 \begin{document}
 
 %Polish title page
@@ -69,7 +72,7 @@ Prof. Witold \textsc{Charatonik}
 \renewcommand{\abstractname}{Streszczenie}
 \begin{abstract}
 
-	Gdy chcemy przechowywać dane, większość dzisiejszych popularnych języków programowania posiada już zaimplementowane biblioteki z wieloma dostępnymi strukturami danych. 
+	Gdy chcemy przechowywać dane, większość popularnych dzisiaj języków programowania posiada już zaimplementowane biblioteki z wieloma dostępnymi strukturami danych. 
 	Programiści po prostu muszą nauczyć się, kiedy należy używać danej struktury. W niektórych przypadkach, ten wybór jest na tyle prosty,
 	że program mógłby automatycznie dobrać najlepszą strukturę danych. Praca ta opisuje \emph{dsinf} - framework do dobierania najlepszej struktury danych pasującej do zadania na podstawie kodu źródłowego programu w języku C. \emph{dsinf} analizuje przypadki użycia struktur danych w całym programie i proponuje najszybszą. 
 	Aby jeszcze bardziej poprawić jakość sugestii, używa danych profilera.
@@ -122,7 +125,7 @@ Prof. Witold \textsc{Charatonik}
 \renewcommand{\abstractname}{Abstract}
 \begin{abstract}
 
-    When you need to store data in a data structure, most of popular languages
+    When you need to store data in a data structure, most languages popular
     today already have libraries with convenience data structures implemented.
     Programmers just have to be taught when to use a particular data structure. Some of
     the cases of choosing the right data structure look sufficiently easy, so a
@@ -144,15 +147,15 @@ Prof. Witold \textsc{Charatonik}
 	In computer science, a data structure is a particular way of storing and organizing data in a computer so that
 	it can be used efficiently\cite{Wids}.
 
-	The interface of a data structure is a set of operation that you can perform on a data structure and some
+	The interface of a data structure is a set of operations that you can perform on a data structure and some
 	semantics of those operations.
 
 	The implementation of a data structure is a realization of some data structure interface in some programming
 	language, that is consistent with the semantics.
 
-	There is a lot of different known types of data structures:
+	There are a lot of different known types of data structures:
 	\begin{itemize}
-		\item Map/Associative array/Dictionary is a data structure for storing $(key,\;value)$ pairs, it allows
+		\item Map/associative array/dictionary is a data structure for storing $(key,\;value)$ pairs, it allows
 			insertion, deletion, modification and lookup,
 		\item multimap is the same as map, but with the possibility of storing multiple values for a one key,
 		\item list is a data structure for storing ordered sets of values,
@@ -189,20 +192,20 @@ Prof. Witold \textsc{Charatonik}
 		pushed to the phase between compilation and linking as described in \autoref{sec:future}.
 
 		The analysis process uses asymptotic complexity for data structure comparison. The process can also be
-		modified by providing some source code annotations or you can use test data to tailor your data
+		modified by providing source code annotations. One can also use test data to tailor the data
 		structure as described in \autoref{sub:importance}.
 
-		The idea of the framework is to provide a data structure, that when used is always good enough. Due to
+		The idea of the framework is to provide a data structure, that is always "good enough". Due to
 		unsolvability of the general case of the problem, the effect always will be worse than a hand tailored
-		data structure to your task, but can save up some time (both programming time and execution time) if the
+		data structure to your task, but can save up some time (both programming time and execution time) if
         time is an important factor. To reiterate, using dsinf for the most critical bottleneck of your
-		application probably isn't a good idea.
+		application probably is not a good idea.
 
 	\subsection{Comparing to a database} \label{sub:database}
-        There's already a mature solution for storing data and querying it in an efficient way --- databases.
+        There is already a mature solution for storing data and querying it in an efficient way --- databases.
 		The main difference between dsinf and a database is that a database has to implement all the operations
 		for all the possible SQL queries, including some crosschecks, counting, summations, extremal elements
-		and with dsinf your data structure implementation doesn't have to be ready for all the possible SQL
+		and with dsinf your data structure implementation does not have to be ready for all the possible SQL
 		queries that can be constructed, but only the ones you used in your source code, which enables it to
 		potentially gain some performance over a database, both in space and time complexity.
 
@@ -219,7 +222,7 @@ Prof. Witold \textsc{Charatonik}
 
 	\subsection{C API}
         The framework detects specific C functions in the source code and bases the inference on them. Now we define
-        what are those functions. The first API version is on \autoref{fig:C-api-v1}.
+        what those functions are. The first API version is in \autoref{fig:C-api-v1}.
 
         \begin{figure}[h!]
             \lstinputlisting{thesis-pics/ds1.h}
@@ -229,9 +232,9 @@ Prof. Witold \textsc{Charatonik}
             \label{fig:C-api-v1}
         \end{figure}
 
-        There is a problem with \autoref{fig:C-api-v1} API. If there's an
-        operation on a data structure that is asymptoticly faster than the
-        speed of a lookup of an element, it's impossible to obtain in the
+        There is a problem with the \autoref{fig:C-api-v1} API. If there is an
+        operation on a data structure that is asymptotically faster than the
+        speed of a lookup of an element, it is impossible to obtain in the
         desired time with this API. For example, a balanced search tree
         that guarantees $O(log n)$ lookups, with a linked list of all the
         elements (like in \autoref{sec:gdsm:le}) to enhance the speed of the
@@ -242,14 +245,14 @@ Prof. Witold \textsc{Charatonik}
 dstype successor_d(ds, dstype);
         \end{lstlisting}
 
-        The problem with this function is that it doesn't take a pointer to the element in a data structure, so it has
+        The problem with this function is that it does not take a pointer to the element in a data structure, so it has
         to actually find the value given in the actual parameter of the function, and then compute the successor in
         $O(1)$, but the search takes $O(log n)$, so the whole operation takes $O(log n)$, which is bad.
 
-        To fix this we declare a new type for an data structure element. The type encompasses a pointer to the place in
+        To fix this we declare a new type for a data structure element. The type encompasses a pointer to the place in
         the data structure. The search can be started from this pointer, so there is no need to waste time on finding the element.
 
-        The second version of the API is on \autoref{fig:C-api-v2}. It's updated to use the \emph{dselem} struct. We use the pointer value instead of the simple value like before.
+        The second version of the API is in \autoref{fig:C-api-v2}. It is updated to use the \emph{dselem} struct. We use the pointer value instead of the simple value like before.
 
         \begin{figure}[h!]
             \lstinputlisting{thesis-pics/ds2.h}
@@ -267,7 +270,7 @@ dstype successor_d(ds, dstype);
 		If we want to find the best possible data structure for a task, we have to define some kind of ordering
 		on the data structures, so we can judge which structures are better than others. Here we want to compare the
 		asymptotic complexities of operations on data structures. When trying to define such ordering, we
-		encounter a problem.  We can't do it for the general case, because the complexity of an operation
+		encounter a problem.  We can not do it for the general case, because the complexity of an operation
         can be described by arbitrary functions and a comparison of asymptotic complexities is complicated.
 
 		Asymptotic complexity of an operation is stored as a pair of type:
@@ -282,7 +285,7 @@ dstype successor_d(ds, dstype);
 			(k, \; l) \; means \; O(n^k \log^l{ n}).
 		\end{eqnarray}
 
-		The reason to choose such a type is that it's easier to compare than the general case (we can do a
+		The reason to choose such a type is that it is easier to compare than the general case (we can do a
 		lexicographical comparison of the two numbers) and it distinguishes most of the data structure operation
 		complexities.
 
@@ -312,11 +315,11 @@ dstype successor_d(ds, dstype);
 		will exceed that time multiplied by a constant. Amortized is worse, because here, we can only guarantee
 		that $n$ consecutive operations will have the average time $O(f(n))$, but single operations can spike
 		heavily. Expected is worse than amortized, because here we can only have some probability of achieving
-		the mentioned complexity for an operation and there's no bound on the number of spikes, which were under
+		the mentioned complexity for an operation and there is no bound on the number of spikes, which were under
 		control in an amortized complexity.
 
 		We also always choose the smallest asymptotic-complexity-wise complexity.  For example, we have a search
-		operation on a splay tree. It's $O(n)$, but $O(\log n)$ amortized, so it's represented as
+		operation on a splay tree. It is $O(n)$, but $O(\log n)$ amortized, so it is represented as
 		$((0,1),Amortized)$.
 
 	\subsection{Choosing the best data structure} \label{sec:choose-ds}
@@ -403,7 +406,7 @@ dstype successor_d(ds, dstype);
 	\subsection{Collecting the program data} \label{dsu-definition}
 
 		In \autoref{dsu-type} the type of the $DSU()$ operation was mentioned. This section shows, how $DSU()$ is
-		defined. We're not considering the problem of 2 different variables having the same name and/or shadowing each
+		defined. We are not considering the problem of 2 different variables having the same name and/or shadowing each
         other, to evade this we can just rename each variable to an UUID, and then remember the mapping for nicer
         output.
 
@@ -423,11 +426,11 @@ dstype successor_d(ds, dstype);
 
 		\end{enumerate}
 
-		Example of the first rule is on \autoref{fig:global-collection-rule}. In the example there are two global data structure variables declared ($global\_ds\_1$, $global\_ds\_2$) and in the bodies of functions we perform some operations on them. The rule returns list of pairs of data structures and operations as they were called.
+		An example of the first rule is in \autoref{fig:global-collection-rule}. In the example there are two global data structure variables declared ($global\_ds\_1$, $global\_ds\_2$) and in the bodies of functions we perform some operations on them. The rule returns list of pairs of data structures and operations as they were called.
 
-		Example of the second rule is on \autoref{fig:declared-collection-rule}. This rule is similiar to the first rule, but it works on variables with an auto storage specifier (local variables in C code) like the $declared\_ds$ variable in the example.
+		An example of the second rule is in \autoref{fig:declared-collection-rule}. This rule is similiar to the first rule, but it works on variables with an auto storage specifier (local variables in C code) like the $declared\_ds$ variable in the example.
 
-		Example of the third rule is on \autoref{fig:parameter-collection-rule}. This rule works similiarly to the two above, only gathering results on variables declared as a function parameter of any function in the program, like the $parameter\_ds$ variable in the example.
+		An example of the third rule is in \autoref{fig:parameter-collection-rule}. This rule works similiarly to the two above, only gathering results on variables declared as a function parameter of any function in the program, like the $parameter\_ds$ variable in the example.
 
         \begin{figure}[h]
             \lstinputlisting{thesis-pics/collecting_global.c}
@@ -458,7 +461,7 @@ dstype successor_d(ds, dstype);
 		data structure from its allocation, to deallocation or the end of the program, counting in passing the structure as a
 		parameter to another function or copying the pointer to the structure.
 
-		$DSU(p)$ is the list of groups created in this step. After this operation, each group has operations performed on the same persistent identity of a data structure. For every such group we find the best matching data structure like shown in 
+		$DSU(p)$ is the list of groups created in this step. After this operation, each group has operations performed on the same persistent identity of a data structure. For every such group we find the best matching data structure as shown in 
 		\autoref{sec:choose-ds}.
 
 		To group the operations:
@@ -468,15 +471,15 @@ dstype successor_d(ds, dstype);
                 \autoref{it:global} or \autoref{it:auto}, we put them in the same group if $d_1 = d_2$. This rule for the example \autoref{fig:global-collection-rule} would group all the operations on $global\_ds\_1$ into one group, and all the operations on $global\_ds\_2$ into another.
 
             \item \textbf{Function calls} - for every pair $(p, o_1)$ that was created by using \autoref{it:param}
-                from function $f$, which was called with the actual data structure parameter $d$ as the formal parameter
+                on function $f$, which was called with the actual data structure parameter $d$ as the formal parameter
                 $p$, we put $o_1$ into the group of operations on $d$.
-                This rule for the example \autoref{fig:parameter-collection-rule} would group all the operations on $declared\_ds$ and $parameter\_ds$ into one group. More complex example is described on \autoref{fig:function-call-grouping}.
+                This rule for the example \autoref{fig:parameter-collection-rule} would group all the operations on $declared\_ds$ and $parameter\_ds$ into one group. A more complex example is described in \autoref{fig:function-call-grouping}.
 
             \item \textbf{Copy propagation} - for every $(do, o_1)$ and $(dc, o_2)$, where the $dc$ variable was
-                obtained by copying the value of the variable $do$, we put $o_1$ and $o_2$ in the same group. On \autoref{fig:copy-grouping} this rule would group 
+                obtained by copying the value of the variable $do$, we put $o_1$ and $o_2$ in the same group. In \autoref{fig:copy-grouping} this rule would group 
                 $declared\_ds$ and $copied\_ds$ into one group.
 
-            \item \textbf{Uniqueness} - for every group, we delete repeating elements. We notice that in example \autoref{fig:global-collection-rule} the method yields a list with $(global\_ds\_2, delete\_d)$ two times. This rule takes care of that and leaves only one.
+            \item \textbf{Uniqueness} - for every group, we delete repeating elements. We notice that in \autoref{fig:global-collection-rule} the method yields a list with $(global\_ds\_2, delete\_d)$ two times. This rule takes care of that and leaves only one.
 
 		\end{itemize}
 
@@ -506,7 +509,7 @@ dstype successor_d(ds, dstype);
 
 	\subsection{Second extremal element}
 
-		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that's what heaps are
+		If we want to find the maximal element in a heap, we just look it up in $O(1)$, that is what heaps are
 		for.  If we want to find the minimal element we can modify the heap, for it to use an order, which would
 		allow us to lookup the minimal element in $O(1)$.  What happens if we want to find the max and the min
 		element in the duration of one program?  How to modify our framework to handle this kind of situations?
@@ -539,10 +542,10 @@ dstype successor_d(ds, dstype);
 		\end{figure}
 
 		In \autoref{fig:undecidable}, the best data structure is depending on the user input, which is not known at
-		compile time. If we analyze it as is, it will decide basing on the information, that every operation is
-		used, so the final data structure won't be specific to the task, but just average at everything.
+		compile time. If we analyze it as is, it will decide based on the information, that every operation is
+		used, so the final data structure will not be specific to the task, but just average at everything.
 
-		The code that is not totally dependent on the user input can also cause problems to analyze.
+		Code that is not totally dependent on the user input can also cause problems to analyze.
 
         \begin{figure}[!h]
 			\lstinputlisting{thesis-pics/weighted-instructions.c}
@@ -555,15 +558,15 @@ dstype successor_d(ds, dstype);
 
 		In \autoref{fig:hard-no-user} we see a very costly instruction used only once
 		($delete\_max\_d$), and a few instructions ($insert$, $search$) run in a loop for a few million times.
-		To anyone that knows program complexities it's obvious that this one heavy instruction doesn't affect
+		To anyone that knows program complexities it is obvious that this one heavy instruction does not affect
 		the execution time of the whole program, yet the framework at the current state treats those
 		instructions equally and will probably choose something like Red-Black Trees, to minimize the time of
 		the $delete\_max\_d$, instead of ignoring its cost and using a very fast Hashtable.
 
         We can formally show, that the problem of choosing the fastest data structure is undecidable, by showing that
-        it's not easier than the halting problem. In \autoref{fig:undecidable-no-user} we run the $delete\_max\_d$ only
-        if a turing machine that we defined accepts an input, so we don't know if we should choose a data structure that
-        implements $delete\_max\_d$ fast, or just ignore it, because it won't ever be used because of the machine not
+        it is not easier than the halting problem. In \autoref{fig:undecidable-no-user} we run the $delete\_max\_d$ only
+        if a turing machine that we defined accepts an input, so we do not know if we should choose a data structure that
+        implements $delete\_max\_d$ fast, or just ignore it, because it will not ever be used because of the machine not
         stopping the computation.
 
         \begin{figure}
@@ -588,11 +591,11 @@ dstype successor_d(ds, dstype);
 				\label{fig:code-pragmas}
 			\end{figure}
 
-            In the example on \autoref{fig:code-pragmas} programmer can add weights to operations, assigning very low values
+            In the example in \autoref{fig:code-pragmas} the programmer adds weights to operations, assigning very low values
 			for statements that are used rarely or for debug purposes, and very high values for crucial
 			parts of the program.
 
-            We would have to extend the API like on \autoref{fig:code-pragmas-api}.
+            We would have to extend the API like in \autoref{fig:code-pragmas-api}.
 
             \begin{figure}[!h]
 				\lstinputlisting{thesis-pics/dsw.h}
@@ -602,8 +605,8 @@ dstype successor_d(ds, dstype);
 				\label{fig:code-pragmas-api}
 			\end{figure}
 
-			This isn't a perfect solution, because we still need the programmer to judge which operations
-			should have high weights, but it's nice when a programmer wants to use it for debug purposes or
+			This is not a perfect solution, because we still need the programmer to judge which operations
+			should have high weights, but it is nice when a programmer wants to use it for debug purposes or
 			otherwise tinker with it.
 
 		\subsubsection{Choosing the best data structure with weights} \label{sec:choose-weights}
@@ -617,7 +620,7 @@ dstype successor_d(ds, dstype);
 			\end{equation}
 
 			This change introduces weights for data structure operations in program \emph{p}. We can use the
-			additional \emph{Int} field to store specified weight of the operation. For operations that are used
+			additional \emph{Int} field to store the specified weight of the operation. For operations that are used
 			multiple times, we sum the weights and the resulting sum is the value for that operation.
 
 			The $DSU()$ definition needs a change from \autoref{dsu-definition}:
@@ -634,19 +637,19 @@ dstype successor_d(ds, dstype);
 
             The change the definition of \autoref{data-structure-order} is needed. We could still simply compare data
             structure operations on their complexity, making that one point, and multiply that point by the weight of
-            the operation for that data structure identity. That's not a very precise solution, let's consider an
-            example on \autoref{fig:dsu-weight-bad-example}.
+            the operation for that data structure identity. That is not a very precise solution, let us consider an
+            example in \autoref{fig:dsu-weight-bad-example}.
 
             \begin{figure}[!h]
                 \lstinputlisting{thesis-pics/dsu-weight-bad-example.c}
 
                 \caption{Example for weighted data structure choice algorithm, using pragmas API; the weight is
-                counted per call site, not per function call, so the weight won't be $x^2$, but $x$ for $search\_d$ .}
+                counted per call site, not per function call, so the weight will not be $x^2$, but $x$ for $search\_d$ .}
 
                 \label{fig:dsu-weight-bad-example}
             \end{figure}
 
-            Let's consider the class of programs, like on \autoref{fig:dsu-weight-bad-example}, but with different $n$
+            Let us consider the class of programs, like in \autoref{fig:dsu-weight-bad-example}, but with different $n$
             and $x$ values. Assume for simplicity that we ignore the insertions and the complexity functions of $search\_d$,
             $delete\_max\_d$ and $delete\_min\_d$ are $log_2 n$, $log_2 n$, $log_2 n$ for Red Black Trees and $1$, $n$ and $n$
             for Hashtables respectively --- we discard big-O constants. Then, the answer to the question which data structure 
@@ -669,7 +672,7 @@ dstype successor_d(ds, dstype);
                 \label{fig:dsu-weight-bad-plot}
             \end{figure}
 
-            This plot on \autoref{fig:dsu-weight-bad-plot} shows, where the better solution would be to use Red Black
+            This plot in \autoref{fig:dsu-weight-bad-plot} shows, where the better solution would be to use Red Black
             Trees (blue area), and where to use Hashtables (white area). The blue cone, although smaller, still covers a
             lot of cases. The earlier algorithm yields hashtables for virtually all examples here ($x > 2$), which means
             that the data structures chosen in the blue cone on the plot are not the best ones for the case.
@@ -711,13 +714,12 @@ dstype successor_d(ds, dstype);
 			solely use the source code, PGO uses the results of test runs of the instrumented program to
             optimize the final generated code \cite{Wipgo}.
 
-            Usually the technique is used for optimizing hot loops and if statements. The binary saves logs of it
-            working and the lines which are hit more, then a system-wide daemon can recompile the parts of the binary to
-            make it faster for the common case.
+            Usually the technique is used for optimizing hot loops and if statements. The binary saves logs of itself
+            working and which source lines are hit more, then a system-wide daemon can recompile the parts of the binary to make it faster for the common case.
 
-			If the user has test data, he can run against his program, we can take advantage of that.  First
+			If the user has test data he can run against his program, we can take advantage of that.  First
 			we choose the best data structure using an unmodified method and link some library to the
-			executable. Of course this doesn't have to be the best data structure possible. Then the user can run the test suite with code coverage option, like \emph{gcov} in GCC, turned on in the compiler. This
+			executable. Of course this does not have to be the best data structure possible. Then the user can run the test suite with code coverage option, like \emph{gcov} in GCC, turned on in the compiler. This
 			generates a file like the one shown in \autoref{fig:gcov}.
 
 			\begin{figure} \label{fig:gcov}
@@ -739,12 +741,11 @@ dstype successor_d(ds, dstype);
 			operations and set weights on the operations according to the extracted data and then use the
 			choosing algorithm for operations with weights from \autoref{sec:choose-weights}.
 
-            In this method we can approximate the element count \emph{N} basing on our coverage data, counting all inserting
-            and deleting operations.
+            In this method we can approximate the element count \emph{N} based on our coverage data, counting all insert and delete operations.
 
-			It's a better solution than letting the user set the weights himself, but still, the data the
-			inference is based upon comes from tests and there's no guarantee the real world data will
-			match the test data.
+			It is a better solution than letting the user set the weights himself, but we have to keep in mind 
+			that the data the inference is based upon comes from tests and there is no guarantee the real world 
+			data will match the test data.
 
 		\subsubsection{Transforming data structures on-line} \label{sec:transforming-on-line}
 
@@ -757,23 +758,23 @@ dstype successor_d(ds, dstype);
             preparatively compiled to physical machine code in order to run faster.\cite{Wijit}
 
             This technique is, as PGO (\autoref{sec:pgo}), used mostly for peephole optimizations, which means we always
-            look at a small part of the code, like a hot if statement or a loop. With PGO we gathered information
-            overtime and changed the binary, JIT does basically the same thing, only works in runtime. Usually we
-            implement some proxy abstraction, that decides if, at the current time, it's profitable, to compile the
+            look at a small part of the code, like a hot \emph{if} statement or a loop. With PGO we gathered information
+            over time and changed the binary, JIT does basically the same thing, only works at runtime. Usually we
+            implement some proxy abstraction, that decides if, at the current time, it is profitable to compile the
             executed part to assembly instead of interpreting it.
 
             Instead of compiling a bytecode to assembly, we can use a proxy to count the specific operations on our
             data structure, using the counts of usage as the new weights in the data structure inference algorithm in
             \autoref{sec:choose-weights}. We substitute the data structure with a faster one, if the program would
-            obviously benefit time-wise from the substitution. New implementation could of course be compiled from a
+            obviously benefit time-wise from the substitution. The new implementation could of course be compiled from a
             bytecode (e.g. LLVM IR) to assembly just like the standard JIT approach does it.
 
             The element count \emph{N} can be computed precisely, because we proxy all the data structure operations, so we
             just keep a counter.
 
             The heuristics for detection of a good moment for the substitution should be stronger and more careful than
-            in the standard JIT way. Compiling a part of code to assembly, in most cases, isn't as costly as
-            rebuilding a data structure, because unused code won't be run and a wrong data structure can slow down the
+            in the standard JIT way. Compiling a part of code to assembly, in most cases, is not as costly as
+            rebuilding a data structure, because unused code will not be run and a wrong data structure can slow down the
             whole program quite a bit. Building a sensible set of heuristics is very hard even for the standard JIT,
             e.g. the PyPy project tried a lot of different JIT approaches, before finding the one that is working well \cite{PyPy}.
             Depending on the heuristics here, this may be the most beneficial option for a program, or a big performance
@@ -783,32 +784,32 @@ dstype successor_d(ds, dstype);
 
 		Currently the framework works only for integer elements. We could extend it to every primitive type in
 		C, but it would require some changes.  Some data structures require the type to be comparable, which
-		wouldn't be a big problem, because there is a comparison semantics defined on those types. There's also
+		would not be a big problem, because there is a comparison semantics defined on those types. There is also
 		a hash function needed, because some data structures, like a hashtable, need to compute hash values to
 		work. We can just use the binary representation of other types, and use it as an integer for the hash
-		function. This whole modification doesn't need any user interaction.
+		function. This whole modification does not need any user interaction.
 
-		There's a bigger problem with composite types. Comparing pointers isn't obvious. You may want to compare
+		There is a bigger problem with composite types. Comparing pointers is not obvious. You may want to compare
 		addresses or the contents under that address, depending if you want object or structural equality. The
-		same problem is with hash function arguments. There's also a problem with possible memory leaks. You can
+		same problem apppears in hash function arguments. There is also a problem with possible memory leaks. You can
 		pass a pointer to a string to the data structure and lose the pointer in the program, then when the
 		structure deletes the pointer and the string stays in the memory to the program's end. Adding this to
 		the framework would require passing the comparison function, hash function and some kind of destructor
 		function to the data structure, or possibly use some reference counting system. It would be very
 		technical and would be beyond the scope of this thesis. With an array or a big struct passed to the
-		framework, there's a problem if we want to share the data structure and just copy the pointer, copying
+		framework, there is a problem if we want to share the data structure and just copy the pointer, copying
 		the whole thing may be a bad idea, because it can have quite a lot of data inside.
 
 		\subsubsection{Linked data structures}
 
 			When we want to store structs like \autoref{fig:linked-struct} in a data structure, the
 			framework, at the moment, could generate some data structure for this kind of structs. The
-			operation on the data structure would look like on \autoref{fig:struct-old}.
+			operation on the data structure would look like in \autoref{fig:struct-old}.
 
             \begin{figure}[h!]
 				\lstinputlisting{thesis-pics/linked-struct.c}
 
-				\caption{An example record, that we want to store in a data structure}
+				\caption{An example record that we want to store in a data structure}
 
 				\label{fig:linked-struct}
 			\end{figure}
@@ -822,7 +823,7 @@ dstype successor_d(ds, dstype);
 				\label{fig:struct-old}
 			\end{figure}
 
-			In \autoref{fig:struct-old} a comparison function is used, it compares the height. We can use
+			In \autoref{fig:struct-old} a comparison function is used; it compares the height. We can use
 			any function that compares a coordinate or a combination of coordinates, but only one order of
 			the elements is available per data structure. This can also be achieved without using structs at
 			all, like in \autoref{fig:struct-pointer-sizeof-reduction}.
@@ -838,39 +839,39 @@ dstype successor_d(ds, dstype);
 
 			In \autoref{fig:struct-pointer-sizeof-reduction} we dereference structs as arrays of
 			chars. To get to any field, we just take a pointer to a field in the array and cast it to the
-			right type. So it doesn't really give us any more expressiveness. It would be nice if our
+			right type. So it does not really give us any more expressiveness. It would be nice if our
 			program enabled things like comparing structs by more than one condition in one program. We
 			would want to be able to use operations like in \autoref{fig:struct-new}.
 
             \begin{figure}[h!]
 				\lstinputlisting{thesis-pics/struct-new.c}
 
-				\caption{Examples of the new dsinf API, that takes different orders on structs into
+				\caption{Examples of the new dsinf API that takes different orders on structs into
 				account}
 
 				\label{fig:struct-new}
 			\end{figure}
 
-            We change the current API of dsinf (\autoref{fig:struct-api-change}), to enable passing an arbitrary number
+            We change the current API of dsinf (\autoref{fig:struct-api-change}) to enable passing an arbitrary number
             of comparison functions defining orders on the data to the constructor \emph{init\_d}. We use the \emph{va\_args}
-            mechanism in C, that's why we need the order count as the first argument, because the \emph{va\_arg} macro needs
+            mechanism in C, which is why we need the order count as the first argument, because the \emph{va\_arg} macro needs
             the first argument of a known type, to start iterating over the rest of the arguments. Next arguments are
             function pointers of type $int(void *, void *)$.
 
             \begin{figure}[h!]
 				\lstinputlisting{thesis-pics/struct-api-change.c}
 
-				\caption{Change for the API, so we can define multiple orders on data}
+				\caption{Change in the API, enabling us to define multiple orders on data}
 
 				\label{fig:struct-api-change}
 			\end{figure}
 
-            To achieve such thing, we need to change the way we choose structures for record types. We will check all
+            To achieve this, we need to change the way we choose structures for record types. We will check all
             the data structure tuples, of length of the order count, in the cross-product of all data structures. The
             result will be a linked data structure, i.e. a number of data structures, in which elements have pointers to
             elements in other data structures, representing the same element value --- like on
-            \autoref{fig:linked-data-structures}. For example, if we have the code from the earlier example
-            \autoref{fig:struct-new}, we may have a (Red-Black-Tree, Hashtable) pair, where the RBT is for the \emph{weight}
+            \autoref{fig:linked-data-structures}. For example, if we consider the code from the earlier example in
+            \autoref{fig:struct-new}, the result may be a (Red-Black-Tree, Hashtable) pair, where the RBT is for the \emph{weight}
             order, and the hashtable is for the \emph{height} order.
 
             \begin{figure}[h!]
@@ -878,18 +879,17 @@ dstype successor_d(ds, dstype);
                     \includegraphics[width=0.9\textwidth]{thesis-pics/linked-dses.png}
                 \end{center}
 
-				\caption{Visualization of a linked data structure, elements from a balanced tree, represeting one order of data,
+				\caption{Visualization of a linked data structure: elements from a balanced tree, represeting one order of data,
                  connected with the elements of a linked list, representing the second order of data}
 				\label{fig:linked-data-structures}
 			\end{figure}
 
-			In the choice algorithm we make distinctions to the operations that are order specific and order independent
+			In the choice algorithm we make distinctions between operations that are order specific and those that are order independent
             operations. An example of an order specific operation is \emph{max\_d}, which finds an element that is maximal in
-            a given order; an example of an order independent operation is \emph{insert\_d}, which doesn't take the order as an
-            argument, it has to perform an operation on all the linked data structures. 
+            a given order; an example of an order independent operation is \emph{insert\_d}, which does not take the order as an argument, as it has to perform an operation on all the linked data structures. 
 
-            Sometimes order specific operations, aside from performing an operation on the data structure related to their order, they have to update the state in other data structures, e.g. \emph{delete\_d} after firing has to run a \emph{delete\_d} operation on the element on the other data structures responsible for different orders. It doesn't have to be the same operation. For example, \emph{delete\_max\_d} doesn't have to call \emph{delete\_max\_d}, because it already has the data structure element pointer, and can just call \emph{delete\_d} --- we call the operation
-            that will have the desired effect with the smallest complexity cost. Calling \emph{delete\_max\_d} wouldn't be correct for this example, because it would delete the maximal element from another order.
+            Sometimes order specific operations, aside from performing an operation on the data structure related to their order, have to update the state in other data structures, e.g. \emph{delete\_d}, after firing, has to run a \emph{delete\_d} operation on the element on the other data structures responsible for different orders. It does not have to be the same operation. For example, \emph{delete\_max\_d} does not have to call \emph{delete\_max\_d}, because it already has the data structure element pointer, and can just call \emph{delete\_d} --- we call the operation
+            that will have the desired effect with the smallest complexity cost. Calling \emph{delete\_max\_d} would not be correct for this example, because it would delete the maximal element from another order.
 
 			We define a function:
 
@@ -928,7 +928,7 @@ dstype successor_d(ds, dstype);
                 \mathit{RELATED}(DeleteMin) = Delete
             \end{eqnarray}
 
-            For every supported operation one has to decide if it's read-only or read-write, is it order specific or independent and define what is the related operation for it.
+            For every supported operation one has to decide if it is read-only or read-write, is it order specific or independent and define what is the related operation for it.
 
             To create an ordering of linked data structures we modify the \autoref{data-structure-order-weights} as follows:
 
@@ -949,7 +949,7 @@ dstype successor_d(ds, dstype);
                 \mathit{DSCOST}(ld,dsu) = \sum_{u \in dsu} \mathit{OPCOST}(u, ld)
             \end{eqnarray}
 
-			\emph{OPCOST} describes the cost of a single usage \emph{u} on the linked data structure \emph{ld}. This has 2 cases because for read-only order-independent operations we can use the data structure, that performs the operation the fastest. The other case is the sum of the main operation on the order specific data structure plus all cost of all the related operations on all the other data structures.
+			\emph{OPCOST} describes the cost of a single usage \emph{u} of the linked data structure \emph{ld}. This has two cases because for read-only order-independent operations we can use the data structure that performs the operation the fastest. The other case is the sum of the main operation on the order specific data structure plus all cost of all the related operations on all the other data structures.
 
             \begin{equation} \label{eqn:opcost}
                 OPCOST(u, ld) = \begin{cases}
@@ -982,22 +982,22 @@ dstype successor_d(ds, dstype);
             
 	\subsection{Upper bound on the element count}
 
-		When analyzing the input program, we can try to get the information, if the maximum element count in the
-		data structure is bounded by some constant. If we can obtain such an information (in general it is of course undecidable), we can use it to enhance the data structure generated for the program.
+		When analyzing the input program, we can try to gather whether the maximum element count in the
+		data structure is bounded by some constant. If we can obtain this information (in general it is of course undecidable), we can use it to enhance the data structure generated for the program.
 
 		When the element count in the data structure is potentially infinite, we have to create an
 		implementation of the structure that allocates memory lazily, when it needs the space for new elements.
 		We can imagine that a structure can allocate one chunk on every insertion and free a chunk on every
-		deletion, or even allocate twice as big chunks and amortize the number of allocations to $O(log \; n)$.
+		deletion, or even allocate chunks twice as big and amortize the number of allocations to $O(log \; n)$.
 
 		When we have the information about the element count, we can allocate the whole static buffer for the
 		data structure, and this removes the whole cost of allocation during insertions and deletions. The
-		example on \autoref{fig:upper-bound-transform} shows such a program.
+		example in \autoref{fig:upper-bound-transform} shows such a program.
 
 		\begin{figure}
 			\lstinputlisting{thesis-pics/upper-bound-transform.c}
 
-			\caption{An example showing a situation, where beneficial would be to create a statically allocated data
+			\caption{An example showing a situation where beneficial would be to create a statically allocated data
 			structure instead of a dynamically allocated, because of statically known element count}
 
 			\label{fig:upper-bound-transform}
@@ -1008,16 +1008,16 @@ dstype successor_d(ds, dstype);
 
 	\subsection{Minimal element count threshold}
 
-		It's worth noticing that we compare only the asymptotic complexity of data structures. Some awfully
+		It is worth noticing that we compare only the asymptotic complexity of data structures. Some awfully
 		complicated structures can have good asymptotic results, but the constant is quite high. We can avoid
 		this problem by setting a threshold for each structure, what is the smallest number of elements to use
 		this data structure.
 
-		Another problem arises, how to know at compile time, how many elements a data structure will have at
+		Another problem arises -- how to know at compile time, how many elements a data structure will have at
 		runtime. We can ask the user to explicitly specify the number during compilation or we can try to
 		detect how big the declared data is, with some kind of constant folding analysis, that checks if the
 		insertion to the data structure is in a loop that is run more times than the threshold. This is a fragile
-		solution, because not a lot of programs are easy to analyze this way.
+		solution, because few programs are easy to analyze this way.
 
 		Another solution is runtime tallying the size, and using the method of transforming data structures
 		on-line described in \autoref{sec:transforming-on-line}. When we hit a threshold for a data structure
@@ -1026,7 +1026,7 @@ dstype successor_d(ds, dstype);
 		\begin{figure}
 			\lstinputlisting{thesis-pics/minimal-elem-count.c}
 
-			\caption{An example showing a situation, where beneficial would be to transform a data structure
+			\caption{An example showing a situation where beneficial would be to transform a data structure
 				into a more complex one, because the number of elements is sufficiently big, so the
 				whole transformation is profitable}
 
@@ -1035,34 +1035,34 @@ dstype successor_d(ds, dstype);
 
         In \autoref{fig:minimal-elem-count} we see a code example that would yield some kind of a priority queue in our
         framework, although it only has a few elements, and some of the fastest priority queues are pretty heavy-weight
-        and it would be better just to use some simpler data structure, because the setup cost isn't amortized by the
+        and it would be better just to use some simpler data structure, because the setup cost is not amortized by the
         operations.
 
 	\subsection{Generic data structure modifications} \label{sub:gdsm}
 
 		When searching for the most apt data structure, we need to have some kind of data structure database,
-		where we keep all the structures' metadata and implementations for the framework to use. Ideally there
+		where we keep all the structure metadata and implementations for the framework to use. Ideally there
 		would be a lot of different data structures there.
 
 		When implementing a data structure, one could easily modify the implementation to maybe match some rare
-		specific task, that is not needed in most cases. It would be wasteful to keep a copy of the data
-		structure for each small combination of those modifications, if we want to return a data structure
+		specific task that is not needed in most cases. It would be wasteful to keep a copy of the data
+		structure for each small combination of those modifications if we want to return a data structure
 		tailored perfectly to the task. Of course some of the modifications are very data structure specific, so
-		a generalization isn't possible, but for some cases, we can extract a piece of code, like a wrapper for
-        a data structure that modifies its behavior in some specific way (similar pattern was used in
+		a generalization is not possible, but for some cases, we can extract a piece of code, like a wrapper for
+        a data structure that modifies its behavior in some specific way (a similar pattern was used in
         \cite{Okasaki}).
 
 		\subsubsection{Extremal element cache}
 
-			When we want to be able to lookup extremal elements in the data structure, we don't really have
+			If we want to be able to lookup extremal elements in the data structure, we do not really have
 			to know the implementation specifics of the data structure. We only need to intercept the calls
 			which insert and delete elements. When we insert an element, we compare it to a cache variable,
 			which keeps the biggest element (if our extremal element is the maximal element) known to be in
 			the data structure.
 
-			But this road also has some drawbacks, if we delete an element, and it occurs that the deleted
+			But this approach also has some drawbacks -- if we delete an element, and it occurs that the deleted
 			element is the current maximum, we have to find the new maximal element from the rest of
-			elements, which can be asymptoticly more costly than the delete itself.
+			elements, which can be asymptotically more costly than the delete itself.
 
 				\begin{table}[h!]
 				\centering
@@ -1114,28 +1114,28 @@ dstype successor_d(ds, dstype);
 				\label{fig:elem-cache}
 			\end{figure}
 
-			We notice that a lot of data structures already implement this pattern \cite{Wiveb}.
+			We should note that a lot of data structures already implement this pattern \cite{Wiveb}.
 
         \subsubsection{Linked elements}\label{sec:gdsm:le}
 
-			When we have a structure that keeps some data, to find a predecessor or a successor, it usually
-			takes $O(n)$ or $O(log \; n)$ operations.  To help this we can create an overlay with a doubly
-			linked list on the elements, so our predecessor/successor lookups are $O(1)$. Drawback here is
-			that the cost of insert is increased by searching the successor to link it appropriately. Cost of
-			update is also affected. Delete cost stays the same, becasue we can wire the elements in $O(1)$, 
+			When we have a structure that keeps some data, it usually takes $O(n)$ or $O(log \; n)$ operations
+			to find a predecessor or a successor. To improve this we can create an overlay with a doubly
+			linked list on the elements, so our predecessor/successor lookups are $O(1)$. The drawback here is
+			that the cost of insert is increased by searching the successor to link it appropriately. The cost of
+			update is also affected. The delete cost stays the same, because we can wire the elements in $O(1)$, 
 			just like the removal of an element in a double linked list.
 
 \section{Future work} \label{sec:future}
-	It may be a good idea to rewrite the framework to analyze LLVM\cite{LLVM} intermediate representation internally,
+	It may be a good idea to rewrite the framework to analyze the LLVM\cite{LLVM} intermediate representation internally,
     instead of the C language abstract syntax tree. This could yield better results because of the optimizations that clang
     \cite{Clang} can apply to
-	the initial code, like removing unnecessary calls to data structure operations, so the framework can infer the
+	the initial code, like removing unnecessary calls to data structure operations, so that the framework can infer the
 	data structure based on the optimized code. LLVM also enables a link-time optimization, so after linking the
-	chosen data structure to a program, another optimization step is performed. Also analyzing LLVM IR is easier
+	chosen data structure to a program, another optimization step is performed. Also, analyzing LLVM IR is easier
 	than analyzing the C language.
 
-    Framework can be easily generalized to substitute data structure comparison functions, so one could write a function
-    that takes e.g. I/O into account, or any combination of I/O and big-O complexity or even something more complicated.
+    The framework can be easily generalized to substitute data structure comparison functions, so one could write a function
+    that, as an example, takes I/O into account, or any combination of I/O and big-O complexity or even something more complicated.
 
 \newpage
 \begin{appendices}
@@ -1153,7 +1153,7 @@ cd data-structure-inferrer/
 make dsinf
 		\end{lstlisting}
 	This will clone the \emph{dsinf} git repository and build the package using a \emph{cabal sandbox}.
-	This can take a little while, but all the dependencies are installed locally and won't affect your 
+	This can take a little while, but all the dependencies are installed locally and will not affect your 
 	haskell setup in the system. This will install the \emph{dsinf} binary in your current working directory.
 	\subsection{Usage}
 
@@ -1186,7 +1186,7 @@ CCOPTS are passed directly to the compiler
     \end{verbatim}  
 \endgroup
 	
-	We can run \emph{dsinf} on some test files just to check if everything is working alright.
+	There are test files available so that one can check if everything is works alright.
 	\begin{verbatim}
 % ./dsinf C/tests/d1_delmax_d2_max.c
 
@@ -1220,10 +1220,10 @@ recommendDS opns =  do
 		in \autoref{sec:all-structures-impl}. The \emph{compareDS} function is an implementation
 		of the ordering in \autoref{data-structure-order}.
 		
-		In this functions elements from \emph{allStructures} are sorted using the \emph{compareDS} order.
+		In these functions elements from \emph{allStructures} are sorted using the \emph{compareDS} order.
 		Then we take the group of first elements that are equal within this ordering --- the structures
 		represent the fastest structures for the persistent data structure identity. We return a random
-		fastest data structure.
+		fastest data structure, so the program can return one data structure.
 		
 		\subsubsection{C Analyzer - C/Analyzer.hs, Analyzer.hs}
 		This part of the code uses the \emph{language-c} Haskell library to parse C code. 
@@ -1234,7 +1234,7 @@ recommendDS opns =  do
 \begin{verbatim}
 analyzeC :: FilePath -> IO [DSInfo]
 \end{verbatim}
-		The return value is a list of \emph{DSInfo}s which are just lists of \emph{DSU}s with all the names, 
+		The return value is a list of \emph{DSInfo}s which are simply lists of \emph{DSU}s with all the names, 
 		which the particular persistent data structure identity can be called. This information is 
 		sufficient to pass it to the Core described in \autoref{sec:recommend-impl}.
 
@@ -1267,12 +1267,12 @@ ll = DS "Linked List"       [
                             Op UpdateByRef          (LinLog 0 0, N)
                                                                     ]
 \end{verbatim}
-		The \emph{LinLog} constructor is stores the asymptotic complexity as described in 
-		\autoref{eqn:linlog}. The \emph{N} part is a marker, that this is a normal complexity,
+		The \emph{LinLog} constructor stores the asymptotic complexity as described in 
+		\autoref{eqn:linlog}. The \emph{N} part is a marker, signifying that this is a normal complexity,
 		as opposed to an expected or amortized complexity.
 		
 		This part also implements the technique described in \autoref{sub:gdsm} that provides generic 
-		data structure modifications, like e.g. extremal element caching:
+		data structure modifications, e.g. extremal element caching:
 \begin{verbatim}
 -- | A function that adds an extremal element cache to a data structure
 extremalElemCache :: Structure -> Structure
@@ -1284,7 +1284,7 @@ extremalElemCache (DS name ops) = DS (name ++ " with extreme element caching") o
             filter (\dsop -> getOpName dsop `notElem` [ExtremalVal, DeleteByRef]) ops
 \end{verbatim}
 	The \emph{extremalElemCache} function takes a data structure definition as an input and 
-	return a data structure definition with modified costs according to the generic modification.
+	returns a data structure definition with modified costs according to the generic modification.
 	As adding an extremal element cache will speed up (to constant time) the lookup of an 
 	extremal value, the resulting data structure definition has the cost of \emph{ExtremalVal}
 	as \emph{(LinLog 0 0, N)} --- normal constant time. The tradeoff in this case is that, 
